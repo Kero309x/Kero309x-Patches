@@ -1,0 +1,13 @@
+# Version catalogue.
+#
+# The Morphe patcher is supplied to the patches module by the framework Gradle
+# plugin. The entry below exists so that dependency tooling (Dependabot) can
+# track the version we compile against; it is not added as a direct dependency.
+#
+# Anything else listed here must be approved before it is used in a build.
+
+[versions]
+morphePatcher = "2.2.0"
+
+[libraries]
+morphe-patcher = { module = "app.morphe:morphe-patcher", version.ref = "morphePatcher" }

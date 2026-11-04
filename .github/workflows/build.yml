@@ -1,0 +1,63 @@
+# Builds the patch bundle on pull requests and on the two long-lived branches.
+# Draft: not yet executed, because the repository does not exist yet.
+
+name: Build
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - dev
+    paths-ignore:
+      - "docs/**"
+      - "**/*.md"
+      - ".github/ISSUE_TEMPLATE/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Reject committed credentials
+        run: |
+          if git grep -nE 'ghp_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{20,}' -- . \
+              ':!docs' ':!*.md' ; then
+            echo "A credential appears to be committed. Remove it and rotate it." >&2
+            exit 1
+          fi
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build
+        run: ./gradlew build --no-daemon --stacktrace
+        env:
+          # Read-only access to the framework plugin registry.
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.MORPHE_REGISTRY_TOKEN }}
+
+      - name: Upload bundle
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: patches-bundle
+          path: patches/build/outputs/**/*.mpp
+          if-no-files-found: error
+          retention-days: 7

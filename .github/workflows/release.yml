@@ -1,0 +1,80 @@
+# Publishes a release from main when the version in gradle.properties is new.
+# Draft: not yet executed, because the repository does not exist yet.
+
+name: Release
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read version
+        id: version
+        run: |
+          version="$(sed -n 's/^version=//p' gradle.properties | head -n 1)"
+          if [ -z "$version" ]; then
+            echo "No version found in gradle.properties" >&2
+            exit 1
+          fi
+          echo "value=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Check for an existing tag
+        id: tag
+        run: |
+          if git rev-parse --quiet --verify "refs/tags/v${{ steps.version.outputs.value }}" >/dev/null; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up JDK
+        if: steps.tag.outputs.exists == 'false'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        if: steps.tag.outputs.exists == 'false'
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build
+        if: steps.tag.outputs.exists == 'false'
+        run: ./gradlew build --no-daemon --stacktrace
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.MORPHE_REGISTRY_TOKEN }}
+          MORPHE_SIGNING_KEY: ${{ secrets.MORPHE_SIGNING_KEY }}
+
+      - name: Publish
+        if: steps.tag.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mapfile -t assets < <(find patches/build/outputs -name '*.mpp' -type f)
+          if [ "${#assets[@]}" -eq 0 ]; then
+            echo "No bundle produced" >&2
+            exit 1
+          fi
+          gh release create "v${{ steps.version.outputs.value }}" \
+            --title "Kero309x Patches ${{ steps.version.outputs.value }}" \
+            --generate-notes \
+            "${assets[@]}"
