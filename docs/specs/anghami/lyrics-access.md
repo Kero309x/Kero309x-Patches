@@ -1,7 +1,7 @@
 # Full lyrics access
 
 - **Id:** `anghami.media.lyrics-access`
-- **Status:** draft
+- **Status:** derived
 - **Default enabled:** yes
 - **Risk:** high
 - **Category:** Media and lyrics
@@ -31,10 +31,13 @@ third-party lyrics provider.
 ## Open questions
 
 - Is the refusal a client-side flag, a server response, or both? Only the client
-  part may be changed.
+  part may be changed. Answered for the entry point: the lyrics screen is gated by
+  one account predicate, `Account.lyricsEnabled()`, which the entry point reads
+  before it starts the activity. Whether the lyrics payload is separately withheld
+  by the server has not been observed.
 - Does the lyrics request depend on a token that the patch would have to
-  fabricate? If so this behaviour cannot be implemented independently and must be
-  reported as a limitation rather than guessed at.
+  fabricate? No token is fabricated: the request is made exactly as a subscriber
+  makes it.
 
 ## Verification
 

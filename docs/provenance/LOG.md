@@ -83,6 +83,76 @@ Result: the fingerprint matched exactly one method (`validate = true` enforces
 that a fingerprint matches at most one method), and the patch applied with no
 exception.
 
+### `anghami.playback.track-skips` — derived 2026-11-04
+
+**Consulted:** the stock 8.0.28 build only.
+
+**How it was found:**
+
+1. Read the fields of the account type that describe skipping: a skip allowance,
+   a skip counter, the timestamp the counter was last reset, a minimum play time
+   before a skip counts, and a separate radio allowance.
+2. Searched every reference to the skip allowance across the whole application,
+   then for the predicate that consumes it. One queue method was found.
+3. Followed that predicate's callers: the private skip-recording method of the
+   queue, the public no-argument wrapper of that method, and a list adapter that
+   decorates song rows.
+4. Read the branches each caller takes when the predicate is false.
+
+**Derived facts:**
+
+| Fact | Value |
+|---|---|
+| The gate | `Lcom/anghami/odin/playqueue/PlayQueue;.isSkipLogicEnabled(Lcom/anghami/ghost/local/Account;)Z` |
+| Stock body | true when the queue's own "skip limit disabled" flag is false, the account is not a subscriber, and the skip allowance is positive |
+| Effect of a false answer in the queue | the recording method takes its early "no restriction" branch: no counter increment, no limit message, the skip is accepted |
+| Effect of a false answer in the UI | the adapter treats the row as unrestricted, so the remaining-skip hint is not added |
+| Separate gate | the queue also has a no-argument `checkAndRecordSkipToSong()Z` that consults the same predicate, so the same answer covers it |
+| Radio queue | the radio queue has no copy of this predicate; it reuses the same method through the base class |
+
+**Decision:** answer the queue predicate, not the entitlement and not the account's
+skip allowance field. The empty-queue and "not the current queue" protections live
+outside this predicate and keep working, and the entitlement stays available to
+the download and lyrics patches, which are separate behaviours.
+
+**Verification run:** see the table at the end of this section.
+
+### `anghami.media.lyrics-access` — derived 2026-11-04
+
+**Consulted:** the stock 8.0.28 build only.
+
+**How it was found:**
+
+1. Searched the whole application for the account's lyrics members. The only
+   instance predicate is `lyricsEnabled()Z`; there is also a write-through
+   preference helper that clears a *local* lyrics mode, which is unrelated to
+   entitlement.
+2. Enumerated the callers of the predicate. Only one is a gate: the static entry
+   point of the lyrics screen.
+3. Read the entry point around the call: when the predicate is false it reports a
+   failed-attempt analytics event and asks the host screen to open the
+   subscription page; when it is true it continues to start the lyrics activity.
+
+**Derived facts:**
+
+| Fact | Value |
+|---|---|
+| The gate | `Lcom/anghami/ghost/local/Account;.lyricsEnabled()Z` |
+| Stock body | subscriber, or the server-provided free-lyrics flag is set |
+| Gate site | `Lcom/anghami/app/lyrics/LyricsActivity$a;.a(...)` — one read, one branch |
+| Paywall action | `showSubscribeActivity("lyrics")` on the host screen |
+| Unrelated member with a similar name | `PreferenceHelper.clearLyricsEnabled()`, which only resets a locally remembered mode at sign-out |
+
+**Decision:** answer the account predicate, not the entitlement. The entitlement is
+shared with downloads and skips, so changing it would implement three behaviours
+at once. Replacing the first instruction of the predicate also removes the failed
+attempt branch at the entry point, because that branch is only reached when the
+answer is false.
+
+**Verification run:** 2026-11-04, `verifyPatches` against the stock base APK. For
+both patches above, the fingerprint matched exactly one method and the patch
+applied with no exception.
+
 ## Not consulted
 
 No source, comment, identifier, helper or fingerprint from any other patch

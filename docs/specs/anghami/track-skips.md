@@ -1,7 +1,7 @@
 # Unlimited track skips
 
 - **Id:** `anghami.playback.track-skips`
-- **Status:** draft
+- **Status:** derived
 - **Default enabled:** yes
 - **Risk:** medium
 - **Category:** Playback
@@ -29,9 +29,11 @@ Server-side enforcement, if any. The patch only removes the client-side gate.
 
 ## Open questions
 
-- Is the count reported to the server, and does the server act on it? This must be
-  answered before the patch is described as unlimited rather than as a removed
-  client gate.
+- Is the count reported to the server, and does the server act on it? Partly
+  answered: the client still reports the skip as a playback event, and the count
+  it keeps locally is only fed by the predicate this patch switches off. Whether a
+  server refuses a skip on its own has not been observed and cannot be from a
+  static build.
 
 ## Verification
 

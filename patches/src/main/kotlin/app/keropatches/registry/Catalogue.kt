@@ -38,6 +38,20 @@ data class PatchEntry(
 object Catalogue {
     val entries: List<PatchEntry> = listOf(
         PatchEntry(
+            patch = app.keropatches.anghami.skips.unlimitedSkipsPatch,
+            application = "anghami",
+            behaviourId = "anghami.playback.track-skips",
+            specPath = "docs/specs/anghami/track-skips.md",
+            sourceFile = "src/main/kotlin/app/keropatches/anghami/skips/UnlimitedSkips.kt",
+        ),
+        PatchEntry(
+            patch = app.keropatches.anghami.lyrics.fullLyricsAccessPatch,
+            application = "anghami",
+            behaviourId = "anghami.media.lyrics-access",
+            specPath = "docs/specs/anghami/lyrics-access.md",
+            sourceFile = "src/main/kotlin/app/keropatches/anghami/lyrics/UnlockLyrics.kt",
+        ),
+        PatchEntry(
             patch = app.keropatches.anghami.rating.disableRatingPromptPatch,
             application = "anghami",
             behaviourId = "anghami.system.rating-prompt",
