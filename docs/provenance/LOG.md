@@ -27,6 +27,27 @@ assuming anything was carried over from another project.
 
 ## Behaviour derivations
 
+### How the application models a subscription — mapped 2026-11-04
+
+Every behaviour in this bundle that depends on whether the user pays reaches that
+answer through the same small class, so the map is recorded once here and referred
+to from the individual specs.
+
+| Fact | Value |
+|---|---|
+| Account state object | `Lcom/anghami/ghost/local/Account;`, a single instance field, handed out by `getAccountInstance()` |
+| The decision that matters | `isPlusUser()Z` on that instance — true when the stored plan type is `PLUS`, or `FREE_TRIAL`, or when `isGoldUser()` is true |
+| The static shorthand | `Account.isPlus()Z` — wraps `isPlusUser()` of the current instance through a compiler-generated callback object |
+| Gold tier | `isGoldUser()Z` — stored plan type equals `GOLD`; `Account.isGold()Z` is its static wrapper |
+| Persistence | the instance is read from an on-disk account file and written back by one write helper, so the stored plan type is a local copy of what the server sent |
+
+**Why this matters for patch design:** changing `isPlusUser()` changes every
+decision built on it at once, and there are dozens of call sites across playback,
+downloads, lyrics, settings and the player. That is powerful and it is broad: a
+single change would silently turn the entitlement, the badge and the lyrics gate
+into one behaviour, which is exactly what this bundle avoids. The shared class is
+therefore treated as a place to *read* state from, not as a shortcut to rewrite.
+
 ### `anghami.system.rating-prompt` — derived 2026-11-04
 
 **Consulted:** the stock 8.0.28 build only, decompiled locally with apktool
@@ -57,7 +78,10 @@ change then covers both presentation paths, and the dialog code and the review
 library stay untouched. This also avoids depending on the two synthetic classes,
 which are compiler-generated and unstable.
 
-**Verification run:** not yet. Pending a working build.
+**Verification run:** 2026-11-04, `verifyPatches` against the stock base APK.
+Result: the fingerprint matched exactly one method (`validate = true` enforces
+that a fingerprint matches at most one method), and the patch applied with no
+exception.
 
 ## Not consulted
 
