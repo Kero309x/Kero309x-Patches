@@ -34,6 +34,7 @@ tasks.withType<Test>().configureEach {
 // Captured outside the task block so the configuration cache stores values rather
 // than references to this build script.
 val verifyApkPath = providers.gradleProperty("apk").orElse("")
+val verifyOutPath = providers.gradleProperty("out").orElse("")
 val verifyRuntimeClasspath = sourceSets["test"].runtimeClasspath
 
 /**
@@ -51,4 +52,5 @@ tasks.register<JavaExec>("verifyPatches") {
     mainClass.set("app.keropatches.verification.VerifyPatchesKt")
     // Read eagerly: JavaExec does not resolve a Provider passed to systemProperty.
     systemProperty("keropatches.apk", verifyApkPath.get())
+    systemProperty("keropatches.out", verifyOutPath.get())
 }

@@ -20,11 +20,14 @@ import kotlin.system.exitProcess
  * Usage:
  * ```
  * gradlew verifyPatches -Papk=C:\path\to\base.apk
+ * gradlew verifyPatches -Papk=... -Pout=C:\path\to\patched.apk
  * ```
  *
- * The output APK is never written: patching stops after the execute blocks run,
- * which is the point where every fingerprint has been resolved. That keeps the
- * check fast and avoids leaving an unsigned build behind.
+ * Without `-Pout` the run stops after the execute blocks, which is the point where
+ * every fingerprint has been resolved. With `-Pout` it also compiles the result,
+ * which is the only way to prove that injected instructions assemble and that
+ * every register they name exists. The output is unsigned, so it is a build proof
+ * rather than something to install.
  */
 fun main() {
     val property = System.getProperty("keropatches.apk")
@@ -38,6 +41,10 @@ fun main() {
         System.err.println("APK not found: $apk")
         exitProcess(2)
     }
+
+    val outputPath = System.getProperty("keropatches.out").takeUnless { it.isNullOrBlank() }
+    val output = outputPath?.let { File(it).absoluteFile }
+    output?.parentFile?.mkdirs()
 
     val workspace = createTempDir(prefix = "keropatches-verify-")
     val failures = mutableListOf<String>()
@@ -67,6 +74,14 @@ fun main() {
                         exception.printStackTrace(System.out)
                     }
                 }
+            }
+
+            if (failures.isEmpty() && output != null) {
+                // Compiling rewrites every modified DEX file, so a malformed
+                // injected instruction fails here instead of on a user's device.
+                patcher.writeApk(output)
+                println()
+                println("Wrote patched APK to $output (unsigned)")
             }
         }
     } finally {

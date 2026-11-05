@@ -1,7 +1,7 @@
 # Expand download limits
 
 - **Id:** `anghami.downloads.limits`
-- **Status:** draft
+- **Status:** derived
 - **Default enabled:** yes
 - **Risk:** medium
 - **Category:** Account and entitlements
@@ -34,7 +34,17 @@ so.
 ## Open questions
 
 - Which of the limits are enforced from a locally cached plan object, and which
-  come from a server response that must not be overridden?
+  come from a server response that must not be overridden? Answered for the local
+  limits: the plan check, the limited-plan collection restriction and the offline
+  count are all read from the locally cached account and the local object box.
+  Whether the server independently refuses a download has not been observed.
+
+## Known limitation
+
+The stock validator also refuses every download when the local database is flagged
+as potentially corrupted. That branch protects the stored library rather than
+limiting the plan, so the patch re-implements it in its own instructions instead of
+dropping it.
 
 ## Verification
 

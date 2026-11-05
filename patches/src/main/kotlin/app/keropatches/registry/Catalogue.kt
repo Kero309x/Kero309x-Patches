@@ -52,6 +52,13 @@ object Catalogue {
             sourceFile = "src/main/kotlin/app/keropatches/anghami/lyrics/UnlockLyrics.kt",
         ),
         PatchEntry(
+            patch = app.keropatches.anghami.downloads.expandDownloadLimitsPatch,
+            application = "anghami",
+            behaviourId = "anghami.downloads.limits",
+            specPath = "docs/specs/anghami/download-limits.md",
+            sourceFile = "src/main/kotlin/app/keropatches/anghami/downloads/ExpandDownloadLimits.kt",
+        ),
+        PatchEntry(
             patch = app.keropatches.anghami.rating.disableRatingPromptPatch,
             application = "anghami",
             behaviourId = "anghami.system.rating-prompt",
