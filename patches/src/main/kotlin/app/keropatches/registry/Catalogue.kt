@@ -59,6 +59,13 @@ object Catalogue {
             sourceFile = "src/main/kotlin/app/keropatches/anghami/downloads/ExpandDownloadLimits.kt",
         ),
         PatchEntry(
+            patch = app.keropatches.anghami.analytics.disableAnalyticsPatch,
+            application = "anghami",
+            behaviourId = "anghami.privacy.analytics",
+            specPath = "docs/specs/anghami/analytics.md",
+            sourceFile = "src/main/kotlin/app/keropatches/anghami/analytics/DisableAnalytics.kt",
+        ),
+        PatchEntry(
             patch = app.keropatches.anghami.rating.disableRatingPromptPatch,
             application = "anghami",
             behaviourId = "anghami.system.rating-prompt",

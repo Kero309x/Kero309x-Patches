@@ -1,7 +1,7 @@
 # Disable analytics and crash reporting
 
 - **Id:** `anghami.privacy.analytics`
-- **Status:** draft
+- **Status:** derived
 - **Default enabled:** yes
 - **Risk:** high
 - **Category:** Privacy
@@ -31,10 +31,20 @@ network traffic the application needs for playback.
 
 ## Open questions
 
-- Which of the reporting call sites return a value that the caller uses? Those
-  cannot simply be made void, and need a neutral return value instead.
+- Which of the reporting call sites return a value that the caller uses? Answered:
+  the emitted events are void throughout. Only two value-returning methods exist on
+  the facade — the experiment reader and the local rate limiter — and neither
+  touches the network, so silence them was not needed and they are left alone. The
+  experiment client is simply never created, and its one outside caller treats that
+  as "use the default value".
 - Should this be disabled by default, given that it removes diagnostics the
-  maintainer would want from bug reports?
+  maintainer would want from bug reports? Resolved by decision `0004`: every patch
+  defaults to enabled, and the manager lets a user turn it off per patch.
+- Does the application own crash reporting, or is it a separate SDK? Answered: the
+  crash reports travel through the same facade as an ordinary event, so silencing
+  the sinks covers them. No Firebase Crashlytics entry point is called by the
+  application, and BugSnag is present as a library without any call site from app
+  code, so there is nothing to silence for it.
 
 ## Verification
 
@@ -46,4 +56,5 @@ network traffic the application needs for playback.
 ## Provenance
 
 - Spec author and date: Kero309x, 2026-11-04
-- Derived code points: not yet derived. See `docs/provenance/LOG.md`.
+- Derived: 2026-11-04 from the stock build. Derivation record:
+  `docs/provenance/LOG.md`, section `anghami.privacy.analytics`.

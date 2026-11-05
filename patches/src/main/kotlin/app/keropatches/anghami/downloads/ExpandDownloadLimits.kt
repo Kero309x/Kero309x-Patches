@@ -39,6 +39,7 @@ private object DownloadRestrictionsFingerprint : Fingerprint(
  * correct if the helper ever moves.
  */
 private object DatabaseCorruptionFingerprint : Fingerprint(
+    definingClass = "Lcom/anghami/ghost/prefs/PreferenceHelper;",
     name = "isDatabasePotentiallyCorrupted",
     returnType = "Z",
     parameters = emptyList(),

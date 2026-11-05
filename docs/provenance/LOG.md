@@ -153,6 +153,50 @@ answer is false.
 both patches above, the fingerprint matched exactly one method and the patch
 applied with no exception.
 
+### `anghami.privacy.analytics` — derived 2026-11-04
+
+**Consulted:** the stock 8.0.28 build only.
+
+**How it was found:**
+
+1. Located the class the application reports through and listed every method on it
+   whose body reaches a third-party SDK, by scanning each method for class
+   references to the Amplitude, Adjust, Branch, Firebase and Facebook packages.
+2. Checked which of those methods return a value, and whether any caller reads it.
+3. Followed the bootstrap: which SDKs it starts, who calls it, and what the rest of
+   the app reads from the fields it fills.
+4. Enumerated the callers of the one non-void method the rest of the app uses, and
+   read what it does when the SDK object was never created.
+
+**Derived facts:**
+
+| Fact | Value |
+|---|---|
+| Facade | `Lcom/anghami/ghost/analytics/Analytics;` |
+| Bootstrap | `init(String, boolean, FacebookAppEventLogger)` — posts one runnable to the IO pool |
+| What the runnable starts | Firebase Analytics, Amplitude, Adjust (with its app secret), Branch, and the Facebook logger if provided |
+| Caller of the bootstrap | `Lcom/anghami/AnghamiApplication;` — one call, result ignored |
+| Latch safety | the `CountDownLatch` used to wait for Branch is awaited only inside that same runnable, so nothing else waits for a start that never happens |
+| Firebase field safety | the analytics field is null-checked immediately before its only read |
+| Event sinks (void) | `postEvent` ×4, `postGoogleAnalyticsEvent`, `postBranchEvent`, `logBranchPurchaseEvent`, `postAdjustEvent` ×2, `postOpenLinkAdjustEvent` |
+| Event builders | dozens of `post…Event` helpers, all of which end in one of the sinks above |
+| Value-returning methods, deliberately untouched | `AmplitudeExperiment.getMinArtistNumberForOnBoarding(int)` — falls back to its argument when the client is null, one caller outside the package; `shouldSendEventAndRecordTimeStamp(String, long)` — a local rate limiter that sends nothing |
+| Experiment bootstrap | `AmplitudeExperiment.init(String)`, called only from the facade's bootstrap |
+| Crash reporting | travels through the same facade as an ordinary event; no Firebase Crashlytics entry point is called by app code |
+
+**Decision:** silence the bootstrap and, independently, every void sink. Silencing
+only the bootstrap would still leave a sink reachable if a future build moved the
+bootstrap; silencing only the sinks would leave the SDKs running and uploading
+whatever they collect themselves. The value-returning methods stay as they are,
+because silencing them would change a decision — which artists to show — rather
+than stop a report.
+
+**Open limitation:** BugSnag is present in the build as a library with an internal
+hook, but no app code calls it, so there is nothing in the app to silence for it.
+The patch does not attempt to disable a library that the app does not drive.
+
+**Verification run:** see the table at the end of this section.
+
 ## Not consulted
 
 No source, comment, identifier, helper or fingerprint from any other patch

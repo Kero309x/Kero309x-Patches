@@ -4,6 +4,7 @@
 package app.keropatches.registry
 
 import app.keropatches.anghami.AnghamiApp
+import app.keropatches.anghami.analytics.disableAnalyticsPatch
 import app.keropatches.anghami.downloads.expandDownloadLimitsPatch
 import app.keropatches.anghami.lyrics.fullLyricsAccessPatch
 import app.keropatches.anghami.rating.disableRatingPromptPatch
@@ -28,6 +29,7 @@ object PatchRegistry {
         unlimitedSkipsPatch,
         fullLyricsAccessPatch,
         expandDownloadLimitsPatch,
+        disableAnalyticsPatch,
         disableRatingPromptPatch,
     )
 
