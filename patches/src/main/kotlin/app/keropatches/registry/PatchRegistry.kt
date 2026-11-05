@@ -7,6 +7,7 @@ import app.keropatches.anghami.AnghamiApp
 import app.keropatches.anghami.analytics.disableAnalyticsPatch
 import app.keropatches.anghami.downloads.expandDownloadLimitsPatch
 import app.keropatches.anghami.lyrics.fullLyricsAccessPatch
+import app.keropatches.anghami.promotions.blockPromotionalPopupsPatch
 import app.keropatches.anghami.rating.disableRatingPromptPatch
 import app.keropatches.anghami.skips.unlimitedSkipsPatch
 import app.keropatches.anghami.sponsored.hideSponsoredContentPatch
@@ -32,6 +33,7 @@ object PatchRegistry {
         expandDownloadLimitsPatch,
         disableAnalyticsPatch,
         hideSponsoredContentPatch,
+        blockPromotionalPopupsPatch,
         disableRatingPromptPatch,
     )
 

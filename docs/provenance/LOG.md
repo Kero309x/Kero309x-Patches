@@ -229,6 +229,39 @@ itself and pretending otherwise would describe a behaviour the patch cannot keep
 
 **Verification run:** see the table at the end of this section.
 
+### `anghami.ads.promotional-popups` — derived 2026-11-04
+
+**Consulted:** the stock 8.0.28 build only.
+
+**How it was found:**
+
+1. Found the two classes whose stock source names are the promotion surfaces: the
+   popup ad component and the ad popup handler.
+2. Read the one method on each that starts a draw, and confirmed both take the
+   server-provided ad model rather than a generic UI model.
+3. Enumerated every caller of both methods, to be sure that patching them does not
+   suppress anything that is not an ad.
+4. Checked what reads the handler's visibility query, to be sure nothing waits for
+   a dialog to be dismissed.
+
+**Derived facts:**
+
+| Fact | Value |
+|---|---|
+| Popup window surface | `Lcom/anghami/ui/popupwindow/x;`, source `PopupAdShower.kt`, created once in `AnghamiApplication` |
+| Popup start method | `x.i(Lcom/anghami/ui/popupwindow/a;)V`, called from the main screen and from two base-screen helpers |
+| Full-screen surface | `Lp4/d;`, source `AdsPopupHandler.java`, one instance per main screen |
+| Flyer start method | `p4.d.a(Lcom/anghami/odin/ads/e;)V`, called on an ad event and on resume |
+| Visibility query | `p4.d.b()Z` — reads the dialog, returns false when there is none; no caller waits on it |
+| Non-ad users of the popup component | none: its only model parameter is the popup ad model |
+
+**Decision:** answer both start methods immediately. They are the only two places
+that put a promotion on top of the user, and neither is shared with a non-ad
+surface. The ad pipeline itself is untouched, so the patch cannot leave the client
+in a state where an ad is half-built.
+
+**Verification run:** see the table at the end of this section.
+
 ## Not consulted
 
 No source, comment, identifier, helper or fingerprint from any other patch

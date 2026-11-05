@@ -73,6 +73,13 @@ object Catalogue {
             sourceFile = "src/main/kotlin/app/keropatches/anghami/sponsored/HideSponsoredContent.kt",
         ),
         PatchEntry(
+            patch = app.keropatches.anghami.promotions.blockPromotionalPopupsPatch,
+            application = "anghami",
+            behaviourId = "anghami.ads.promotional-popups",
+            specPath = "docs/specs/anghami/promotional-popups.md",
+            sourceFile = "src/main/kotlin/app/keropatches/anghami/promotions/BlockPromotionalPopups.kt",
+        ),
+        PatchEntry(
             patch = app.keropatches.anghami.rating.disableRatingPromptPatch,
             application = "anghami",
             behaviourId = "anghami.system.rating-prompt",
