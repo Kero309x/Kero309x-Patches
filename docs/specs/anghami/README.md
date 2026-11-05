@@ -4,7 +4,7 @@ Target application: `com.anghami`, version 8.0.28 (version code 8000280).
 
 | # | Behaviour | Spec | Default | Risk |
 |---|---|---|---|---|
-| 1 | Block audio ads | [audio-ads.md](audio-ads.md) | yes | low |
+| 1 | Block ads between tracks | [audio-ads.md](audio-ads.md) | yes | low |
 | 2 | Block promotional popups | [promotional-popups.md](promotional-popups.md) | yes | low |
 | 3 | Remove sponsored content | [sponsored-content.md](sponsored-content.md) | yes | low |
 | 4 | Expand download limits | [download-limits.md](download-limits.md) | yes | medium |

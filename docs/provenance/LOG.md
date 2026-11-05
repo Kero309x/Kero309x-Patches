@@ -262,6 +262,42 @@ in a state where an ad is half-built.
 
 **Verification run:** see the table at the end of this section.
 
+### `anghami.ads.audio-ads` — derived 2026-11-05
+
+**Consulted:** the stock 8.0.28 build only.
+
+**How it was found:**
+
+1. Located the playback core by tracing which class constructs the audio ad
+   player, then listed every method in that class whose name mentions ads.
+2. Read the branch that runs when a track ends, and separated "is an ad allowed
+   here" from "play the ad that was chosen".
+3. Confirmed the ad is only ever started from that branch, by listing every
+   caller of the start method, and confirmed the second caller is the
+   back-to-back step that runs after an ad has already started.
+
+**Derived facts:**
+
+| Fact | Value |
+|---|---|
+| Playback core | `Lcom/anghami/odin/core/S;`, source `OdinPlayer.java` |
+| Ad decision | `S.L0()Z` — the single "does an ad belong after this track" answer |
+| What it reads | the queue's `getDisableAds()`, the server's `AdSettings.getNoAd(currentSong)`, `adFrequency` or `adVideoFrequency` depending on video mode, and the player's own offline flag |
+| Where it is used | once when a track ends, and once when the reported item duration is calculated |
+| Start method | `S.w1(Lcom/anghami/odin/ads/A;)V` — the only place an ad is handed to a player |
+| Callers of the start method | the track-end branch, gated by `L0()`; and `S.b1()`, the back-to-back step, which only runs while an ad is already playing |
+| Ad pipeline | separate from the decision: loaders and players are built regardless, so skipping the decision leaves no partial state |
+
+**Decision:** answer `L0()` with false. The stock code already has a branch for
+"no ad here" — it is the branch taken when the server sends no ad, when the queue
+disables ads or when the song is exempt — and it advances the queue normally.
+Returning false therefore reuses existing behaviour instead of suppressing a call
+and hoping the caller recovers. The ad pipeline is left intact on purpose: it
+still fetches and caches its models, and a player handed an ad from elsewhere
+would still work.
+
+**Verification run:** see the table at the end of this section.
+
 ## Not consulted
 
 No source, comment, identifier, helper or fingerprint from any other patch

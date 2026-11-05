@@ -38,6 +38,13 @@ data class PatchEntry(
 object Catalogue {
     val entries: List<PatchEntry> = listOf(
         PatchEntry(
+            patch = app.keropatches.anghami.ads.blockAudioAdsPatch,
+            application = "anghami",
+            behaviourId = "anghami.ads.audio-ads",
+            specPath = "docs/specs/anghami/audio-ads.md",
+            sourceFile = "src/main/kotlin/app/keropatches/anghami/ads/BlockAudioAds.kt",
+        ),
+        PatchEntry(
             patch = app.keropatches.anghami.skips.unlimitedSkipsPatch,
             application = "anghami",
             behaviourId = "anghami.playback.track-skips",

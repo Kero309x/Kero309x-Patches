@@ -4,6 +4,7 @@
 package app.keropatches.registry
 
 import app.keropatches.anghami.AnghamiApp
+import app.keropatches.anghami.ads.blockAudioAdsPatch
 import app.keropatches.anghami.analytics.disableAnalyticsPatch
 import app.keropatches.anghami.downloads.expandDownloadLimitsPatch
 import app.keropatches.anghami.lyrics.fullLyricsAccessPatch
@@ -28,6 +29,7 @@ import app.morphe.patcher.patch.Patch
 object PatchRegistry {
     /** Patches for the Anghami application. */
     val anghami: Set<Patch<*>> = setOf(
+        blockAudioAdsPatch,
         unlimitedSkipsPatch,
         fullLyricsAccessPatch,
         expandDownloadLimitsPatch,
