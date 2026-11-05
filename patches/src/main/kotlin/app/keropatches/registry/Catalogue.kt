@@ -59,6 +59,20 @@ object Catalogue {
             sourceFile = "src/main/kotlin/app/keropatches/anghami/lyrics/UnlockLyrics.kt",
         ),
         PatchEntry(
+            patch = app.keropatches.anghami.playback.disableForcedShufflePatch,
+            application = "anghami",
+            behaviourId = "anghami.playback.forced-shuffle",
+            specPath = "docs/specs/anghami/forced-shuffle.md",
+            sourceFile = "src/main/kotlin/app/keropatches/anghami/playback/DisableForcedShuffle.kt",
+        ),
+        PatchEntry(
+            patch = app.keropatches.anghami.ui.hideShuffleBadgesPatch,
+            application = "anghami",
+            behaviourId = "anghami.interface.shuffle-badges",
+            specPath = "docs/specs/anghami/shuffle-badges.md",
+            sourceFile = "src/main/kotlin/app/keropatches/anghami/ui/HideShuffleBadges.kt",
+        ),
+        PatchEntry(
             patch = app.keropatches.anghami.downloads.expandDownloadLimitsPatch,
             application = "anghami",
             behaviourId = "anghami.downloads.limits",

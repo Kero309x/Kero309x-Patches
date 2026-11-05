@@ -298,6 +298,90 @@ would still work.
 
 **Verification run:** see the table at the end of this section.
 
+### `anghami.playback.forced-shuffle` — derived 2026-11-05
+
+**Consulted:** the stock 8.0.28 build only.
+
+**How it was found:**
+
+1. Started from the player, not from the list: read how a queue is obtained when a
+   list is started, and found that the presenter asks one private predicate
+   before it decides what kind of queue to build.
+2. Listed every caller of that predicate across all seven DEX files. There are
+   exactly two, both in the same presenter: the page play button and the
+   play-one-song action.
+3. Read both branches. The true branch builds a radio queue; the false branch
+   builds a queue over the list it was given. Followed the radio path into the
+   queue constructors to see where the queue's own play mode comes from.
+4. Checked whether the server marks anything else that would make the false
+   branch behave like the true one, by looking at how a section's play mode is
+   consumed when a queue is filled.
+
+**Derived facts:**
+
+| Fact | Value |
+|---|---|
+| The predicate | `Lcom/anghami/app/base/list_fragment/c;->shouldPlayRadio(Lcom/anghami/ghost/pojo/Song;Lcom/anghami/ghost/pojo/section/Section;)Z` |
+| Callers | two, both in `c`: the page play button path and `getPlayQueueFromSection` |
+| Stock inputs | `Account.isPlus()Z`; the first song's `playMode`; the section's `playMode` |
+| Stock answer | for non-Plus: true when either play mode is `shuffle`; for Plus: true only when the section's play mode is `shuffle` |
+| True branch | `buildRadioQueue(...)`, which builds a `Radio` of type `SONGLIST` over the joined song ids and a queue whose play mode is `shuffle` |
+| False branch | `buildRelatedPlayQueue(...)` when the page allows it, otherwise a plain queue over the same list, starting at the chosen song |
+| Why shuffle cannot be turned off | the queue is a radio whose own play mode is `shuffle`; the player's toggle does not describe the list the user opened |
+| Effect of a plain queue | the section play mode `shuffle` is not mapped onto the queue flag; only `infinite` is, so the queue is genuinely in list order |
+
+**Decision:** inject a guard at the start of the predicate that answers false for
+accounts without an active plan and otherwise falls through to the untouched
+stock body. The Plus case is preserved deliberately: for Plus accounts the same
+play mode marks content that is meant to be a radio, and removing it would take
+away a feature rather than a restriction. The patch also does not touch the
+queue's shuffle control, so the user keeps a working toggle over the plain queue.
+
+**Known limitation:** the false branch does not expand the list into a radio, so a
+free account hears the songs the list contains and not the extra recommendations
+the radio queue would have fetched. This is the client-side part of the change.
+
+**Verification run:** see the table at the end of this section.
+
+### `anghami.interface.shuffle-badges` — derived 2026-11-05
+
+**Consulted:** the stock 8.0.28 build only.
+
+**How it was found:**
+
+1. Located the model field whose name describes shuffle state, then listed every
+   write and every read of it across all seven DEX files.
+2. Confirmed the field is filled in reflectively: the only writes are a copy
+   constructor, a remote-update copy and a parcel write, so there is no mapper
+   assignment to rewrite and the value has to be handled at the read sites.
+3. Grouped the reads by the method that contains them, and read each method. Three
+   groups draw something: a subtitle leading drawable on card layouts, an image
+   span inside row subtitle text, and a dedicated badge view in headers and one
+   carousel layout.
+4. Checked the remaining reads to make sure they are not drawing decisions:
+   persistence, remote update, diff flags, section flattening and objectbox
+   cursors all only carry or compare the value.
+
+**Derived facts:**
+
+| Fact | Value |
+|---|---|
+| The flag | `Lcom/anghami/ghost/pojo/PossiblyGenericModel;->isShuffleMode:Z` |
+| How it is populated | reflective JSON mapping; no assignment in the bytecode |
+| Card surfaces | `AlbumCardModel`, `PlaylistCardModel` and `LinkCardModel`, each in `getSubtitleStartingDrawable()`, returning the shuffle glyph resource or `-1` |
+| Row surfaces | `AlbumRowModel` and `PlaylistRowModel` in `getSubtitleText()`, and both `LinkModel.setSubtitleView` overloads, which prepend an image span |
+| Dedicated badge views | `LinkNewCardModel._bind(HeaderLinkHolder)` and `StoreCarouselSubModel._bind(StoreSubViewHolder)`, both toggling a view's visibility |
+| Header predicate | `getHasShuffleBadge()Z` declared on `BaseHeaderModel` and overridden by `AlbumHeaderModel` and `PlaylistHeaderModel` |
+| Non-visual reads left alone | `PossiblyGenericModel.updateFromRemote`, `writeToParcel`, `BaseModel.fillChangeFlags`, `t4.f` and `P5.h` section flattening, `StoredPlaylist.updateMetadataFromRemote`, objectbox cursors |
+
+**Decision:** replace only the drawing reads with a constant false, and answer the
+three header predicates with false. The field keeps its value, so persistence,
+diffing and queue building are untouched. Every read site that produces a badge
+was enumerated, so the patch asserts that at least one read exists in each method
+it edits and fails loudly if the layout changes.
+
+**Verification run:** see the table at the end of this section.
+
 ## Not consulted
 
 No source, comment, identifier, helper or fingerprint from any other patch

@@ -5,15 +5,10 @@ package app.keropatches.anghami.sponsored
 
 import app.keropatches.anghami.AnghamiApp
 import app.keropatches.core.PatchCategory
+import app.keropatches.core.replaceBooleanFieldReadsWithFalse
 import app.morphe.patcher.Fingerprint
-import app.morphe.patcher.extensions.InstructionExtensions.instructions
-import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import app.morphe.patcher.patch.bytecodePatch
-import app.morphe.patcher.util.proxy.mutableTypes.MutableMethod
 import app.morphe.patcher.util.returnEarly
-import com.android.tools.smali.dexlib2.Opcode
-import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
-import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
 
 /**
  * The field a song carries to say the server supplied it as sponsored content.
@@ -109,37 +104,11 @@ val hideSponsoredContentPatch = bytecodePatch(
     category(PatchCategory.ADS.label)
 
     execute {
-        SongCardFingerprint.method.apply { ignoreSponsorship() }
-        SongRowFingerprint.method.apply { ignoreSponsorship() }
-        SongWideFingerprint.method.apply { ignoreSponsorship() }
+        SongCardFingerprint.method.apply { replaceBooleanFieldReadsWithFalse(SPONSORED_FIELD) }
+        SongRowFingerprint.method.apply { replaceBooleanFieldReadsWithFalse(SPONSORED_FIELD) }
+        SongWideFingerprint.method.apply { replaceBooleanFieldReadsWithFalse(SPONSORED_FIELD) }
 
         CarSponsorImageFingerprint.method.returnEarly("")
         CarSponsorTextFingerprint.method.returnEarly("")
-    }
-}
-
-/**
- * Replaces every read of the sponsored field in this method with a constant false.
- *
- * The register the original read wrote to is reused, so the surrounding branch
- * still tests the same register and takes its "not sponsored" path without any
- * other edit. Reading the field is the only thing changed; the song object itself
- * keeps the flag, so nothing that inspects the model later behaves differently
- * from what the row now shows.
- */
-private fun MutableMethod.ignoreSponsorship() {
-    val indices = instructions.indices.filter { index ->
-        val instruction = instructions[index]
-        instruction.opcode == Opcode.IGET_BOOLEAN &&
-            (instruction as? ReferenceInstruction)?.reference?.toString() == SPONSORED_FIELD
-    }
-
-    check(indices.isNotEmpty()) {
-        "No sponsored read in $definingClass->$name$returnType; the layout changed."
-    }
-
-    indices.forEach { index ->
-        val register = (instructions[index] as OneRegisterInstruction).registerA
-        replaceInstruction(index, "const/4 v$register, 0x0")
     }
 }
