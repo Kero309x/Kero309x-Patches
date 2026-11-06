@@ -73,6 +73,20 @@ object Catalogue {
             sourceFile = "src/main/kotlin/app/keropatches/anghami/ui/HideShuffleBadges.kt",
         ),
         PatchEntry(
+            patch = app.keropatches.anghami.ui.hidePremiumButtonsPatch,
+            application = "anghami",
+            behaviourId = "anghami.interface.premium-buttons",
+            specPath = "docs/specs/anghami/premium-buttons.md",
+            sourceFile = "src/main/kotlin/app/keropatches/anghami/ui/HidePremiumButtons.kt",
+        ),
+        PatchEntry(
+            patch = app.keropatches.anghami.capture.allowScreenshotsPatch,
+            application = "anghami",
+            behaviourId = "anghami.system.screenshots",
+            specPath = "docs/specs/anghami/screenshots.md",
+            sourceFile = "src/main/kotlin/app/keropatches/anghami/capture/AllowScreenshots.kt",
+        ),
+        PatchEntry(
             patch = app.keropatches.anghami.downloads.expandDownloadLimitsPatch,
             application = "anghami",
             behaviourId = "anghami.downloads.limits",

@@ -6,7 +6,7 @@
 |---|---|---|
 | JDK | 21 | Gradle and the framework plugin |
 | Git | any current | version control |
-| Gradle | via wrapper, once generated | builds |
+| Gradle | via the committed wrapper | builds |
 | Android SDK, platform 36 | only when an extension module exists | Android library builds |
 
 Node.js and Python are not required. The release workflow uses `gh`, which is
@@ -30,13 +30,15 @@ come from the `MORPHE_REGISTRY_TOKEN` secret.
 
 ## First build
 
+The wrapper is committed, so a checkout only needs a JDK:
+
 ```bash
-gradle wrapper --gradle-version <current>   # once, then commit the wrapper
 ./gradlew build
 ```
 
-The wrapper is generated rather than copied, so the checksum in
-`gradle/wrapper/gradle-wrapper.properties` is produced by the installed Gradle.
+The wrapper was generated with the installed Gradle rather than copied, so the
+checksum in `gradle/wrapper/gradle-wrapper.properties` belongs to the distribution
+it points at. Regenerate it only when the Gradle version changes.
 
 ## Verifying against a stock build
 
@@ -44,12 +46,18 @@ The stock application is never committed and never uploaded. Point the build at 
 local copy:
 
 ```bash
-./gradlew verifyFingerprints -Papk="C:/path/to/stock-build.apkm"
+./gradlew verifyPatches -Papk="C:/path/to/stock-build.apk"
 ```
 
-This task is not implemented yet. It is the gate every patch must pass before it
-is released: each fingerprint must match exactly the expected number of times in
-the stock build.
+Every registered patch is applied to the stock build with validation enabled. The
+run prints one line per patch and fails if a fingerprint does not match, if a
+patch throws, or if the bytecode it produces does not assemble. Add
+`-Pout="C:/path/to/patched.apk"` to write the patched, unsigned APK, which also
+proves that the result compiles.
+
+This is the gate every patch passes before it is released. It proves that the
+patches find what they expect and that the result assembles; it does not prove
+runtime behaviour. That still needs a device.
 
 ## Deriving code points
 

@@ -24,8 +24,14 @@ Target application: `com.anghami`, version 8.0.28 (version code 8000280).
 
 ## Status
 
-All specs are drafts. None has been implemented. Each spec must reach `derived`
-before its patch is written, and `verified` before it is released.
+Twelve specs are `derived` and implemented: audio ads, promotional popups,
+sponsored content, download limits, lyrics, forced shuffle, shuffle badges,
+premium buttons, screenshots, track skips, analytics and the rating prompt.
+
+Five are still drafts, in implementation order: the profile Plus badge, the Plus
+entitlement state, the stock signature assertion, the Gold upsell and the upgrade
+banners. A draft must reach `derived` before its patch is written, and every patch
+must be checked on a device before it is released.
 
 ## Notes on defaults
 

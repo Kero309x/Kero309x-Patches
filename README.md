@@ -3,9 +3,10 @@
 An independent patch collection for the Morphe patching framework, maintained by
 Kero309x.
 
-> **Status: pre-alpha.** The architecture, the behaviour specifications and the
-> build scaffolding exist. No patch has been implemented or verified yet, and no
-> release has been published. There is nothing to install at this time.
+> **Status: pre-alpha.** Twelve of the seventeen specified behaviours are
+> implemented and pass the build and the patch-application gate against the stock
+> build. None has been checked on a device yet, and no release has been published.
+> There is nothing to install at this time.
 
 ## What this is
 
@@ -80,20 +81,23 @@ Then:
 ./gradlew build
 ```
 
-The Gradle wrapper is generated once with `gradle wrapper --gradle-version <v>`
-and committed afterwards. It is not present yet, because the toolchain is not
-installed on the development machine.
+The Gradle wrapper is committed and pins the Gradle version the project is built
+with.
 
 ## Verifying a patch
 
-Fingerprints are validated against a stock build that must be provided locally.
-The build never downloads, uploads or redistributes it:
+Patches are applied against a stock build that must be provided locally. The build
+never downloads, uploads or redistributes it:
 
 ```bash
-./gradlew verifyFingerprints -Papk="path/to/stock-build.apkm"
+./gradlew verifyPatches -Papk="path/to/stock-build.apk"
 ```
 
-This task is not implemented yet; it is the acceptance gate for every patch.
+Every registered patch is applied with validation enabled, and the result must
+assemble. Add `-Pout="path/to/patched.apk"` to write the patched, unsigned APK.
+
+This is the acceptance gate for every patch. It proves the fingerprints match and
+the bytecode assembles; runtime behaviour needs a device and is checked separately.
 
 ## Catalogue
 

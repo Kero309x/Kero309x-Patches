@@ -6,6 +6,7 @@ package app.keropatches.registry
 import app.keropatches.anghami.AnghamiApp
 import app.keropatches.anghami.ads.blockAudioAdsPatch
 import app.keropatches.anghami.analytics.disableAnalyticsPatch
+import app.keropatches.anghami.capture.allowScreenshotsPatch
 import app.keropatches.anghami.downloads.expandDownloadLimitsPatch
 import app.keropatches.anghami.lyrics.fullLyricsAccessPatch
 import app.keropatches.anghami.playback.disableForcedShufflePatch
@@ -13,6 +14,7 @@ import app.keropatches.anghami.promotions.blockPromotionalPopupsPatch
 import app.keropatches.anghami.rating.disableRatingPromptPatch
 import app.keropatches.anghami.skips.unlimitedSkipsPatch
 import app.keropatches.anghami.sponsored.hideSponsoredContentPatch
+import app.keropatches.anghami.ui.hidePremiumButtonsPatch
 import app.keropatches.anghami.ui.hideShuffleBadgesPatch
 import app.morphe.patcher.patch.Patch
 
@@ -36,6 +38,8 @@ object PatchRegistry {
         fullLyricsAccessPatch,
         disableForcedShufflePatch,
         hideShuffleBadgesPatch,
+        hidePremiumButtonsPatch,
+        allowScreenshotsPatch,
         expandDownloadLimitsPatch,
         disableAnalyticsPatch,
         hideSponsoredContentPatch,

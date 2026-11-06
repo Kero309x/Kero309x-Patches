@@ -382,6 +382,77 @@ it edits and fails loudly if the layout changes.
 
 **Verification run:** see the table at the end of this section.
 
+### `anghami.system.screenshots` — derived 2026-11-06
+
+**Consulted:** the stock 8.0.28 build only.
+
+**How it was found:**
+
+1. Searched the application packages for the numeric window flag that blocks
+   capture, rather than for a method name. The only place that adds it to a window
+   is one method on the shared activity base, and the other hits are unrelated
+   bits with the same value.
+2. Read that method. It asks a single boolean, applies the flag when the answer is
+   true, and clears it when the answer is false; the flag is stored on the window
+   itself, not on the activity.
+3. Listed every declaration of that boolean across all seven DEX files. There are
+   four: the base, which answers false, and three overrides, which answer true.
+4. Checked that no other code path adds the flag, so the four declarations are the
+   whole of the behaviour.
+
+**Derived facts:**
+
+| Fact | Value |
+|---|---|
+| The question | `shouldUseSecureMode()Z` |
+| Base declaration | `Lcom/anghami/app/base/o;`, answers false |
+| Overrides that answer true | `com/anghami/app/main/MainActivity`, `com/anghami/app/stories/live_radio/LiveRadioFullscreenVideoActivity`, `com/anghami/player/video/VideoPlayerActivity` |
+| The consequence | `refreshSecureMode()V` on the same base adds `0x2000` (`FLAG_SECURE`) to the window when the answer is true, and clears it otherwise |
+| Extra condition on the flag | the flag is applied only while a playback service object exists and reports a state the base treats as requiring protection; the clear path runs regardless |
+| Other users of `0x2000` in the app packages | none for window flags; the remaining hits are text and system-UI flags |
+
+**Decision:** answer false on all four declarations. The three overrides are the
+real change; the base is included so the patch does not depend on the base
+happening to answer false in this build. The method that applies the flag is left
+alone so an already-marked window is still cleared.
+
+**Verification run:** see the table at the end of this section.
+
+### `anghami.interface.premium-buttons` — derived 2026-11-06
+
+**Consulted:** the stock 8.0.28 build only.
+
+**How it was found:**
+
+1. Listed the account's boolean answers whose names mention karaoke, then read
+   each one. Three describe the feature itself; one is a server-sent attribute
+   that only says whether to advertise it.
+2. Listed every reader of that attribute across the application. There are two.
+3. Read both. One sets the visibility of a view in the full player screen, guarded
+   by the track's own karaoke marker; the other passes the answer as a flag into a
+   row holder in the player's queue list.
+4. Checked that no other surface reads the track's karaoke marker in the player,
+   model or UI packages, and searched for a separately advertised remix button.
+   There is none in this build.
+
+**Derived facts:**
+
+| Fact | Value |
+|---|---|
+| The answer | `Lcom/anghami/ghost/local/Account;->isShowKaraokeUpsellButton()Z` |
+| What it reads | a boolean attribute sent with the account, not a computed plan check |
+| Reader one | `com/anghami/player/ui/l`, which shows a view when the track's `hasKaraoke` is true and this answer is true |
+| Reader two | `y8/a`, the player's queue adapter, which passes the answer into `F8/X` when it creates a row holder |
+| Feature answers left alone | `isShowKaraoke()Z` and `isCanUseKaraoke()Z` |
+| Remix teaser | none in the player or queue of this build |
+
+**Decision:** answer false on the getter. Both surfaces already have a path for
+"do not draw the button", and neither needs its layout touched. The feature
+answers stay as they are, so an account that legitimately has karaoke keeps its
+entry point and only loses the advertisement.
+
+**Verification run:** see the table at the end of this section.
+
 ## Not consulted
 
 No source, comment, identifier, helper or fingerprint from any other patch
