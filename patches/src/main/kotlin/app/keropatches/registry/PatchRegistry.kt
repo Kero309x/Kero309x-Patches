@@ -9,6 +9,7 @@ import app.keropatches.anghami.downloads.expandDownloadLimitsPatch
 import app.keropatches.anghami.lyrics.fullLyricsAccessPatch
 import app.keropatches.anghami.rating.disableRatingPromptPatch
 import app.keropatches.anghami.skips.unlimitedSkipsPatch
+import app.keropatches.anghami.sponsored.hideSponsoredContentPatch
 import app.morphe.patcher.patch.Patch
 
 /**
@@ -30,6 +31,7 @@ object PatchRegistry {
         fullLyricsAccessPatch,
         expandDownloadLimitsPatch,
         disableAnalyticsPatch,
+        hideSponsoredContentPatch,
         disableRatingPromptPatch,
     )
 

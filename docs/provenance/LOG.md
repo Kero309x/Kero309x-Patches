@@ -197,6 +197,38 @@ The patch does not attempt to disable a library that the app does not drive.
 
 **Verification run:** see the table at the end of this section.
 
+### `anghami.ads.sponsored-content` — derived 2026-11-04
+
+**Consulted:** the stock 8.0.28 build only.
+
+**How it was found:**
+
+1. Listed every field whose name contains "sponsored" and every method that reads
+   one, across the whole application.
+2. Separated the model that carries the flag from the views that draw it, and read
+   each view.
+3. Checked whether anything filters on the flag, or reacts to it on a click, before
+   deciding that removing the marker is the whole of the client behaviour.
+
+**Derived facts:**
+
+| Fact | Value |
+|---|---|
+| The flag | `Lcom/anghami/ghost/pojo/Song;->isSponsored:Z`, serialised from the JSON key `sponsored` |
+| How it is populated | reflective JSON mapping — there is no assignment to the field anywhere in the bytecode, and no mapper calls the protobuf getter either |
+| Readers | `SongCardModel._bind(SquareViewHolder)` — passed to the shared badge helper; `SongRowModel._bind(RowViewHolder)` — caption visibility; `SongWideModel._bind(WideViewHolder)` — caption visibility |
+| Non-readers | no click handler, no filter, no sort, no playback decision |
+| Section flag | `Section;->sponsored:Z` is copied from the response and written to a parcel, but no view reads it |
+| In-car sponsor | `PreferenceHelper.getACRSponsoredImage()/getACRSponsoredText()`, read once by `com.anghami.acr.ACRActivity`; an empty value is its documented "nothing to show" state |
+
+**Decision:** replace the four reads that draw a marker with a constant false, and
+answer the two in-car getters with an empty string. Editing assignments was not an
+option: the flag arrives through a reflective mapper, so the bytecode has no store
+to change. Removing the songs is not attempted, because the client never does that
+itself and pretending otherwise would describe a behaviour the patch cannot keep.
+
+**Verification run:** see the table at the end of this section.
+
 ## Not consulted
 
 No source, comment, identifier, helper or fingerprint from any other patch
