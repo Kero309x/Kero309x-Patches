@@ -453,6 +453,81 @@ entry point and only loses the advertisement.
 
 **Verification run:** see the table at the end of this section.
 
+### `anghami.entitlement.profile-badge` — derived 2026-11-06
+
+**Consulted:** the stock 8.0.28 build only.
+
+**How it was found:**
+
+1. Listed the view holder fields whose names mention a badge, which produced one
+   dedicated view on the profile header and a boolean on the settings row model.
+2. Read the header bind around that view. It has three branches: gold profile,
+   plus profile, hidden. The gold and plus answers both come from the profile
+   object, not from the account.
+3. Read the start of the same bind and found it already computes whether the
+   profile belongs to the signed-in account, then discards that answer before the
+   badge branch.
+4. Traced the settings row model back to its producer: a coroutine that copies the
+   account's plus answer into the row, which a second class then turns into the
+   row list.
+
+**Derived facts:**
+
+| Fact | Value |
+|---|---|
+| Header badge view | `UserHeaderViewHolder.plusBadge`, drawn by `UserHeaderModel._bind` |
+| Gold branch | `GoldUtilsKt.isGold(profile)` shows the gold drawable `0x7f0803e0` |
+| Plus branch | `Profile;->isPlus:Z` shows the plus drawable `0x7f0805d4` |
+| Ownership check already present | `Account.isMe(profile.id)` at the start of the same bind |
+| Settings row producer | `com/anghami/app/settings/view/ui/mainsettings/q` copies `Account.isPlusUser()` into the row model at two construction sites |
+| Settings row consumer | `com/anghami/app/settings/view/ui/mainsettings/r` copies that boolean into `SettingsRow$UserInfo` |
+
+**Decision:** replace the single plus read in the header with the ownership check
+that the method already computed, and answer true at the two row-model
+construction sites. The account's own answer and the profile's flag are not
+rewritten, so this stays cosmetic. The gold branch is above the changed read and
+keeps working.
+
+**Verification run:** see the table at the end of this section.
+
+### `anghami.entitlement.plus` — derived 2026-11-06
+
+**Consulted:** the stock 8.0.28 build only.
+
+**How it was found:**
+
+1. Read the account's plus answer end to end and found it is a derivation over
+   the stored plan type: plus plan, free trial, or gold.
+2. Confirmed the cached static wrapper delegates to it by reading the wrapper and
+   its callable.
+3. Counted the readers of both forms across all seven DEX files. They are spread
+   over the download manager, the player, play queues, lyrics, settings, lists and
+   the remote-control screens, which is why the derivation is the only practical
+   place to answer.
+4. Checked what else reads the plan type directly. Apart from the tier answers
+   themselves, those readers only display it or write it back to the account.
+
+**Derived facts:**
+
+| Fact | Value |
+|---|---|
+| The derivation | `Lcom/anghami/ghost/local/Account;->isPlusUser()Z` |
+| Its inputs | `planType` equals the plus plan, equals the free-trial plan, or `isGoldUser()` |
+| Static wrapper | `Account.isPlus()Z`, which calls the instance answer through `Account$4` |
+| Readers | 83 call sites of the instance and static forms across all seven DEX files |
+| Direct plan-type readers outside the tier answers | account display, diagnostics, protobuf fill and account persistence |
+| Gold answer | a separate derivation over the same plan type, left untouched |
+
+**Decision:** answer the derivation with a constant true. Changing the stored plan
+type instead would make the account screen claim a plan the server never sent and
+would leak into persistence; changing the static wrapper alone would miss the
+instance callers. The gold derivation and the plan type stay as they are.
+
+**Known limitations:** a server-gated feature still fails, and the account screen
+still shows the stored plan. Both are recorded in the spec.
+
+**Verification run:** see the table at the end of this section.
+
 ## Not consulted
 
 No source, comment, identifier, helper or fingerprint from any other patch

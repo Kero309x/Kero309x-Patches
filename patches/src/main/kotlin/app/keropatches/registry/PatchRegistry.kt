@@ -8,6 +8,8 @@ import app.keropatches.anghami.ads.blockAudioAdsPatch
 import app.keropatches.anghami.analytics.disableAnalyticsPatch
 import app.keropatches.anghami.capture.allowScreenshotsPatch
 import app.keropatches.anghami.downloads.expandDownloadLimitsPatch
+import app.keropatches.anghami.entitlement.plusEntitlementPatch
+import app.keropatches.anghami.entitlement.showProfilePlusBadgePatch
 import app.keropatches.anghami.lyrics.fullLyricsAccessPatch
 import app.keropatches.anghami.playback.disableForcedShufflePatch
 import app.keropatches.anghami.promotions.blockPromotionalPopupsPatch
@@ -40,6 +42,8 @@ object PatchRegistry {
         hideShuffleBadgesPatch,
         hidePremiumButtonsPatch,
         allowScreenshotsPatch,
+        showProfilePlusBadgePatch,
+        plusEntitlementPatch,
         expandDownloadLimitsPatch,
         disableAnalyticsPatch,
         hideSponsoredContentPatch,

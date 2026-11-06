@@ -87,6 +87,20 @@ object Catalogue {
             sourceFile = "src/main/kotlin/app/keropatches/anghami/capture/AllowScreenshots.kt",
         ),
         PatchEntry(
+            patch = app.keropatches.anghami.entitlement.showProfilePlusBadgePatch,
+            application = "anghami",
+            behaviourId = "anghami.entitlement.profile-badge",
+            specPath = "docs/specs/anghami/profile-plus-badge.md",
+            sourceFile = "src/main/kotlin/app/keropatches/anghami/entitlement/ProfilePlusBadge.kt",
+        ),
+        PatchEntry(
+            patch = app.keropatches.anghami.entitlement.plusEntitlementPatch,
+            application = "anghami",
+            behaviourId = "anghami.entitlement.plus",
+            specPath = "docs/specs/anghami/plus-entitlement.md",
+            sourceFile = "src/main/kotlin/app/keropatches/anghami/entitlement/PlusEntitlement.kt",
+        ),
+        PatchEntry(
             patch = app.keropatches.anghami.downloads.expandDownloadLimitsPatch,
             application = "anghami",
             behaviourId = "anghami.downloads.limits",

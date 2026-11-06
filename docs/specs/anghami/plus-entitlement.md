@@ -1,50 +1,76 @@
 # Plus entitlement state
 
 - **Id:** `anghami.entitlement.plus`
-- **Status:** draft
+- **Status:** derived
 - **Default enabled:** yes
 - **Risk:** high
 - **Category:** Account and entitlements
 
 ## Observable behaviour
 
-Several screens and features check whether the account is a paying subscriber.
-After patching, the client-side check reports a subscribed account, so features
-that are gated only on that local check become available.
+The client derives "is this a paying subscriber?" in one method on the account
+object: a plus plan, a free trial, or a gold plan. Scores of screens ask that
+question, directly or through the cached static wrapper.
+
+After patching, the client answers yes. Every feature that is gated only by that
+local answer becomes available: the download manager stops refusing downloads,
+the player stops applying free-tier queue rules, lyrics and skips open up, and the
+screens that advertise an upgrade stop doing so because they now see a subscriber.
 
 ## Preconditions
 
-Signed in. A feature that is gated on the server is out of reach regardless of
-this patch.
+Signed in. Features the server itself refuses remain out of reach.
 
 ## Acceptance criteria
 
-- [ ] The client reports an active subscription wherever it derives that state
-      locally.
-- [ ] Features gated only by that local state become usable.
-- [ ] Anything the server refuses still fails, with a normal error rather than a
-      crash.
+- [ ] The local check reports an active subscription on every screen that asks it.
+- [ ] Locally gated features become usable.
+- [ ] The account screen still shows the plan the server sent.
+- [ ] A server refusal still appears as its normal error, with no crash.
+- [ ] Turning the patch off restores the stock answer everywhere.
 
 ## Out of scope
 
-Server-side entitlement, billing, and anything that would require forging a
-purchase. This patch does not grant paid content that the server withholds.
+Server-side entitlement, billing, purchases, and anything that would require
+forging a receipt. The patch does not make the server hand over paid content.
+
+## What is deliberately not changed
+
+- The plan type string is left exactly as the server sent it. It is displayed on
+  the account screen and used by answers that describe a different tier.
+- The gold answer is left alone. Gold is a separate tier with its own checks, and
+  reporting it would be a claim about a purchase that never happened.
+- No request is altered and no response is rewritten. The change is confined to
+  the local derivation.
+
+## Known limitations
+
+- A feature that the server gates will still be refused, usually as an error or an
+  empty response rather than a crash, because the client only controls its own
+  check.
+- The account screen may show the free plan next to features that now work. This
+  is the visible consequence of changing the derived answer and not the stored
+  plan.
+- This behaviour overlaps the narrow patches on purpose. It is the broad switch;
+  the narrow ones exist so a user can take a single behaviour instead.
 
 ## Open questions
 
-- Which local checks must change, and which must be left alone so that the
-  application does not enter an inconsistent state such as showing an active
-  subscription next to a payment prompt?
-- Should this remain disabled by default? Current decision: yes.
+- Should this stay enabled by default? Current decision: yes, recorded as decision
+  `0004`, matching the behaviour set this project replaces. A user who does not
+  want it disables it in the manager.
 
 ## Verification
 
-1. Sign in with a free account.
-2. Exercise every feature the spec lists as locally gated.
-3. Confirm no crash and no inconsistent purchase prompt.
-4. Confirm server-refused features still show their normal refusal.
+1. Sign in with a free account and enable only this patch.
+2. Exercise downloads, lyrics, skips and queue behaviour and confirm they no
+   longer ask for an upgrade.
+3. Open the account screen and confirm the plan the server sent is still shown.
+4. Trigger a server-gated feature and confirm it fails normally, without a crash.
+5. Disable the patch and confirm every answer returns to what it was.
 
 ## Provenance
 
 - Spec author and date: Kero309x, 2026-11-04
-- Derived code points: not yet derived. See `docs/provenance/LOG.md`.
+- Derived: 2026-11-06 from the stock build. Derivation record:
+  `docs/provenance/LOG.md`, section `anghami.entitlement.plus`.

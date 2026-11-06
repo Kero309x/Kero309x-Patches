@@ -41,3 +41,60 @@ internal fun MutableMethod.replaceBooleanFieldReadsWithFalse(field: String) {
         replaceInstruction(index, "const/4 v$register, 0x0")
     }
 }
+
+/**
+ * Makes every call to this boolean method in this method answer true.
+ *
+ * The call is kept and its result is discarded in favour of a constant, so the
+ * caller's branch, its register usage and its control flow stay as they are. Only
+ * the call sites listed here change; the callee is untouched, so other callers
+ * keep the real answer.
+ *
+ * The constant is written with `const/16` rather than `const/4` because the
+ * destination register of a call result is not limited to the four-bit range.
+ *
+ * @param method method reference in smali form, for example
+ *   `Lcom/example/Thing;->isEnabled()Z`.
+ */
+internal fun MutableMethod.answerBooleanCallsWithTrue(method: String) {
+    val indices = instructions.indices.filter { index ->
+        val instruction = instructions[index]
+        instruction.opcode in INVOKE_OPCODES &&
+            (instruction as? ReferenceInstruction)?.reference?.toString() == method
+    }
+
+    check(indices.isNotEmpty()) {
+        "No call to $method in $definingClass->$name$returnType; the code changed."
+    }
+
+    indices.forEach { index ->
+        val resultIndex = index + 1
+        check(resultIndex < instructions.size) {
+            "The call to $method at $index has no following instruction in " +
+                "$definingClass->$name$returnType."
+        }
+
+        val result = instructions[resultIndex]
+        check(result.opcode == Opcode.MOVE_RESULT) {
+            "The call to $method at $index is not followed by move-result in " +
+                "$definingClass->$name$returnType."
+        }
+
+        val destination = (result as OneRegisterInstruction).registerA
+        replaceInstruction(resultIndex, "const/16 v$destination, 0x1")
+    }
+}
+
+/** Every invoke form, so a call is recognised regardless of its register width. */
+private val INVOKE_OPCODES = setOf(
+    Opcode.INVOKE_VIRTUAL,
+    Opcode.INVOKE_SUPER,
+    Opcode.INVOKE_DIRECT,
+    Opcode.INVOKE_STATIC,
+    Opcode.INVOKE_INTERFACE,
+    Opcode.INVOKE_VIRTUAL_RANGE,
+    Opcode.INVOKE_SUPER_RANGE,
+    Opcode.INVOKE_DIRECT_RANGE,
+    Opcode.INVOKE_STATIC_RANGE,
+    Opcode.INVOKE_INTERFACE_RANGE,
+)
