@@ -769,6 +769,54 @@ embedded certificate digest to the compatibility value passes. The behaviour has
 not been observed on a device or against the server, because neither is
 available.
 
+### `anghami.ads.feed-banners` — derived 2026-11-07
+
+**Consulted:** the stock 8.0.28 build only.
+
+**How it was found:**
+
+1. Searched the application code for the advertising SDK's request type and
+   excluded the SDK's own classes. Two application classes refer to it: the popup
+   shower that `anghami.ads.promotional-popups` already covers, and one list
+   model.
+2. Enumerated the constructors of that list model. Exactly one class builds it.
+3. Read that class end to end. It exposes a single runnable whose whole body is
+   the banner insertion: it refuses to act when a banner already exists, when the
+   server supplied no ad tag, or when the current song is exempt, and otherwise
+   creates the banner, appends it to the list and asks the SDK to load it.
+4. Confirmed the runnable does nothing else: it does not build ordinary cells and
+   does not touch saved state, so skipping it is equivalent to the stock path
+   where the ad tag is absent.
+5. Confirmed the audio-ad behaviour touches a different decision
+   (`odin/core/S.L0`), so the banner placement was genuinely uncovered.
+
+**Derived facts:**
+
+| Fact | Value |
+|---|---|
+| Banner model | `Lcom/anghami/model/adapter/AdTagModel;`, constructed in one place |
+| Inserter | a `run()V` in an obfuscated class, identified by the model construction and `AdSettings.noAd(Song)` |
+| Gates inside it | no existing banner, non-blank ad tag from the host, current song not ad-exempt |
+| Effect when skipped | the banner is never created, appended or loaded; the list keeps its ordinary cells |
+| Other banner paths | none; the only other ad surface in the request-type search is the popup shower |
+| Audio ads | separate decision point, covered by `anghami.ads.audio-ads` |
+
+**Decision:** answer the inserter with an early return. Hiding the banner view
+after creation would leave the model in the list and an empty row behind, and
+answering the per-song exemption true would change the player's ad decision too.
+Skipping the inserter is the same code path the stock build takes when the server
+sends no ad tag.
+
+**Known limitations:** the server still decides that a placement exists and still
+records the impression it never receives; the patch cannot change that. The
+advertising identifiers the client sends are untouched, as are the audio ad and
+popup decisions, which have their own behaviours.
+
+**Verification run:** the unified run applies all registered patches to the stock
+8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. The
+edit was confirmed in the decompiled output. The behaviour has not been observed
+on a device, because no test device is available.
+
 ## Not consulted
 
 No source, comment, identifier, helper or fingerprint from any other patch

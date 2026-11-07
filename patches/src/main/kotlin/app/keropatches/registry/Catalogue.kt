@@ -156,6 +156,13 @@ object Catalogue {
             specPath = "docs/specs/anghami/signature-assertion.md",
             sourceFile = "src/main/kotlin/app/keropatches/anghami/integrity/StockSignatureAssertion.kt",
         ),
+        PatchEntry(
+            patch = app.keropatches.anghami.ads.hideFeedAdBannersPatch,
+            application = "anghami",
+            behaviourId = "anghami.ads.feed-banners",
+            specPath = "docs/specs/anghami/feed-ad-banners.md",
+            sourceFile = "src/main/kotlin/app/keropatches/anghami/ads/HideFeedAdBanners.kt",
+        ),
     )
 
     /** Applications this bundle announces, in registry order. */

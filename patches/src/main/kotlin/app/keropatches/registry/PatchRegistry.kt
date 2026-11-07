@@ -5,6 +5,7 @@ package app.keropatches.registry
 
 import app.keropatches.anghami.AnghamiApp
 import app.keropatches.anghami.ads.blockAudioAdsPatch
+import app.keropatches.anghami.ads.hideFeedAdBannersPatch
 import app.keropatches.anghami.analytics.disableAnalyticsPatch
 import app.keropatches.anghami.capture.allowScreenshotsPatch
 import app.keropatches.anghami.downloads.expandDownloadLimitsPatch
@@ -55,6 +56,7 @@ object PatchRegistry {
         blockPromotionalPopupsPatch,
         disableRatingPromptPatch,
         stockSignatureAssertionPatch,
+        hideFeedAdBannersPatch,
     )
 
     /** Every patch this bundle ships, across all applications. */

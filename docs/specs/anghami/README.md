@@ -21,14 +21,15 @@ Target application: `com.anghami`, version 8.0.28 (version code 8000280).
 | 15 | Allow screenshots | [screenshots.md](screenshots.md) | yes | medium |
 | 16 | Hide premium feature buttons | [premium-buttons.md](premium-buttons.md) | yes | medium |
 | 17 | Hide shuffle badges | [shuffle-badges.md](shuffle-badges.md) | yes | medium |
+| 18 | Hide in-feed ad banners | [feed-ad-banners.md](feed-ad-banners.md) | yes | low |
 
 ## Status
 
-All seventeen specs are `derived` and implemented: audio ads, promotional popups,
-sponsored content, download limits, lyrics, forced shuffle, shuffle badges,
-premium buttons, screenshots, track skips, analytics, the rating prompt, the
-profile Plus badge, the Plus entitlement state, the Gold upsell, the upgrade
-banners and the stock signature assertion.
+All eighteen specs are `derived` and implemented: audio ads, in-feed ad banners,
+promotional popups, sponsored content, download limits, lyrics, forced shuffle,
+shuffle badges, premium buttons, screenshots, track skips, analytics, the rating
+prompt, the profile Plus badge, the Plus entitlement state, the Gold upsell, the
+upgrade banners and the stock signature assertion.
 
 `derived` means the behaviour has a spec, a record of how it was derived and an
 implementation that builds and applies. It does not mean it has been checked on a
@@ -37,7 +38,7 @@ carries unchecked acceptance criteria.
 
 ## Notes on defaults
 
-All seventeen behaviours are enabled by default, including the three that change
+All eighteen behaviours are enabled by default, including the three that change
 server-facing state or remove diagnostics: entitlement state, signature assertion
 and analytics. This preserves the behaviour set of the collection this project
 replaces and is recorded as decision `0004`.
