@@ -2,6 +2,7 @@
 
 - **Status:** accepted
 - **Date:** 2026-11-04
+- **Amended by:** 0006 (repository name only)
 
 ## Context
 
@@ -13,7 +14,7 @@ and coordinates that do not collide with the previous repository.
 | Item | Value |
 |---|---|
 | Display name | Kero309x Patches |
-| Repository | `Kero309x/KeroPatches` |
+| Repository | `Kero309x/Kero309x-Patches` (see 0006) |
 | Maven group | `app.keropatches` |
 | Kotlin package root | `app.keropatches` |
 | Extension namespace | `app.keropatches.extension.<app>` |
@@ -25,8 +26,8 @@ that needs runtime code.
 
 - The display name is derived from the maintainer, which the framework's notice
   explicitly recommends when a neutral name would be ambiguous.
-- `Kero309x-Patches` cannot be used: repository names are compared
-  case-insensitively and the previous repository already occupies that name.
+- The repository name is the one recorded in 0006. The coordinate parts of this
+  decision — the Maven group, the package root, the module names — are unchanged.
 - `app.keropatches` contains no framework or upstream identifier, so no part of
   the artefact suggests it originates elsewhere.
 

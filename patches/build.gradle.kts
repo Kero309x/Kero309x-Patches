@@ -8,8 +8,8 @@ patches {
         // here to avoid publishing a personal address; replace it with a contact
         // address if you want one in the manifest.
         contact = "https://github.com/Kero309x"
-        source = "https://github.com/Kero309x/KeroPatches"
-        website = "https://github.com/Kero309x/KeroPatches"
+        source = "https://github.com/Kero309x/Kero309x-Patches"
+        website = "https://github.com/Kero309x/Kero309x-Patches"
         license = "GPL-3.0-only"
     }
 }
