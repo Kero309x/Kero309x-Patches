@@ -712,6 +712,63 @@ still depends on the server having granted the download. Recorded in the spec.
 four edits were confirmed by decompiling the patched output. The behaviour has not
 been observed on a device, because no test device is available.
 
+### `anghami.integrity.signature-assertion` — derived 2026-11-07
+
+**Consulted:** the stock 8.0.28 build only.
+
+**How it was found:**
+
+1. Searched the application package for the signature type and the package-info
+   field that holds signers. Exactly one class reads it.
+2. Read that class end to end. It hashes the certificate, appends a per-request
+   salt and hashes the request body on top, and both signature headers come from
+   the same answer.
+3. Enumerated the other package-info readers in the application: they read the
+   version code, the installer or the package name, never the signers.
+4. Took the store build's certificate from the stock APK with `keytool` and
+   confirmed its SHA-256 equals the value the bundle already uses for the
+   compatibility check.
+5. Read the derivation again to place the change at the certificate read rather
+   than at the method entry, so the salt and the body still contribute.
+
+**Derived facts:**
+
+| Fact | Value |
+|---|---|
+| Derivation | `Lcom/anghami/ghost/utils/SignatureUtils;->getAppSignature(Ljava/lang/String;[B)Ljava/lang/String;` |
+| Signer source | `PackageManager.getPackageInfo(packageName, 0x40)` then `PackageInfo.signatures[0]` |
+| Certificate step | `Signature.toByteArray()`, hashed with `MessageDigest("SHA")`, base64 encoded |
+| Final step | `SHA-256` over base64 hash + salt + request body, then hex |
+| Headers | `X-ANGH-RGSIG` and `X-ANGH-APP-RGSIG`, both from this answer |
+| Other signer readers | none in the application package |
+| Stock certificate | 846-byte DER, SHA-256 `5e5d1b36…45659`, digest checked by a unit test |
+
+**Decision:** replace the certificate byte read with a decode of the store
+certificate. Constructing the value directly would drop the salt and the body and
+would no longer be a derivation; replacing the whole method would hard-code a
+value the server expects per request. The installed signature is untouched, so
+every other package-manager reader still sees the truth.
+
+The edit inserts the decode before the certificate read and then removes that one
+read. The framework's `replaceInstructions` removes as many instructions as the
+replacement contains, which at this site would also remove the result move and
+the digest update: the method would still compile, but it would hash an empty
+certificate. The patch therefore inserts and removes explicitly, and then checks
+that the result move and the digest update still follow.
+
+**Known limitations:** server-side attestation, Play Integrity and certificate
+pinning are out of reach; the patch closes the client-side half only. A request
+the store build never makes has no known expected value. Recorded in the spec.
+
+**Verification run:** the unified run applies all registered patches to the stock
+8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. The
+edit was confirmed in the decompiled output: the store certificate is decoded
+before the result move, the decoded bytes still feed the SHA digest, and the salt
+and the request body still contribute afterwards. The unit test comparing the
+embedded certificate digest to the compatibility value passes. The behaviour has
+not been observed on a device or against the server, because neither is
+available.
+
 ## Not consulted
 
 No source, comment, identifier, helper or fingerprint from any other patch

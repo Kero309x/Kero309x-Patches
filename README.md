@@ -3,10 +3,10 @@
 An independent patch collection for the Morphe patching framework, maintained by
 Kero309x.
 
-> **Status: pre-alpha.** Twelve of the seventeen specified behaviours are
-> implemented and pass the build and the patch-application gate against the stock
-> build. None has been checked on a device yet, and no release has been published.
-> There is nothing to install at this time.
+> **Status: pre-alpha.** All seventeen specified behaviours are implemented and
+> pass the build and the patch-application gate against the stock build. None has
+> been checked on a device yet, and no release has been published. There is
+> nothing to install at this time.
 
 ## What this is
 

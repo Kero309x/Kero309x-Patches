@@ -24,15 +24,16 @@ Target application: `com.anghami`, version 8.0.28 (version code 8000280).
 
 ## Status
 
-Sixteen specs are `derived` and implemented: audio ads, promotional popups,
+All seventeen specs are `derived` and implemented: audio ads, promotional popups,
 sponsored content, download limits, lyrics, forced shuffle, shuffle badges,
 premium buttons, screenshots, track skips, analytics, the rating prompt, the
-profile Plus badge, the Plus entitlement state, the Gold upsell and the upgrade
-banners.
+profile Plus badge, the Plus entitlement state, the Gold upsell, the upgrade
+banners and the stock signature assertion.
 
-One is still a draft: the stock signature assertion. A draft must reach `derived`
-before its patch is written, and every patch must be checked on a device before
-it is released.
+`derived` means the behaviour has a spec, a record of how it was derived and an
+implementation that builds and applies. It does not mean it has been checked on a
+device: no test device is available to this project yet, so every spec still
+carries unchecked acceptance criteria.
 
 ## Notes on defaults
 

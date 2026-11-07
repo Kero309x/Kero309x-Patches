@@ -10,6 +10,7 @@ import app.keropatches.anghami.capture.allowScreenshotsPatch
 import app.keropatches.anghami.downloads.expandDownloadLimitsPatch
 import app.keropatches.anghami.entitlement.plusEntitlementPatch
 import app.keropatches.anghami.entitlement.showProfilePlusBadgePatch
+import app.keropatches.anghami.integrity.stockSignatureAssertionPatch
 import app.keropatches.anghami.lyrics.fullLyricsAccessPatch
 import app.keropatches.anghami.playback.disableForcedShufflePatch
 import app.keropatches.anghami.promotions.blockPromotionalPopupsPatch
@@ -53,6 +54,7 @@ object PatchRegistry {
         hideSponsoredContentPatch,
         blockPromotionalPopupsPatch,
         disableRatingPromptPatch,
+        stockSignatureAssertionPatch,
     )
 
     /** Every patch this bundle ships, across all applications. */

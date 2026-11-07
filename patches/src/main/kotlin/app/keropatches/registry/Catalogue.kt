@@ -149,6 +149,13 @@ object Catalogue {
             specPath = "docs/specs/anghami/rating-prompt.md",
             sourceFile = "src/main/kotlin/app/keropatches/anghami/rating/DisableRatingPrompt.kt",
         ),
+        PatchEntry(
+            patch = app.keropatches.anghami.integrity.stockSignatureAssertionPatch,
+            application = "anghami",
+            behaviourId = "anghami.integrity.signature-assertion",
+            specPath = "docs/specs/anghami/signature-assertion.md",
+            sourceFile = "src/main/kotlin/app/keropatches/anghami/integrity/StockSignatureAssertion.kt",
+        ),
     )
 
     /** Applications this bundle announces, in registry order. */
