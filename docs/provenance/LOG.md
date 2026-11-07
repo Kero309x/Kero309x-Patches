@@ -817,6 +817,52 @@ popup decisions, which have their own behaviours.
 edit was confirmed in the decompiled output. The behaviour has not been observed
 on a device, because no test device is available.
 
+### `anghami.system.forced-update` — derived 2026-11-07
+
+**Consulted:** the stock 8.0.28 build only.
+
+**How it was found:**
+
+1. Searched the application code for the update vocabulary and excluded the Play
+   core library's own classes. Besides the in-app update manager, the application
+   has a stored preference named `forceUpdate`.
+2. Read the preference's getter and setter. The getter reads a boolean with a
+   `false` default; the setter is called from two server responses: the
+   configuration response field `forceupdate` and the sign-in response field of
+   the same name.
+3. Searched for every reader of the getter. There are two: the main screen, where
+   a true answer posts a blocking dialog whose only action opens the store, and
+   the sign-in bookkeeping, where the same answer adjusts the session timestamp.
+4. Checked the other update surfaces. The Play in-app update manager is a
+   voluntary flow with its own availability check and does not consult this
+   preference.
+
+**Derived facts:**
+
+| Fact | Value |
+|---|---|
+| Stored question | `PreferenceHelper.shouldForceUpdate()Z`, reads the `forceUpdate` boolean |
+| Written by | the configuration response (`ConfigResponse.forceUpdate`) and the sign-in response (`Authenticate.forceUpdate`) |
+| Readers | the main screen's blocking dialog, and the session bookkeeping in `f6.1/b` |
+| In-app update flow | separate, voluntary, does not read the preference |
+| Effect when answered false | the same branch the client takes when the server does not require an update |
+
+**Decision:** answer the stored question false with an early return. Clearing the
+preference instead would only last until the next sign-in writes it back, and
+answering the server fields would change what the client stores. Changing the
+getter's answer leaves both stored values intact and only affects the local
+decision.
+
+**Known limitations:** the patched build stays on the version it was built for and
+does not receive later fixes, including security fixes. The server still regards
+the build as outdated and may refuse version-gated features. The patch removes the
+local dead end; it does not change the server's decision.
+
+**Verification run:** the unified run applies all registered patches to the stock
+8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. The
+edit was confirmed in the decompiled output. The behaviour has not been observed
+on a device, because no test device is available.
+
 ## Not consulted
 
 No source, comment, identifier, helper or fingerprint from any other patch

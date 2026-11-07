@@ -163,6 +163,13 @@ object Catalogue {
             specPath = "docs/specs/anghami/feed-ad-banners.md",
             sourceFile = "src/main/kotlin/app/keropatches/anghami/ads/HideFeedAdBanners.kt",
         ),
+        PatchEntry(
+            patch = app.keropatches.anghami.update.ignoreForcedUpdatePatch,
+            application = "anghami",
+            behaviourId = "anghami.system.forced-update",
+            specPath = "docs/specs/anghami/forced-update.md",
+            sourceFile = "src/main/kotlin/app/keropatches/anghami/update/IgnoreForcedUpdate.kt",
+        ),
     )
 
     /** Applications this bundle announces, in registry order. */

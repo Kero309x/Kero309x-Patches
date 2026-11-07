@@ -22,6 +22,7 @@ import app.keropatches.anghami.store.hideGoldUpsellPatch
 import app.keropatches.anghami.store.hideUpgradeBannersPatch
 import app.keropatches.anghami.ui.hidePremiumButtonsPatch
 import app.keropatches.anghami.ui.hideShuffleBadgesPatch
+import app.keropatches.anghami.update.ignoreForcedUpdatePatch
 import app.morphe.patcher.patch.Patch
 
 /**
@@ -57,6 +58,7 @@ object PatchRegistry {
         disableRatingPromptPatch,
         stockSignatureAssertionPatch,
         hideFeedAdBannersPatch,
+        ignoreForcedUpdatePatch,
     )
 
     /** Every patch this bundle ships, across all applications. */
