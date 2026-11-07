@@ -16,6 +16,8 @@ import app.keropatches.anghami.promotions.blockPromotionalPopupsPatch
 import app.keropatches.anghami.rating.disableRatingPromptPatch
 import app.keropatches.anghami.skips.unlimitedSkipsPatch
 import app.keropatches.anghami.sponsored.hideSponsoredContentPatch
+import app.keropatches.anghami.store.hideGoldUpsellPatch
+import app.keropatches.anghami.store.hideUpgradeBannersPatch
 import app.keropatches.anghami.ui.hidePremiumButtonsPatch
 import app.keropatches.anghami.ui.hideShuffleBadgesPatch
 import app.morphe.patcher.patch.Patch
@@ -44,6 +46,8 @@ object PatchRegistry {
         allowScreenshotsPatch,
         showProfilePlusBadgePatch,
         plusEntitlementPatch,
+        hideGoldUpsellPatch,
+        hideUpgradeBannersPatch,
         expandDownloadLimitsPatch,
         disableAnalyticsPatch,
         hideSponsoredContentPatch,

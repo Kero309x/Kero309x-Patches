@@ -3,9 +3,11 @@
 
 package app.keropatches.core
 
+import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
 import app.morphe.patcher.extensions.InstructionExtensions.instructions
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import app.morphe.patcher.util.proxy.mutableTypes.MutableMethod
+import com.android.tools.smali.dexlib2.AccessFlags
 import com.android.tools.smali.dexlib2.Opcode
 import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
@@ -83,6 +85,42 @@ internal fun MutableMethod.answerBooleanCallsWithTrue(method: String) {
         val destination = (result as OneRegisterInstruction).registerA
         replaceInstruction(resultIndex, "const/16 v$destination, 0x1")
     }
+}
+
+/**
+ * Makes this method answer null without running its body.
+ *
+ * Some callers treat a null getter answer as "this surface is not configured" and
+ * skip building the row or cell that would otherwise show it. Returning null is
+ * therefore preferable to hiding the result afterwards: nothing is allocated, no
+ * adapter position is reserved, and no empty space is left behind.
+ *
+ * The injected ending needs one local register for the null constant. It is
+ * derived from the method's own register frame rather than assumed, so a method
+ * that loses its locals fails the patch instead of producing a broken frame.
+ */
+internal fun MutableMethod.returnNullEarly() {
+    check(returnType.startsWith("L") || returnType.startsWith("[")) {
+        "returnNullEarly needs an object or array return type, but " +
+            "$definingClass->$name returns $returnType."
+    }
+
+    val parameterRegisters = parameterTypes.sumOf { type ->
+        when (type.firstOrNull()) {
+            'J', 'D' -> 2
+            else -> 1
+        }
+    }
+    val receiver = if (AccessFlags.STATIC.isSet(accessFlags)) 0 else 1
+    val locals = checkNotNull(implementation) {
+        "$definingClass->$name has no implementation to inspect."
+    }.registerCount - receiver - parameterRegisters
+
+    check(locals >= 1) {
+        "$definingClass->$name has no local register to hold the null answer."
+    }
+
+    addInstructions(0, "const/4 v0, 0x0\nreturn-object v0")
 }
 
 /** Every invoke form, so a call is recognised regardless of its register width. */

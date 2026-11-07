@@ -25,12 +25,49 @@ private object AccountPlanFingerprint : Fingerprint(
 )
 
 /**
+ * The account flag that turns the player restrictions on for this account.
+ *
+ * For a subscriber the server sends it off; for a free account it sends it on and
+ * the player refuses to scrub, repeat or play more. Since the flag is a server
+ * answer, the client has to be told the subscriber value instead.
+ */
+private object PlayerRestrictionFlagFingerprint : Fingerprint(
+    definingClass = "Lcom/anghami/ghost/local/Account;",
+    name = "enablePlayerRestrictions",
+    isStatic = true,
+    returnType = "Z",
+    parameters = emptyList(),
+)
+
+/**
+ * The account flag that turns those refusals into an upsell prompt.
+ *
+ * It is consulted before the seek, repeat or play-more action is allowed, and when
+ * it answers true the action is replaced by a "subscribe" message. A subscriber
+ * never sees it, because the server sends it off for one.
+ */
+private object PlayerRestrictionUpsellFingerprint : Fingerprint(
+    definingClass = "LW7/a;",
+    name = "f",
+    isStatic = true,
+    returnType = "Z",
+    parameters = emptyList(),
+)
+
+/**
  * Makes the client treat the signed-in account as a subscriber.
  *
  * The answer is derived locally: a plus plan, a free trial, or a gold plan. The
  * patch replaces the derivation with a constant, so every feature that asks the
  * client whether the account pays gets yes: download allowances, lyrics, queue
  * behaviour, upsell suppression and the rest.
+ *
+ * Two more answers are server-flag driven and do not consult the plan at all, so
+ * they are answered here as well. One marks the account as restricted in the
+ * player; the other turns an attempted scrub, repeat or play-more into an upsell
+ * message. A subscriber receives both off from the server, and without this the
+ * client would keep refusing those actions for an account it otherwise treats as
+ * paying.
  *
  * The plan type itself is not changed, and neither is the gold answer. That is
  * deliberate. The plan type is what the server sent and what the account screen
@@ -53,5 +90,7 @@ val plusEntitlementPatch = bytecodePatch(
 
     execute {
         AccountPlanFingerprint.method.returnEarly(true)
+        PlayerRestrictionFlagFingerprint.method.returnEarly(false)
+        PlayerRestrictionUpsellFingerprint.method.returnEarly(false)
     }
 }

@@ -40,6 +40,9 @@ to from the individual specs.
 | The static shorthand | `Account.isPlus()Z` — wraps `isPlusUser()` of the current instance through a compiler-generated callback object |
 | Gold tier | `isGoldUser()Z` — stored plan type equals `GOLD`; `Account.isGold()Z` is its static wrapper |
 | Persistence | the instance is read from an on-disk account file and written back by one write helper, so the stored plan type is a local copy of what the server sent |
+| Instance hand-out | `getAccountInstance()Z` is a plain singleton getter: it returns one static field and has no caching layer of its own |
+| Attribute helpers | `getAccountAttribute` and `getBooleanAttribute` resolve that one instance and then call the supplied callback; neither caches a result |
+| Clones | `Account$AccountReference` and `Account.clone()` copy the instance, so an answer patched on the instance also applies to a reference
 
 **Why this matters for patch design:** changing `isPlusUser()` changes every
 decision built on it at once, and there are dozens of call sites across playback,
@@ -115,7 +118,9 @@ skip allowance field. The empty-queue and "not the current queue" protections li
 outside this predicate and keep working, and the entitlement stays available to
 the download and lyrics patches, which are separate behaviours.
 
-**Verification run:** see the table at the end of this section.
+**Verification run:** the unified run applies all registered patches to the stock
+8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. The
+behaviour has not been observed on a device, because no test device is available.
 
 ### `anghami.media.lyrics-access` — derived 2026-11-04
 
@@ -195,7 +200,9 @@ than stop a report.
 hook, but no app code calls it, so there is nothing in the app to silence for it.
 The patch does not attempt to disable a library that the app does not drive.
 
-**Verification run:** see the table at the end of this section.
+**Verification run:** the unified run applies all registered patches to the stock
+8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. The
+behaviour has not been observed on a device, because no test device is available.
 
 ### `anghami.ads.sponsored-content` — derived 2026-11-04
 
@@ -227,7 +234,9 @@ option: the flag arrives through a reflective mapper, so the bytecode has no sto
 to change. Removing the songs is not attempted, because the client never does that
 itself and pretending otherwise would describe a behaviour the patch cannot keep.
 
-**Verification run:** see the table at the end of this section.
+**Verification run:** the unified run applies all registered patches to the stock
+8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. The
+behaviour has not been observed on a device, because no test device is available.
 
 ### `anghami.ads.promotional-popups` — derived 2026-11-04
 
@@ -260,7 +269,9 @@ that put a promotion on top of the user, and neither is shared with a non-ad
 surface. The ad pipeline itself is untouched, so the patch cannot leave the client
 in a state where an ad is half-built.
 
-**Verification run:** see the table at the end of this section.
+**Verification run:** the unified run applies all registered patches to the stock
+8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. The
+behaviour has not been observed on a device, because no test device is available.
 
 ### `anghami.ads.audio-ads` — derived 2026-11-05
 
@@ -296,7 +307,9 @@ and hoping the caller recovers. The ad pipeline is left intact on purpose: it
 still fetches and caches its models, and a player handed an ad from elsewhere
 would still work.
 
-**Verification run:** see the table at the end of this section.
+**Verification run:** the unified run applies all registered patches to the stock
+8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. The
+behaviour has not been observed on a device, because no test device is available.
 
 ### `anghami.playback.forced-shuffle` — derived 2026-11-05
 
@@ -341,7 +354,9 @@ queue's shuffle control, so the user keeps a working toggle over the plain queue
 free account hears the songs the list contains and not the extra recommendations
 the radio queue would have fetched. This is the client-side part of the change.
 
-**Verification run:** see the table at the end of this section.
+**Verification run:** the unified run applies all registered patches to the stock
+8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. The
+behaviour has not been observed on a device, because no test device is available.
 
 ### `anghami.interface.shuffle-badges` — derived 2026-11-05
 
@@ -380,7 +395,9 @@ diffing and queue building are untouched. Every read site that produces a badge
 was enumerated, so the patch asserts that at least one read exists in each method
 it edits and fails loudly if the layout changes.
 
-**Verification run:** see the table at the end of this section.
+**Verification run:** the unified run applies all registered patches to the stock
+8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. The
+behaviour has not been observed on a device, because no test device is available.
 
 ### `anghami.system.screenshots` — derived 2026-11-06
 
@@ -416,7 +433,9 @@ real change; the base is included so the patch does not depend on the base
 happening to answer false in this build. The method that applies the flag is left
 alone so an already-marked window is still cleared.
 
-**Verification run:** see the table at the end of this section.
+**Verification run:** the unified run applies all registered patches to the stock
+8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. The
+behaviour has not been observed on a device, because no test device is available.
 
 ### `anghami.interface.premium-buttons` — derived 2026-11-06
 
@@ -451,7 +470,9 @@ alone so an already-marked window is still cleared.
 answers stay as they are, so an account that legitimately has karaoke keeps its
 entry point and only loses the advertisement.
 
-**Verification run:** see the table at the end of this section.
+**Verification run:** the unified run applies all registered patches to the stock
+8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. The
+behaviour has not been observed on a device, because no test device is available.
 
 ### `anghami.entitlement.profile-badge` — derived 2026-11-06
 
@@ -488,7 +509,9 @@ construction sites. The account's own answer and the profile's flag are not
 rewritten, so this stays cosmetic. The gold branch is above the changed read and
 keeps working.
 
-**Verification run:** see the table at the end of this section.
+**Verification run:** the unified run applies all registered patches to the stock
+8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. The
+behaviour has not been observed on a device, because no test device is available.
 
 ### `anghami.entitlement.plus` — derived 2026-11-06
 
@@ -517,16 +540,177 @@ keeps working.
 | Readers | 83 call sites of the instance and static forms across all seven DEX files |
 | Direct plan-type readers outside the tier answers | account display, diagnostics, protobuf fill and account persistence |
 | Gold answer | a separate derivation over the same plan type, left untouched |
+| Player restriction flag | `Account.enablePlayerRestrictions()Z`, a server flag; one reader |
+| Player restriction upsell flag | `W7.a.f()Z`, the `upsellOnPlayerRestrictions` server flag, read before seek, repeat and play-more |
 
 **Decision:** answer the derivation with a constant true. Changing the stored plan
 type instead would make the account screen claim a plan the server never sent and
 would leak into persistence; changing the static wrapper alone would miss the
 instance callers. The gold derivation and the plan type stay as they are.
 
+The audit that followed found two more answers a subscriber never trips, both
+server-flag driven and neither consult the plan: the restricted-player flag and
+the upsell-on-restriction flag. Answering them false is what a subscriber's own
+payload does, so they are answered here rather than in a separate behaviour. The
+first is read only by the restriction helper, and the second is read before the
+seek, repeat and play-more paths, where a true answer replaces the action with a
+subscription prompt.
+
 **Known limitations:** a server-gated feature still fails, and the account screen
 still shows the stored plan. Both are recorded in the spec.
 
-**Verification run:** see the table at the end of this section.
+**Verification run:** the unified run applies all registered patches to the stock
+8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. The
+behaviour has not been observed on a device, because no test device is available.
+
+### `anghami.store.gold-upsell` — re-derived 2026-11-06 (first derivation 2026-11-04)
+
+**Consulted:** the stock 8.0.28 build only.
+
+**How it was found:**
+
+1. Searched every DEX for the Gold plan comparison and found two account-level
+   declarations: one static answer and one instance answer.
+2. Followed the render-side helpers and found three overloads that compare a
+   profile, ranked user or story author with the same plan value.
+3. Read the readers of all five answers. Two conclusions came out of that read:
+   both account answers are already false for a free account, and the render-side
+   helpers drive badges and a click target, not an advertisement.
+4. Searched the section payload for a Gold promotion and found one optional field
+   on `Section`, read in exactly one class.
+5. Read that class end to end: it branches on the field once to decide whether the
+   call-to-action container is shown, and reads it again to label the button.
+
+**Derived facts:**
+
+| Fact | Value |
+|---|---|
+| Account, static | `Account.isGold()Z`, delegates through `Account$5` to the instance answer |
+| Account, instance | `Account.isGoldUser()Z`, compares `planType` with `PLAN_TYPE_GOLD` |
+| Render-side helpers | `GoldUtilsKt.isGold(Profile)`, `isGold(RankedUser)`, `isGold(Story$User)` |
+| Render-side effect | badge decoration (`A7/H.c`) and, for a non-Gold viewer, a click target on a Gold user's header |
+| Gold promotion | `Section.goldCTA`, read only by `TitleModel._bind(TitleModel$TitleViewHolder)` |
+| Promotion effect | container visibility and button text; the branch takes the hidden path when the field is null |
+| Gold sheet construction | one site, in `com/anghami/app/base/j.executeAnghamiDeepLink`, reached from the `subscribesheet` deep link |
+| Raw plan field | unchanged; also read by account refresh, authentication and issue reporting |
+
+**Decision:** hide the promotion at its only read, by writing null into the
+register the following branch tests. The first derivation answered the five tier
+predicates false; that was wrong for this behaviour. It changed nothing for a free
+account (the answers were already false) and it removed other users' Gold badges,
+which state something true about those users and are decoration, not advertising.
+The account answers, the render-side helpers and the stored plan type are all left
+as they are.
+
+**Known limitations:** server-side Gold checks still fail, Gold destinations are
+not removed from the payload, and two badge-driven entry points remain: tapping a
+Gold badge, and tapping the header of a Gold user while the viewer is not Gold.
+Closing them would mean deleting the badge or the title they are attached to.
+Recorded in the spec.
+
+**Verification run:** the unified run applies all registered patches to the stock
+8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. The
+edit was confirmed in the decompiled output. The behaviour has not been observed
+on a device, because no test device is available.
+
+**Verification run:** all 16 registered patches applied in one run; the Gold
+answers are among the 36 modified classes written to the patched APK.
+`Hide Gold upsell` reported PASS.
+
+### `anghami.store.upgrade-banners` — derived 2026-11-06
+
+**Consulted:** the stock 8.0.28 build only.
+
+**How it was found:**
+
+1. Started from the preference getters that drive the navigation entry and the
+   restricted-queue prompt, then enumerated their readers across every DEX.
+2. Followed the header promo bar to its only binding method and its two callers.
+3. Traced the feed cells back to the two model classes that bind server buttons
+   and links, and to the list assembler that filters models before the adapter.
+4. Traced the settings rows to the cached payload getters and confirmed both row
+   builders null-check them.
+5. Traced the library promo button to the configuration getter and confirmed its
+   consumer null-checks the answer.
+6. Followed the downloads-screen notice cells to the account flag all four read
+   before building their text, and confirmed no other screen reads it.
+
+**Derived facts:**
+
+| Fact | Value |
+|---|---|
+| Navigation flag | `PreferenceHelper.getPlusTab()Z`; read by `o.1`, `MainActivity` and its cached static |
+| Restricted-queue flag | `PreferenceHelper.getHasRestrictedQueue()Z`; read by the list fragment, `P6/o` and `q6/h` |
+| Downloads notice flag | `Account.showPlusNotice()Z`; read by four downloads-screen cells and nothing else |
+| Header bar | `com/anghami/ui/bar/HeaderBar.setData(BlueBarItem)`; callers `B5/d0` and `MainActivity$a` |
+| Button cell | `ButtonModel._bind(ButtonViewHolder)`; carries `APIButton.deeplink` |
+| Link cell | `LinkModel._bind(LinkViewHolder)`; carries `Link.deeplink` |
+| Settings upgrade row | `PreferenceHelper.getUpgradeModel()`, read and null-checked by `subscriptions/d` |
+| Settings question row | `PreferenceHelper.getSettingsQuestion()`, read and null-checked by `mainsettings/r` |
+| Library promo button | `LibraryConfiguration.getButton()`, read by `S5/n`, null-checked by `S5/o` |
+| Feed filter | `list_fragment/e.shouldInclude(ConfigurableModel, String)`, sole caller `filterModels`, which removes the model from the list |
+
+**Decision:** close each surface where its consumer decides to create the cell or
+row. Boolean flags answer false, model suppliers answer null, the header bar
+collapses before binding, matching button and link cells have their recycled item
+view set to GONE (and reset to VISIBLE otherwise), and the list filter drops the
+automation teaser and matching button or link models. The downloads notice is
+closed as a group at the one flag its four cells share. The stored preferences and
+cached payloads are not rewritten.
+
+**Known limitations:** the feed match is a case-insensitive substring heuristic,
+so an unrelated destination containing one of the fragments is hidden too. Deep
+links are not intercepted; the subscription screen remains reachable when opened
+deliberately. Recorded in the spec.
+
+**Verification run:** all 16 registered patches applied in one run.
+`Hide upgrade banners` reported PASS, and the final run wrote
+`verify-out/patched.apk`.
+
+### `anghami.downloads.limits` — derived 2026-11-06
+
+**Consulted:** the stock 8.0.28 build only.
+
+**How it was found:**
+
+1. Started from the download entry point and read the validator it calls before
+   accepting a request. The validator throws for every refusal reason, so it is the
+   natural first gate.
+2. Enumerated its callers and readers of the offline allowance field
+   (`maxOfflineSongs`) across all seven DEX files. The field is read in three
+   further places outside the validator.
+3. Read the download loop that runs after the validator, and found it calls the
+   counter again per record.
+4. Read the download service callback and found the same count expressed as a
+   boolean before the record is handed to the download helper.
+5. Followed the post-sign-in cleanup and found it deletes records above the cached
+   allowance, and calls `clearDownloads()` outright when the allowance is zero.
+
+**Derived facts:**
+
+| Fact | Value |
+|---|---|
+| Upfront validator | `DownloadManager.assertDownloadRestrictions(Account, int, SongDownloadReason)`; throws `DownloadRequestException` per reason |
+| Per-record counter | `DownloadManager.assertDownloadLimitReached(Account, int)`; throws `LIMIT_REACHED` |
+| Service-side check | `DownloadService.canDownloadRecordWithMaxOfflineCount(SongDownloadRecord)`; compares `getDownloadsCount()` with the allowance |
+| Post-sign-in trim | `SimpleDownloadActions.cleanDownloads$lambda$2()`; deletes records above the allowance and clears everything at zero |
+| Directory reconciliation | `SimpleDownloadActions.cleanDownloadDirectory$default(false, 1, null)`, also called by the trim |
+| Allowance source | `Account.maxOfflineSongs`, a locally cached field |
+| Limited-plan check | `DownloadManager.isOnLimitedPlan(Account)`, reads the same field |
+| Corruption flag | `PreferenceHelper`, re-thrown by the patch exactly as stock does |
+
+**Decision:** replace the validator body with a corruption-only check, return
+immediately from the per-record counter, answer the service check true, and reduce
+the post-sign-in trim to the directory reconciliation it already performs. The
+allowance field and the stored plan are not rewritten.
+
+**Known limitations:** a server-side refusal is not bypassed, and offline playback
+still depends on the server having granted the download. Recorded in the spec.
+
+**Verification run:** the unified run applies all registered patches to the stock
+8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. The
+four edits were confirmed by decompiling the patched output. The behaviour has not
+been observed on a device, because no test device is available.
 
 ## Not consulted
 

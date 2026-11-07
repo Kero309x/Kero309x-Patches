@@ -12,10 +12,18 @@ The client derives "is this a paying subscriber?" in one method on the account
 object: a plus plan, a free trial, or a gold plan. Scores of screens ask that
 question, directly or through the cached static wrapper.
 
-After patching, the client answers yes. Every feature that is gated only by that
-local answer becomes available: the download manager stops refusing downloads,
-the player stops applying free-tier queue rules, lyrics and skips open up, and the
-screens that advertise an upgrade stop doing so because they now see a subscriber.
+Two further answers come straight from server flags rather than from that
+derivation, and they are what makes the player treat a free account differently:
+one marks the account as restricted, the other turns an attempted scrub, repeat or
+play-more action into a subscription prompt. A real subscriber receives both
+switched off.
+
+After patching, the client answers yes to the derivation and no to those two flags.
+Every feature that is gated only by that local answer becomes available: the
+download manager stops refusing downloads, the player stops applying free-tier
+queue rules, lyrics and skips open up, scrubbing and repeating are no longer
+interrupted by a prompt, and the screens that advertise an upgrade stop doing so
+because they now see a subscriber.
 
 ## Preconditions
 
@@ -25,6 +33,8 @@ Signed in. Features the server itself refuses remain out of reach.
 
 - [ ] The local check reports an active subscription on every screen that asks it.
 - [ ] Locally gated features become usable.
+- [ ] Scrubbing, repeating and play-more are no longer replaced by a subscription
+      prompt.
 - [ ] The account screen still shows the plan the server sent.
 - [ ] A server refusal still appears as its normal error, with no crash.
 - [ ] Turning the patch off restores the stock answer everywhere.
@@ -40,8 +50,11 @@ forging a receipt. The patch does not make the server hand over paid content.
   the account screen and used by answers that describe a different tier.
 - The gold answer is left alone. Gold is a separate tier with its own checks, and
   reporting it would be a claim about a purchase that never happened.
+- The two player flags are answered, not stored. Their values in the account
+  record stay as the server sent them, so persistence and diagnostics are
+  unchanged.
 - No request is altered and no response is rewritten. The change is confined to
-  the local derivation.
+  the local derivation and the two local flag answers.
 
 ## Known limitations
 
@@ -65,9 +78,11 @@ forging a receipt. The patch does not make the server hand over paid content.
 1. Sign in with a free account and enable only this patch.
 2. Exercise downloads, lyrics, skips and queue behaviour and confirm they no
    longer ask for an upgrade.
-3. Open the account screen and confirm the plan the server sent is still shown.
-4. Trigger a server-gated feature and confirm it fails normally, without a crash.
-5. Disable the patch and confirm every answer returns to what it was.
+3. Seek within a track, repeat a track and use play-more, then confirm no
+   subscription prompt interrupts them.
+4. Open the account screen and confirm the plan the server sent is still shown.
+5. Trigger a server-gated feature and confirm it fails normally, without a crash.
+6. Disable the patch and confirm every answer returns to what it was.
 
 ## Provenance
 

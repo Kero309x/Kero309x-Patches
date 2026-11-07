@@ -101,6 +101,20 @@ object Catalogue {
             sourceFile = "src/main/kotlin/app/keropatches/anghami/entitlement/PlusEntitlement.kt",
         ),
         PatchEntry(
+            patch = app.keropatches.anghami.store.hideGoldUpsellPatch,
+            application = "anghami",
+            behaviourId = "anghami.store.gold-upsell",
+            specPath = "docs/specs/anghami/gold-upsell.md",
+            sourceFile = "src/main/kotlin/app/keropatches/anghami/store/HideGoldUpsell.kt",
+        ),
+        PatchEntry(
+            patch = app.keropatches.anghami.store.hideUpgradeBannersPatch,
+            application = "anghami",
+            behaviourId = "anghami.store.upgrade-banners",
+            specPath = "docs/specs/anghami/upgrade-banners.md",
+            sourceFile = "src/main/kotlin/app/keropatches/anghami/store/HideUpgradeBanners.kt",
+        ),
+        PatchEntry(
             patch = app.keropatches.anghami.downloads.expandDownloadLimitsPatch,
             application = "anghami",
             behaviourId = "anghami.downloads.limits",
