@@ -7,6 +7,7 @@ import app.keropatches.anghami.AnghamiApp
 import app.keropatches.anghami.ads.blockAudioAdsPatch
 import app.keropatches.anghami.ads.hideFeedAdBannersPatch
 import app.keropatches.anghami.analytics.disableAnalyticsPatch
+import app.keropatches.anghami.analytics.disableSiloTelemetryPatch
 import app.keropatches.anghami.capture.allowScreenshotsPatch
 import app.keropatches.anghami.downloads.expandDownloadLimitsPatch
 import app.keropatches.anghami.entitlement.plusEntitlementPatch
@@ -59,6 +60,7 @@ object PatchRegistry {
         stockSignatureAssertionPatch,
         hideFeedAdBannersPatch,
         ignoreForcedUpdatePatch,
+        disableSiloTelemetryPatch,
     )
 
     /** Every patch this bundle ships, across all applications. */

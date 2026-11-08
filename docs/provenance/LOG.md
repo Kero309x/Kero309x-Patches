@@ -863,6 +863,66 @@ local dead end; it does not change the server's decision.
 edit was confirmed in the decompiled output. The behaviour has not been observed
 on a device, because no test device is available.
 
+### `anghami.privacy.silo-telemetry` — derived 2026-11-08
+
+**Consulted:** the stock 8.0.28 build only.
+
+**How it was found:**
+
+1. Started from the application's own reporting package,
+   `com.anghami.ghost.silo`, and listed its reporters: play-song, playqueue,
+   click, impression, time spent, generic errors and device information.
+2. Read the preference getters those reporters consult. Two of them are switches
+   the sign-in response writes: `getSiloSongTrackingEnabled()` over
+   `silo_song_tracking`, and `isSiloInstrumentationEnabled()` over
+   `product_instrumentation`. Both default to `false`.
+3. Searched for every reader of each getter. The song-tracking answer is read
+   only by `SiloPlaySongReporting.reportSongPlayEvent`, which returns `false`
+   before it builds or queues a payload. The instrumentation answer is read by
+   the click, impression, time-spent and playqueue reporters, and each one logs
+   "disabled by API" and returns.
+4. Checked the reporters that turned out to have no gate at all: the generic
+   application-error reporter, which queues a payload whenever it is given a
+   non-empty source, and the device-specification upload, which is private and
+   called only from the tail of `prepareDeviceSpecs`.
+5. Looked for a central gate in `SiloManager`. There is none: it queues and sends
+   whatever the reporters hand it, so the reporters are where the decisions live.
+6. Traced the quartile preference separately. `getEnableSiloSongQuartiles()` is
+   read only while `odin/core/X.b` builds a play-song payload, and that payload
+   reaches the queue only through `reportSongPlayEvent`.
+
+**Derived facts:**
+
+| Fact | Value |
+|---|---|
+| Song tracking | `PreferenceHelper.getSiloSongTrackingEnabled()Z`, reads `silo_song_tracking` |
+| Song tracking reader | `SiloPlaySongReporting.reportSongPlayEvent`, returns `false` at the gate |
+| Instrumentation | `PreferenceHelper.isSiloInstrumentationEnabled()Z`, reads `product_instrumentation` |
+| Instrumentation readers | `SiloClickReporting.postClick`, `SiloImpressionReporting.postImpressionEvent`, `SiloTimeSpentReporting.postTimeSpentEvent`, `SiloPlayqueueReporting.postPlayqueueCreated` |
+| Quartile gate | `getEnableSiloSongQuartiles()`, `enable_silo_song_quartiles`, read only in `odin/core/X.b` |
+| Ungated error reporter | `SiloErrorReporting.postAppGenericErrorEvent(Ljava/lang/String;)V` |
+| Ungated device upload | `SiloDeviceInfoReporting.reportDeviceSpecsAsync(Lcom/anghami/ghost/pojo/DeviceSpecs;)V` |
+| Central gate | none in `SiloManager` |
+| Stock path when a gate is false | the reporter logs and returns; nothing is queued |
+
+**Decision:** answer the two preference questions `false` and return early from
+the two ungated reporters. The quartile gate is left alone: it only decides
+whether quartile data is included in the play-song payload, and that payload is
+sent through the reporter the song-tracking answer already silences, so editing
+it would add no behaviour. The stored preferences are not rewritten; only the
+local answers change.
+
+**Known limitations:** the patch stops new reports, it does not purge the local
+Silo store, so events queued by an earlier build and still on disk can be sent at
+the next launch. It covers Silo only; the third-party SDKs are a separate
+behaviour (`anghami.privacy.analytics`). It does not stop ordinary local logging,
+which stays available for bug reports.
+
+**Verification run:** the unified run applies all registered patches to the stock
+8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. All
+four edits were confirmed in the decompiled output. The behaviour has not been
+observed on a device, because no test device is available.
+
 ## Not consulted
 
 No source, comment, identifier, helper or fingerprint from any other patch

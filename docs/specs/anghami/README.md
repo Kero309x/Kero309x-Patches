@@ -23,14 +23,16 @@ Target application: `com.anghami`, version 8.0.28 (version code 8000280).
 | 17 | Hide shuffle badges | [shuffle-badges.md](shuffle-badges.md) | yes | medium |
 | 18 | Hide in-feed ad banners | [feed-ad-banners.md](feed-ad-banners.md) | yes | low |
 | 19 | Ignore the forced update requirement | [forced-update.md](forced-update.md) | yes | medium |
+| 20 | Disable first-party Silo telemetry | [silo-telemetry.md](silo-telemetry.md) | yes | low |
 
 ## Status
 
-All nineteen specs are `derived` and implemented: audio ads, in-feed ad banners,
+All twenty specs are `derived` and implemented: audio ads, in-feed ad banners,
 promotional popups, sponsored content, download limits, lyrics, forced shuffle,
-shuffle badges, premium buttons, screenshots, track skips, analytics, the rating
-prompt, the profile Plus badge, the Plus entitlement state, the Gold upsell, the
-upgrade banners, the stock signature assertion and the forced update requirement.
+shuffle badges, premium buttons, screenshots, track skips, analytics, Silo
+telemetry, the rating prompt, the profile Plus badge, the Plus entitlement state,
+the Gold upsell, the upgrade banners, the stock signature assertion and the forced
+update requirement.
 
 `derived` means the behaviour has a spec, a record of how it was derived and an
 implementation that builds and applies. It does not mean it has been checked on a
@@ -39,10 +41,10 @@ carries unchecked acceptance criteria.
 
 ## Notes on defaults
 
-All nineteen behaviours are enabled by default, including the three that change
-server-facing state or remove diagnostics: entitlement state, signature assertion
-and analytics. This preserves the behaviour set of the collection this project
-replaces and is recorded as decision `0004`.
+All twenty behaviours are enabled by default, including the four that change
+server-facing state or remove diagnostics: entitlement state, signature assertion,
+analytics and Silo telemetry. This preserves the behaviour set of the collection
+this project replaces and is recorded as decision `0004`.
 
 The risk of each behaviour is stated in its spec. A user who does not want one of
 the high-risk behaviours disables it in the manager; the bundle does not make that

@@ -170,6 +170,13 @@ object Catalogue {
             specPath = "docs/specs/anghami/forced-update.md",
             sourceFile = "src/main/kotlin/app/keropatches/anghami/update/IgnoreForcedUpdate.kt",
         ),
+        PatchEntry(
+            patch = app.keropatches.anghami.analytics.disableSiloTelemetryPatch,
+            application = "anghami",
+            behaviourId = "anghami.privacy.silo-telemetry",
+            specPath = "docs/specs/anghami/silo-telemetry.md",
+            sourceFile = "src/main/kotlin/app/keropatches/anghami/analytics/DisableSiloTelemetry.kt",
+        ),
     )
 
     /** Applications this bundle announces, in registry order. */
