@@ -5,8 +5,8 @@ maintained by Kero309x.
 
 > **Status: pre-alpha.** All twenty patches are implemented and pass the build and
 > the patch-application gate against the stock 8.0.28 build (20/20). None has been
-> checked on a device yet. A pre-release bundle, `v0.1.1`, is published; treat it
-> as unverified at runtime.
+> checked on a device yet. A signed pre-release bundle, `v0.1.2`, is published;
+> treat it as unverified at runtime.
 
 ## What this is
 
@@ -32,8 +32,13 @@ on an Android device:
 
 Morphe reads `patches-bundle.json` from `main` and downloads the bundle attached
 to the latest release. Every `0.x` release is a pre-release, so enable
-pre-releases for this source. The bundle is not signed yet and no patch has been
-checked on a device, so treat it as unverified.
+pre-releases for this source.
+
+From `0.1.2` the bundle is signed with Ed25519 and the metadata publishes the
+matching `public_key`, so the manager can reject a bundle altered after
+publication. Earlier releases are unsigned and have no `classes.dex`, which makes
+them Desktop-only. No patch has been checked on a device, so treat the bundle as
+unverified at runtime.
 
 ## Independence
 

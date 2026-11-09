@@ -1,20 +1,23 @@
 # Release process
 
-Status: `v0.1.0` was published from a local build; `v0.1.1` is the first release
-produced by the automated workflow. The sections below distinguish what has been
+Status: `v0.1.0` was published from a local build; `v0.1.1` was the first release
+produced by the automated workflow; `v0.1.2` is the first signed release built by
+`buildAndroid` for Morphe Manager. The sections below distinguish what has been
 exercised from what is still intended.
 
 ## Published so far
 
 | Version | Date | Status | Asset |
 |---|---|---|---|
-| 0.1.0 | 2026-11-09 | pre-release, published manually | `Kero309x-Patches-0.1.0.mpp` |
-| 0.1.1 | 2026-11-09 | pre-release, published by the release workflow | `Kero309x-Patches-0.1.1.mpp` |
+| 0.1.0 | 2026-11-09 | pre-release, published manually, Desktop-only | `Kero309x-Patches-0.1.0.mpp` |
+| 0.1.1 | 2026-11-09 | pre-release, published by the release workflow, Desktop-only | `Kero309x-Patches-0.1.1.mpp` |
+| 0.1.2 | 2026-11-09 | pre-release, published by the release workflow, signed, Manager-ready | `Kero309x-Patches-0.1.2.mpp` |
 
 Each bundle is built from the tagged commit.
 
 - `0.1.0` — `BD74E5B95BADD671DB0C4678D874EE7456750A688FCB0849FEFACFD4F102B644`
 - `0.1.1` — `849971EF03A28F5767DCCE5FCBC6428D5D64626C6309615D486554377CED9FE4`
+- `0.1.2` — `47B177D75EF06CA5E34497B8005DB0415B57A10C9A5C41B7F049C127BE6FEDFD`
 
 The same hash is repeated in the release notes.
 
@@ -57,14 +60,18 @@ Current state:
 - The key pair was generated on 2026-11-09. `morphe-signing.pub` is committed;
   `morphe-signing.key` is ignored by `.gitignore` and stays on the maintainer's
   machine.
-- `MORPHE_SIGNING_KEY` is not configured yet, so `0.1.1` is unsigned. The release
+- `MORPHE_SIGNING_KEY` holds the private key, so `0.1.2` is signed. The release
   workflow only writes `public_key` into the metadata when that secret is present,
   so an unsigned build is never described as signed.
-- Releases `0.1.0` and `0.1.1` were built by `build` and carry no `classes.dex`.
-  They work with Morphe Desktop, not with Morphe Manager.
-- The private key must be backed up offline before it is used for a release.
-  Losing it means every future release is rejected by clients that already trust
-  the old key; generating a new pair means every client must re-add the source.
+- `0.1.2` is the first release built by `buildAndroid`, so it carries
+  `classes.dex` and works with Morphe Manager. Releases `0.1.0` and `0.1.1` were
+  built by `build`, carry no DEX, and are Desktop-only.
+- Every `0.1.2` artefact was checked after publication: 112 entries,
+  `classes.dex` of 99,480 bytes, a `MorpheSig1` trailer whose public key equals
+  `morphe-signing.pub`, and a SHA-256 that matches the release notes.
+- The private key must be backed up offline. Losing it means every future release
+  is rejected by clients that already trust the old key; generating a new pair
+  means every client must re-add the source.
 
 The steps, for the record:
 
