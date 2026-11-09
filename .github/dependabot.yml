@@ -10,6 +10,15 @@ updates:
       gradle:
         patterns:
           - "*"
+    ignore:
+      # These are framework-coupled, not ordinary dependencies: the version in
+      # `gradle/libs.versions.toml` has to match whatever the Morphe build
+      # plugin and the host patcher were built against. A Dependabot bump here
+      # breaks the build or produces a bundle the host rejects, so each one is
+      # moved by hand after checking the framework's own pins.
+      - dependency-name: "app.morphe:morphe-patcher"
+      - dependency-name: "org.jetbrains.kotlin:kotlin-test"
+      - dependency-name: "org.jetbrains.kotlinx:kotlinx-coroutines-core"
 
   - package-ecosystem: github-actions
     directory: /
