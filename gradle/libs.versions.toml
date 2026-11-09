@@ -17,10 +17,10 @@ smali = "4220ae75f7"
 # Must stay equal to the version morphe-patcher itself depends on. The patcher
 # declares coroutines as a runtime-only dependency, so without an explicit entry
 # its `Flow` type is visible at run time but not at compile time.
-kotlinx-coroutines = "1.10.2"
+kotlinx-coroutines = "1.11.0"
 # The Kotlin test library that ships with the compiler in use. It is test-only
 # and is never part of the bundle.
-kotlin = "2.2.20"
+kotlin = "2.4.21"
 
 [libraries]
 morphe-patcher = { module = "app.morphe:morphe-patcher", version.ref = "morphe-patcher" }
