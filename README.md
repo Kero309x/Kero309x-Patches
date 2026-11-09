@@ -5,7 +5,7 @@ maintained by Kero309x.
 
 > **Status: pre-alpha.** All twenty patches are implemented and pass the build and
 > the patch-application gate against the stock 8.0.28 build (20/20). None has been
-> checked on a device yet. A pre-release bundle, `v0.1.0`, is published; treat it
+> checked on a device yet. A pre-release bundle, `v0.1.1`, is published; treat it
 > as unverified at runtime.
 
 ## What this is
