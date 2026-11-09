@@ -46,6 +46,11 @@ release with the version, the release time, the published notes, the asset URL
 and an empty signature URL. `public_key` is added only when the build was signed.
 It is generated, not edited by hand.
 
+The `description` is a copy of the release notes taken at publish time, so notes
+rewritten afterwards do not reach the manager until the next release. `0.1.2` is
+the one case where the field was synced by hand, in a dedicated commit, after its
+notes were replaced.
+
 ## Signing
 
 Signing lets the manager refuse a release that was altered after publication.
