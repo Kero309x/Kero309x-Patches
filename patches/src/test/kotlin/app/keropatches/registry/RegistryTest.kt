@@ -3,7 +3,6 @@
 
 package app.keropatches.registry
 
-import app.keropatches.anghami.AnghamiApp
 import app.keropatches.anghami.rating.disableRatingPromptPatch
 import app.morphe.patcher.patch.Patch
 import java.io.File
@@ -196,11 +195,11 @@ class RegistryTest {
     }
 
     @Test
-    fun anghamiIsTheOnlyApplicationForNow() {
-        assertEquals(listOf(AnghamiApp.definition), AppRegistry.applications)
+    fun everyRegisteredApplicationHasAtLeastOnePatch() {
         assertEquals(
-            AnghamiApp.definition.id,
-            Catalogue.entries.map { it.application }.distinct().single(),
+            AppRegistry.applications.map { it.id }.toSet(),
+            Catalogue.entries.map { it.application }.toSet(),
+            "Every registered application must have catalogue entries, and every catalogue application must be registered.",
         )
     }
 

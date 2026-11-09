@@ -14,8 +14,10 @@ A bundle of patches applied to the stock build of a supported application,
 producing a repackaged build with a modified behaviour set. The bundle is used
 with Morphe Manager, or with any tool that consumes a Morphe patch bundle.
 
-This release targets Anghami 8.0.28 only. The architecture is ready for more
-applications, but none other is registered or claimed.
+The bundle is built for multiple applications. Each one is declared once in
+`AppRegistry`, with its own compatibility data and behaviour specs, and adding
+one is a package change rather than a core change. The table below lists the
+applications currently registered.
 
 ## Independence
 
@@ -40,10 +42,9 @@ derivative works.
 |---|---|---|---|
 | Anghami | `com.anghami` | 8.0.28 (8000280) | APKM |
 
-Only Anghami is registered in this release. The bundle is built around
-`AppDefinition` and `AppRegistry`, so another application can be added as a
-package without changing the core layer; that is architecture, not a claim of
-current support.
+The table lists the applications currently registered. The bundle is not tied to
+a single application: another target is added as a package with its own
+compatibility data and specs, without changing the core layer.
 
 Behaviour specifications: [`docs/specs/anghami/`](docs/specs/anghami/README.md).
 

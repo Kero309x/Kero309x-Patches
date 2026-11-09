@@ -22,6 +22,6 @@ plugins {
     id("app.morphe.patches") version "2.1.0"
 }
 
-rootProject.name = "KeroPatches"
+rootProject.name = "Kero309xPatches"
 
 include(":patches")

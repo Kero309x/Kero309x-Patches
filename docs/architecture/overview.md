@@ -2,14 +2,16 @@
 
 ## Purpose
 
-Kero309x Patches is a patch bundle for the Morphe patching framework. It targets
-the stock, unmodified builds of the applications it declares support for, and it
-is developed independently: the framework is used through its published
-contracts, and no patch code is taken from any other patch collection.
+Kero309x Patches is a multi-application patch bundle for the Morphe patching
+framework. It targets the stock, unmodified builds of the applications it
+declares support for, and it is developed independently: the framework is used
+through its published contracts, and no patch code is taken from any other patch
+collection.
 
-Only Anghami is registered at present. The structure below is what allows
-another application to be added without changing the core layer; this release
-does not claim support for any other application.
+Anghami is the first registered application. Applications are declared one at a
+time in `AppRegistry`; the structure below is what makes each addition a package
+change rather than a core change. The bundle does not claim support for an
+application until it is registered.
 
 ## Layers
 
@@ -51,8 +53,8 @@ This project therefore treats "registration" as a metadata problem:
 
 1. Create `app.keropatches.<app>` with an `<App>App.kt` holding the package name,
    version targets, minimum SDK and signing certificate.
-2. Add it to `AppRegistry` and replace the `anghamiIsTheOnlyApplicationForNow`
-   guard in `RegistryTest`, which currently pins the registry to Anghami.
+2. Add it to `AppRegistry` and add its catalogue entries. The registry test
+   requires every registered application to have at least one catalogued patch.
 3. Write behaviour specs in `docs/specs/<app>/`.
 4. Derive fingerprints from the stock build. Never from another project.
 5. Implement each patch against its spec.

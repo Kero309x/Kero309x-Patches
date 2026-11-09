@@ -1,7 +1,7 @@
 patches {
     about {
         name = "Kero309x Patches"
-        description = "Independent, clean-room patches for Anghami 8.0.28 on the Morphe framework. Multi-application architecture; Anghami is the only registered target."
+        description = "Independent, clean-room patches for the Morphe framework, built for multiple applications. Current target: Anghami 8.0.28."
         author = "Kero309x"
         // The plugin writes every one of these into the bundle manifest and fails
         // on a null value, so none of them may be omitted. A profile URL is used
