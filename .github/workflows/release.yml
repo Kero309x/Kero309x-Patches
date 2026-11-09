@@ -68,7 +68,10 @@ jobs:
 
       - name: Build
         if: steps.tag.outputs.exists == 'false'
-        run: ./gradlew build --no-daemon --stacktrace
+        # `buildAndroid` adds `classes.dex` to the bundle and signs it when a key
+        # is available; `build` alone produces a Desktop-only bundle. The task
+        # captures the Project, so it cannot run with the configuration cache.
+        run: ./gradlew buildAndroid --no-daemon --no-configuration-cache --stacktrace
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.MORPHE_REGISTRY_TOKEN }}
@@ -105,23 +108,31 @@ jobs:
         if: steps.tag.outputs.exists == 'false'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MORPHE_SIGNING_KEY: ${{ secrets.MORPHE_SIGNING_KEY }}
         run: |
           version="${{ steps.version.outputs.value }}"
           asset="Kero309x-Patches-${version}.mpp"
           created_at="$(gh release view "v$version" --json publishedAt -q .publishedAt | sed 's/Z$//')"
           notes="$(gh release view "v$version" --json body -q .body)"
+          # Only advertise a public key when the build was actually signed;
+          # otherwise the manager would reject a bundle whose signature is absent.
+          public_key=""
+          if [ -n "${MORPHE_SIGNING_KEY:-}" ] && [ -f morphe-signing.pub ]; then
+            public_key="$(tr -d '\r\n' < morphe-signing.pub)"
+          fi
           jq -n \
             --arg version "$version" \
             --arg created_at "$created_at" \
             --arg description "$notes" \
             --arg download_url "https://github.com/${GITHUB_REPOSITORY}/releases/download/v${version}/${asset}" \
+            --arg public_key "$public_key" \
             '{
               version: $version,
               created_at: $created_at,
               description: $description,
               download_url: $download_url,
               signature_download_url: ""
-            }' > patches-bundle.json
+            } + (if $public_key == "" then {} else { public_key: $public_key } end)' > patches-bundle.json
           git add patches-bundle.json
           git -c user.name='github-actions[bot]' \
               -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \

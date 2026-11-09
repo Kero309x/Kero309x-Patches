@@ -54,7 +54,10 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
 
       - name: Build
-        run: ./gradlew build --no-daemon --stacktrace
+        # `buildAndroid` produces the bundle Morphe Manager consumes and signs it
+        # when a key is present. The task captures the Project, so the
+        # configuration cache must stay off.
+        run: ./gradlew buildAndroid --no-daemon --no-configuration-cache --stacktrace
         env:
           # Read-only access to the framework plugin registry.
           # Requires the MORPHE_REGISTRY_TOKEN repository secret.

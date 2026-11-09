@@ -26,9 +26,10 @@ before the release commit, so the tag and the manifest always agree.
 
 ## What a release publishes
 
-- `Kero309x-Patches-<version>.mpp` — the patch bundle, built at
-  `patches/build/libs/patches-<version>.mpp` and renamed when it is attached to
-  the release.
+- `Kero309x-Patches-<version>.mpp` — the patch bundle, built by `buildAndroid`
+  at `patches/build/libs/patches-<version>.mpp` and renamed when it is attached to
+  the release. `buildAndroid` adds `classes.dex`, which Morphe Manager needs; the
+  plain `build` output has no DEX and only serves Morphe Desktop.
 - Release notes on the tag page. They summarise the change and the verification
   status; they do not replace the behaviour specs.
 
@@ -39,26 +40,43 @@ is never edited by hand.
 `patches-bundle.json` at the repository root is the patch source metadata that
 Morphe Manager reads from `main`. The release workflow rewrites it after each
 release with the version, the release time, the published notes, the asset URL
-and an empty signature URL while signing is off. It is generated, not edited by
-hand.
+and an empty signature URL. `public_key` is added only when the build was signed.
+It is generated, not edited by hand.
 
 ## Signing
 
 Signing lets the manager refuse a release that was altered after publication.
 
-It is not enabled yet: no key has been generated, no public key is committed, and
-`MORPHE_SIGNING_KEY` is not set. The steps below are the intended process.
+The bundle is signed with an Ed25519 key. The signature is appended inside the
+`.mpp` itself, in the `MorpheSig1` trailer after the zip end record, so a release
+publishes no separate signature file. `patches-bundle.json` carries the matching
+`public_key` instead.
 
-1. `./gradlew generateSigningKey` produces `morphe-signing.key` and
-   `morphe-signing.pub`.
-2. `morphe-signing.pub` is committed. The private key never is; it is ignored by
-   `.gitignore`.
-3. The private key is stored as the repository secret `MORPHE_SIGNING_KEY`.
-4. A backup is kept offline. Losing the key means every future release is
-   rejected by clients that already trust the old one.
+Current state:
 
-Signing must be enabled on a machine the maintainer controls before it can be
-used for a release.
+- The key pair was generated on 2026-11-09. `morphe-signing.pub` is committed;
+  `morphe-signing.key` is ignored by `.gitignore` and stays on the maintainer's
+  machine.
+- `MORPHE_SIGNING_KEY` is not configured yet, so `0.1.1` is unsigned. The release
+  workflow only writes `public_key` into the metadata when that secret is present,
+  so an unsigned build is never described as signed.
+- Releases `0.1.0` and `0.1.1` were built by `build` and carry no `classes.dex`.
+  They work with Morphe Desktop, not with Morphe Manager.
+- The private key must be backed up offline before it is used for a release.
+  Losing it means every future release is rejected by clients that already trust
+  the old key; generating a new pair means every client must re-add the source.
+
+The steps, for the record:
+
+1. `./gradlew :patches:generateSigningKey --no-configuration-cache` produces
+   `morphe-signing.key` and `morphe-signing.pub`. The task captures the project,
+   so it fails when the configuration cache is on.
+2. `morphe-signing.pub` is committed. The private key never is.
+3. The Base64 contents of `morphe-signing.key` are stored as the repository
+   secret `MORPHE_SIGNING_KEY`. No Dependabot secret is needed; only the release
+   workflow signs.
+4. `buildAndroid` reads the secret and appends the signature. Without the secret
+   the build still succeeds and the bundle is unsigned.
 
 ## Workflow rules
 
