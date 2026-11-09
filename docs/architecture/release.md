@@ -1,17 +1,22 @@
 # Release process
 
-Status: `v0.1.0` was published as a pre-release from a local build. The automated
-release workflow has run but has not produced a release yet. The sections below
-distinguish what has been exercised from what is still intended.
+Status: `v0.1.0` was published from a local build; `v0.1.1` is the first release
+produced by the automated workflow. The sections below distinguish what has been
+exercised from what is still intended.
 
 ## Published so far
 
 | Version | Date | Status | Asset |
 |---|---|---|---|
 | 0.1.0 | 2026-11-09 | pre-release, published manually | `Kero309x-Patches-0.1.0.mpp` |
+| 0.1.1 | 2026-11-09 | pre-release, published by the release workflow | `Kero309x-Patches-0.1.1.mpp` |
 
-The attached bundle was built from the tagged commit and its SHA-256 is recorded
-in the release notes.
+Each bundle is built from the tagged commit.
+
+- `0.1.0` — `BD74E5B95BADD671DB0C4678D874EE7456750A688FCB0849FEFACFD4F102B644`
+- `0.1.1` — `849971EF03A28F5767DCCE5FCBC6428D5D64626C6309615D486554377CED9FE4`
+
+The same hash is repeated in the release notes.
 
 ## Versioning
 

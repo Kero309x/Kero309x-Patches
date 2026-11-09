@@ -1,5 +1,5 @@
 # Publishes a release from main when the version in gradle.properties is new.
-# v0.1.0 was published manually; this workflow is the path for later releases.
+# v0.1.0 was published manually; v0.1.1 was the first release produced here.
 
 name: Release
 
