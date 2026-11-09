@@ -35,6 +35,15 @@ jobs:
             exit 1
           fi
 
+      - name: Require the framework registry token
+        env:
+          REGISTRY_TOKEN: ${{ secrets.MORPHE_REGISTRY_TOKEN }}
+        run: |
+          if [ -z "$REGISTRY_TOKEN" ]; then
+            echo "::error::MORPHE_REGISTRY_TOKEN is empty. Add a classic personal access token with the read:packages scope as both a repository secret and a Dependabot secret; see docs/development/setup.md."
+            exit 1
+          fi
+
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:

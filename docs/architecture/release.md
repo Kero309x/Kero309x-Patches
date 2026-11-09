@@ -65,10 +65,12 @@ The framework Gradle plugin is published to GitHub Packages and needs an
 authenticated read. Repository secrets are not shared with other repositories, so
 a personal access token with `read:packages` must be stored as
 `MORPHE_REGISTRY_TOKEN`. It must be read-only and scoped as narrowly as GitHub
-allows.
+allows. The same name must also exist in the Dependabot secret store, because
+Dependabot-triggered runs cannot read repository secrets.
 
-That secret is not configured yet. Until it is, the automated build stops when it
-tries to resolve the framework plugin; a local build uses the credentials in the
+Both workflows check the secret before they configure Gradle, and fail with an
+explicit message when it is empty instead of the plugin-resolution error a missing
+credential otherwise produces. A local build uses the credentials in the
 maintainer's Gradle properties instead.
 
 ## Rollback

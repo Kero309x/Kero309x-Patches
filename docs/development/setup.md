@@ -26,9 +26,14 @@ gpr.key=<token>
 ```
 
 Never put these in the repository, in a workflow file, or in a log. In CI they
-are expected from the `MORPHE_REGISTRY_TOKEN` secret; that secret is not
-configured yet, so the automated build cannot resolve the framework plugin until
-it is added.
+are read from the `MORPHE_REGISTRY_TOKEN` secret, which must exist in two places:
+
+- the repository's Actions secrets, for pushes and pull requests;
+- the repository's Dependabot secrets, because Dependabot-triggered runs cannot
+  read the Actions secret store.
+
+Both workflows refuse to build when that secret is empty, so a missing credential
+fails immediately with a clear message instead of a plugin-resolution error.
 
 ## First build
 
@@ -41,6 +46,7 @@ The wrapper is committed, so a checkout only needs a JDK:
 The wrapper was generated with the installed Gradle rather than copied, so the
 checksum in `gradle/wrapper/gradle-wrapper.properties` belongs to the distribution
 it points at. Regenerate it only when the Gradle version changes.
+
 
 ## Verifying against a stock build
 
