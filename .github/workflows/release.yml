@@ -97,3 +97,33 @@ jobs:
             --generate-notes \
             "${prerelease[@]}" \
             "$asset"
+
+      # Morphe reads this file from the repository root on main and downloads
+      # whatever `download_url` points at, so every release republishes it.
+      # `created_at` must have no time-zone suffix or Manager fails to parse it.
+      - name: Publish the patch source metadata
+        if: steps.tag.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          version="${{ steps.version.outputs.value }}"
+          asset="Kero309x-Patches-${version}.mpp"
+          created_at="$(gh release view "v$version" --json publishedAt -q .publishedAt | sed 's/Z$//')"
+          notes="$(gh release view "v$version" --json body -q .body)"
+          jq -n \
+            --arg version "$version" \
+            --arg created_at "$created_at" \
+            --arg description "$notes" \
+            --arg download_url "https://github.com/${GITHUB_REPOSITORY}/releases/download/v${version}/${asset}" \
+            '{
+              version: $version,
+              created_at: $created_at,
+              description: $description,
+              download_url: $download_url,
+              signature_download_url: ""
+            }' > patches-bundle.json
+          git add patches-bundle.json
+          git -c user.name='github-actions[bot]' \
+              -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+              commit -m "chore: publish the patch source metadata for v${version}"
+          git push origin HEAD:main

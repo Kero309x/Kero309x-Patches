@@ -34,7 +34,13 @@ before the release commit, so the tag and the manifest always agree.
 
 The framework plugin writes `META-INF/MANIFEST.MF` inside the bundle from the
 `patches` block in `patches/build.gradle.kts`. The `.mpp` is a build artefact and
-is never edited by hand. There are no separate JSON catalogue or manifest files.
+is never edited by hand.
+
+`patches-bundle.json` at the repository root is the patch source metadata that
+Morphe Manager reads from `main`. The release workflow rewrites it after each
+release with the version, the release time, the published notes, the asset URL
+and an empty signature URL while signing is off. It is generated, not edited by
+hand.
 
 ## Signing
 

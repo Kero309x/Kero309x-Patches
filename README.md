@@ -19,6 +19,22 @@ The bundle is built for multiple applications. Each one is declared once in
 one is a package change rather than a core change. The table below lists the
 applications currently registered.
 
+## Install with Morphe
+
+This repository is a patch source. Add it from Morphe Manager, or open this link
+on an Android device:
+
+- Open in Morphe: <https://morphe.software/add-source?github=Kero309x/Kero309x-Patches&name=Kero309x+Patches>
+- Or paste the repository URL as a remote source:
+  `https://github.com/Kero309x/Kero309x-Patches`
+- Tools that take the metadata file directly can use
+  `https://raw.githubusercontent.com/Kero309x/Kero309x-Patches/main/patches-bundle.json`
+
+Morphe reads `patches-bundle.json` from `main` and downloads the bundle attached
+to the latest release. Every `0.x` release is a pre-release, so enable
+pre-releases for this source. The bundle is not signed yet and no patch has been
+checked on a device, so treat it as unverified.
+
 ## Independence
 
 This project is not a fork, a mirror, or a rebranding of another patch
