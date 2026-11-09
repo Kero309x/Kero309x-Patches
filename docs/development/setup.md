@@ -47,6 +47,11 @@ The wrapper was generated with the installed Gradle rather than copied, so the
 checksum in `gradle/wrapper/gradle-wrapper.properties` belongs to the distribution
 it points at. Regenerate it only when the Gradle version changes.
 
+The wrapper is pinned to Gradle 9.8.2, which is the newest version the framework
+plugin supports. Gradle 9.9.0 applies the plugin and then fails with `Cannot set
+a fallback for a provider using a null value`, so it cannot be used until the
+framework plugin is updated.
+
 
 ## Verifying against a stock build
 
