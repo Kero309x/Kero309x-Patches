@@ -7,7 +7,7 @@ import app.keropatches.core.AppDefinition
 import app.morphe.patcher.patch.Patch
 
 /**
- * Metadata for one patch, as our tooling needs it.
+ * Metadata for one patch, as the catalogue needs it.
  *
  * The framework exposes a patch's name, description and default on the patch
  * itself, but it has no idea which behaviour spec a patch implements. That link
@@ -32,8 +32,8 @@ data class PatchEntry(
 /**
  * The explicit, ordered list of patches this bundle ships.
  *
- * This is the single description of "what the bundle contains" that the build,
- * the catalogue generator and the tests all read, so the three cannot disagree.
+ * This is the single description of "what the bundle contains" that the tests
+ * and the documentation read, so they cannot disagree.
  */
 object Catalogue {
     val entries: List<PatchEntry> = listOf(

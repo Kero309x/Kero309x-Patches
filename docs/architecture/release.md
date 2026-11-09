@@ -1,6 +1,17 @@
 # Release process
 
-Status: designed, not yet exercised. Nothing here has been run.
+Status: `v0.1.0` was published as a pre-release from a local build. The automated
+release workflow has run but has not produced a release yet. The sections below
+distinguish what has been exercised from what is still intended.
+
+## Published so far
+
+| Version | Date | Status | Asset |
+|---|---|---|---|
+| 0.1.0 | 2026-11-09 | pre-release, published manually | `Kero309x-Patches-0.1.0.mpp` |
+
+The attached bundle was built from the tagged commit and its SHA-256 is recorded
+in the release notes.
 
 ## Versioning
 
@@ -10,17 +21,22 @@ before the release commit, so the tag and the manifest always agree.
 
 ## What a release publishes
 
-- `patches-<version>.mpp` — the patch bundle.
-- `patches-bundle.json` — manifest read by the manager, including the public
-  signing key when signing is enabled.
-- `patches-list.json` — generated catalogue.
+- `Kero309x-Patches-<version>.mpp` — the patch bundle, built at
+  `patches/build/libs/patches-<version>.mpp` and renamed when it is attached to
+  the release.
+- Release notes on the tag page. They summarise the change and the verification
+  status; they do not replace the behaviour specs.
 
-Generated files are never edited by hand. The build writes them, and CI fails if
-a committed copy differs from a freshly generated one.
+The framework plugin writes `META-INF/MANIFEST.MF` inside the bundle from the
+`patches` block in `patches/build.gradle.kts`. The `.mpp` is a build artefact and
+is never edited by hand. There are no separate JSON catalogue or manifest files.
 
 ## Signing
 
 Signing lets the manager refuse a release that was altered after publication.
+
+It is not enabled yet: no key has been generated, no public key is committed, and
+`MORPHE_SIGNING_KEY` is not set. The steps below are the intended process.
 
 1. `./gradlew generateSigningKey` produces `morphe-signing.key` and
    `morphe-signing.pub`.
@@ -30,8 +46,8 @@ Signing lets the manager refuse a release that was altered after publication.
 4. A backup is kept offline. Losing the key means every future release is
    rejected by clients that already trust the old one.
 
-Signing is not enabled yet. It requires the toolchain, and the key must be
-generated on a machine the maintainer controls.
+Signing must be enabled on a machine the maintainer controls before it can be
+used for a release.
 
 ## Workflow rules
 
@@ -40,6 +56,7 @@ generated on a machine the maintainer controls.
   produce a duplicate release.
 - `permissions` is `contents: write` and nothing else.
 - `concurrency` prevents two releases at once.
+- Versions starting with `0.` are published as pre-releases.
 - No scheduled runs, no polling, no workflow chaining.
 
 ## Registry access

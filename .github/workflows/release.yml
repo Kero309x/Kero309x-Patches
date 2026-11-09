@@ -1,5 +1,5 @@
 # Publishes a release from main when the version in gradle.properties is new.
-# Draft: not yet executed, because the repository does not exist yet.
+# v0.1.0 was published manually; this workflow is the path for later releases.
 
 name: Release
 
@@ -69,12 +69,21 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          mapfile -t assets < <(find patches/build/outputs -name '*.mpp' -type f)
-          if [ "${#assets[@]}" -eq 0 ]; then
+          version="${{ steps.version.outputs.value }}"
+          bundle="$(find patches/build/libs -maxdepth 1 -type f -name 'patches-*.mpp' \
+            ! -name '*-sources.mpp' ! -name '*-javadoc.mpp' | head -n 1)"
+          if [ -z "$bundle" ]; then
             echo "No bundle produced" >&2
             exit 1
           fi
-          gh release create "v${{ steps.version.outputs.value }}" \
-            --title "Kero309x Patches ${{ steps.version.outputs.value }}" \
+          asset="Kero309x-Patches-${version}.mpp"
+          cp "$bundle" "$asset"
+          prerelease=()
+          if [[ "$version" == 0.* ]]; then
+            prerelease=(--prerelease)
+          fi
+          gh release create "v$version" \
+            --title "Kero309x Patches $version" \
             --generate-notes \
-            "${assets[@]}"
+            "${prerelease[@]}" \
+            "$asset"

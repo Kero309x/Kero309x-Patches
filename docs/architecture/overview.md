@@ -7,15 +7,22 @@ the stock, unmodified builds of the applications it declares support for, and it
 is developed independently: the framework is used through its published
 contracts, and no patch code is taken from any other patch collection.
 
+Only Anghami is registered at present. The structure below is what allows
+another application to be added without changing the core layer; this release
+does not claim support for any other application.
+
 ## Layers
 
 | Layer | Package | Responsibility | May depend on |
 |---|---|---|---|
 | Core | `app.keropatches.core` | Application metadata model, category taxonomy, validation rules | Framework types only |
-| Registry | `app.keropatches.registry` | The list of supported applications | Core, application packages |
+| Registry | `app.keropatches.registry` | The list of supported applications and the ordered patch catalogue | Core, application packages |
 | Shared | `app.keropatches.shared` | Behaviour that is genuinely identical across applications | Core, framework types |
 | Application | `app.keropatches.<app>` | Compatibility data, fingerprints, patches | Core, Shared, framework types |
-| Tooling | `app.keropatches.tooling` | Catalogue and manifest generation | Framework loader API |
+
+`Catalogue` and `PatchRegistry` are the metadata source the tests and the
+verification task read. There is no separate tooling module; the framework
+plugin produces the bundle.
 
 Rules that keep this intact:
 
@@ -37,14 +44,15 @@ This project therefore treats "registration" as a metadata problem:
 - `AppRegistry` lists the applications.
 - A patch declares its compatibility by referencing the application's
   `compatibility` value, so a version bump is a one-line change.
-- Tests and documentation are generated from, or validated against, the same
-  definitions.
+- Tests validate the registry, the catalogue and the behaviour specs against the
+  same definitions.
 
 ## Adding an application
 
 1. Create `app.keropatches.<app>` with an `<App>App.kt` holding the package name,
    version targets, minimum SDK and signing certificate.
-2. Add it to `AppRegistry`.
+2. Add it to `AppRegistry` and replace the `anghamiIsTheOnlyApplicationForNow`
+   guard in `RegistryTest`, which currently pins the registry to Anghami.
 3. Write behaviour specs in `docs/specs/<app>/`.
 4. Derive fingerprints from the stock build. Never from another project.
 5. Implement each patch against its spec.
@@ -77,10 +85,13 @@ and can be tested on its own; the patch is a claim about what we change.
 
 ## Build and release
 
-- Framework plugin and patcher API, Java 17 bytecode.
+- Framework plugin and patcher API. The plugin emits Java 11 bytecode; the build
+  itself runs on JDK 21.
 - One patch module; applications are packages, not modules.
-- The catalogue and manifest are generated artefacts and are never edited by hand.
-- Release signing is opt-in and documented in `docs/architecture/release.md`.
+- The bundle manifest and the `.mpp` are build artefacts. The README catalogue
+  mirrors `Catalogue.kt` and is updated in the same change as the patch.
+- Release signing is opt-in, not enabled yet, and documented in
+  `docs/architecture/release.md`.
 
 ## Deliberate non-goals
 

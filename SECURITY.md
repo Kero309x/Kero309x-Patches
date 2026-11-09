@@ -24,6 +24,6 @@ published with an explanation.
 ## Signing
 
 Releases are intended to be signed, so that a modified artefact can be refused by
-the manager. The public key is committed to this repository. The private key is
-never committed and is stored as an encrypted repository secret with an offline
-backup.
+the manager. Signing is not enabled yet; no public key has been committed. When
+it is enabled, the public key will be committed to this repository and the
+private key will never be committed or stored in the repository.

@@ -31,7 +31,7 @@ import app.morphe.patcher.patch.Patch
  *
  * The framework discovers patches by scanning public members of the bundle at
  * load time, so this registry is what our own tooling reads: the verification
- * task, the catalogue generator and the registry test. Keeping it explicit means
+ * task and the registry test. Keeping it explicit means
  * a patch that is written but not registered is caught by a test rather than by
  * a user who cannot find it.
  *

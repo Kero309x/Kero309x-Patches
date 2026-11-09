@@ -1,5 +1,4 @@
-# Builds the patch bundle on pull requests and on the two long-lived branches.
-# Draft: not yet executed, because the repository does not exist yet.
+# Builds the patch bundle on pull requests and on pushes to main.
 
 name: Build
 
@@ -8,7 +7,6 @@ on:
   push:
     branches:
       - main
-      - dev
     paths-ignore:
       - "docs/**"
       - "**/*.md"
@@ -58,6 +56,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: patches-bundle
-          path: patches/build/outputs/**/*.mpp
+          path: |
+            patches/build/libs/*.mpp
+            !patches/build/libs/*-sources.mpp
+            !patches/build/libs/*-javadoc.mpp
           if-no-files-found: error
           retention-days: 7

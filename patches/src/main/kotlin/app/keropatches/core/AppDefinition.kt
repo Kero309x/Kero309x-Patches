@@ -10,9 +10,8 @@ import app.morphe.patcher.patch.Compatibility
  *
  * The framework discovers patches by inspecting public static members of the
  * bundle, so this type does not register anything with the runtime. It is the
- * single source of truth our own tooling uses for documentation, validation
- * and tests, so that adding an application is a data change rather than a
- * change to shared code.
+ * single source of truth for the registry, validation and tests, so that adding
+ * an application is a data change rather than a change to shared code.
  *
  * @param id Stable identifier, lowercase, used in package names and spec paths.
  * @param compatibility Package, versions and signing certificates of the stock app.

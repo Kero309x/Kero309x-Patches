@@ -25,7 +25,7 @@ In short:
    incomplete.
 6. Verify on a device with a patched build and update the spec status to
    `verified`.
-7. Open a pull request against `dev`.
+7. Open a pull request against `main`.
 
 ## Commit messages
 
@@ -40,7 +40,7 @@ Use a conventional prefix so the history is readable:
 - Code copied from another project, even partially.
 - A patch without a spec or without a provenance entry.
 - A new dependency without a written justification in the pull request.
-- Changes to generated files (`patches-list.json`, `patches-bundle.json`) by hand.
+- Edits to build outputs such as `patches/build/libs/*.mpp` by hand.
 - Behaviour that is described as server-side when it is client-side, or the
   reverse.
 

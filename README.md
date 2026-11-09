@@ -1,18 +1,21 @@
 # Kero309x Patches
 
-An independent patch collection for the Morphe patching framework, maintained by
-Kero309x.
+An independent, clean-room patch collection for the Morphe patching framework,
+maintained by Kero309x.
 
-> **Status: pre-alpha.** All twenty specified behaviours are implemented and pass
-> the build and the patch-application gate against the stock build. None has been
-> checked on a device yet, and no release has been published. There is nothing to
-> install at this time.
+> **Status: pre-alpha.** All twenty patches are implemented and pass the build and
+> the patch-application gate against the stock 8.0.28 build (20/20). None has been
+> checked on a device yet. A pre-release bundle, `v0.1.0`, is published; treat it
+> as unverified at runtime.
 
 ## What this is
 
 A bundle of patches applied to the stock build of a supported application,
 producing a repackaged build with a modified behaviour set. The bundle is used
 with Morphe Manager, or with any tool that consumes a Morphe patch bundle.
+
+This release targets Anghami 8.0.28 only. The architecture is ready for more
+applications, but none other is registered or claimed.
 
 ## Independence
 
@@ -36,6 +39,11 @@ derivative works.
 | Application | Package | Version | File type |
 |---|---|---|---|
 | Anghami | `com.anghami` | 8.0.28 (8000280) | APKM |
+
+Only Anghami is registered in this release. The bundle is built around
+`AppDefinition` and `AppRegistry`, so another application can be added as a
+package without changing the core layer; that is architecture, not a claim of
+current support.
 
 Behaviour specifications: [`docs/specs/anghami/`](docs/specs/anghami/README.md).
 
@@ -101,11 +109,33 @@ the bytecode assembles; runtime behaviour needs a device and is checked separate
 
 ## Catalogue
 
-The table below is generated from the bundle. Do not edit it by hand.
+The table below mirrors the ordered `Catalogue.kt` list and is updated in the same
+change as any patch. The registry test keeps the catalogue, the registry and the
+behaviour specs in agreement. All twenty patches are enabled by default (decision
+`0004`).
 
-<!-- PATCHES_START -->
-_No release yet. The catalogue is generated when the first bundle is built._
-<!-- PATCHES_END -->
+| # | Patch | Category | Default | Spec |
+|---|---|---|---|---|
+| 1 | Block ads between tracks | Ads and promotion | on | [spec](docs/specs/anghami/audio-ads.md) |
+| 2 | Unlimited track skips | Playback | on | [spec](docs/specs/anghami/track-skips.md) |
+| 3 | Unlock lyrics | Media and lyrics | on | [spec](docs/specs/anghami/lyrics-access.md) |
+| 4 | Disable forced shuffle | Playback | on | [spec](docs/specs/anghami/forced-shuffle.md) |
+| 5 | Hide shuffle badges | Interface | on | [spec](docs/specs/anghami/shuffle-badges.md) |
+| 6 | Hide premium feature buttons | Interface | on | [spec](docs/specs/anghami/premium-buttons.md) |
+| 7 | Allow screenshots | Interface | on | [spec](docs/specs/anghami/screenshots.md) |
+| 8 | Show profile Plus badge | Account and entitlements | on | [spec](docs/specs/anghami/profile-plus-badge.md) |
+| 9 | Plus entitlement state | Account and entitlements | on | [spec](docs/specs/anghami/plus-entitlement.md) |
+| 10 | Hide Gold upsell | Store and upsells | on | [spec](docs/specs/anghami/gold-upsell.md) |
+| 11 | Hide upgrade banners | Store and upsells | on | [spec](docs/specs/anghami/upgrade-banners.md) |
+| 12 | Lift download limits | Account and entitlements | on | [spec](docs/specs/anghami/download-limits.md) |
+| 13 | Disable analytics | Privacy | on | [spec](docs/specs/anghami/analytics.md) |
+| 14 | Hide sponsored content | Ads and promotion | on | [spec](docs/specs/anghami/sponsored-content.md) |
+| 15 | Block promotional popups | Ads and promotion | on | [spec](docs/specs/anghami/promotional-popups.md) |
+| 16 | Disable the rating prompt | Store and upsells | on | [spec](docs/specs/anghami/rating-prompt.md) |
+| 17 | Stock signature assertion | Account and entitlements | on | [spec](docs/specs/anghami/signature-assertion.md) |
+| 18 | Hide in-feed ad banners | Ads and promotion | on | [spec](docs/specs/anghami/feed-ad-banners.md) |
+| 19 | Ignore the forced update requirement | Store and upsells | on | [spec](docs/specs/anghami/forced-update.md) |
+| 20 | Disable first-party Silo telemetry | Privacy | on | [spec](docs/specs/anghami/silo-telemetry.md) |
 
 ## Development
 

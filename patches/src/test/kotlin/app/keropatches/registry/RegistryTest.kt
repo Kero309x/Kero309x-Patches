@@ -179,6 +179,23 @@ class RegistryTest {
     }
 
     @Test
+    fun readmeCatalogueMatchesTheRegistry() {
+        val readme = File(repositoryRoot, "README.md").readLines()
+        val header = readme.indexOfFirst { it == "| # | Patch | Category | Default | Spec |" }
+        assertTrue(header >= 0, "README.md has no catalogue table.")
+
+        val listed = readme.drop(header + 2)
+            .takeWhile { it.startsWith("|") }
+            .map { row -> row.split('|')[2].trim() }
+
+        assertEquals(
+            Catalogue.entries.map { it.patch.name },
+            listed,
+            "README.md catalogue does not match the ordered Catalogue.entries list.",
+        )
+    }
+
+    @Test
     fun anghamiIsTheOnlyApplicationForNow() {
         assertEquals(listOf(AnghamiApp.definition), AppRegistry.applications)
         assertEquals(

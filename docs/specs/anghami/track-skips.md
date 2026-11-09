@@ -45,4 +45,5 @@ Server-side enforcement, if any. The patch only removes the client-side gate.
 ## Provenance
 
 - Spec author and date: Kero309x, 2026-11-04
-- Derived code points: not yet derived. See `docs/provenance/LOG.md`.
+- Derived: 2026-11-04 from the stock build. Derivation record:
+  `docs/provenance/LOG.md`, section `anghami.playback.track-skips`.
