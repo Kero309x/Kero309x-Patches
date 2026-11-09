@@ -1,7 +1,8 @@
 {
-  "version": "0.1.1",
-  "created_at": "2026-11-09T10:59:13",
-  "description": "## Kero309x Patches 0.1.1 (pre-alpha)\n\nIndependent, clean-room patch bundle, built for multiple applications. Anghami 8.0.28 is the first registered target on the Morphe framework.\n\n- The bundle manifest now describes the bundle as multi-application instead of naming Anghami as the only target.\n- First release produced by the release workflow; the 0.1.0 asset was built and attached by hand.\n- GitHub Actions moved to their current majors: `checkout` v7, `setup-java` v6, `setup-gradle` v6, `upload-artifact` v7.\n- The Gradle wrapper is pinned to 9.8.2, because 9.9.0 cannot apply the framework plugin.\n- The workflows now refuse to build when `MORPHE_REGISTRY_TOKEN` is empty, instead of failing with a plugin-resolution error.\n\n### Verification\n\n- 20 patches, all default-enabled.\n- 20/20 PASS against the stock 8.0.28 build (fingerprint, apply and recompile).\n- No device or emulator is available yet, so there is no runtime behavioural verification.\n\n### Install\n\nUse the attached `Kero309x-Patches-0.1.1.mpp` with Morphe Manager.\n\n### Integrity\n\nSHA-256: `849971EF03A28F5767DCCE5FCBC6428D5D64626C6309615D486554377CED9FE4`\n\nLicence: GPL-3.0-only.",
-  "download_url": "https://github.com/Kero309x/Kero309x-Patches/releases/download/v0.1.1/Kero309x-Patches-0.1.1.mpp",
-  "signature_download_url": ""
+  "version": "0.1.2",
+  "created_at": "2026-11-09T12:41:57",
+  "description": "**Full Changelog**: https://github.com/Kero309x/Kero309x-Patches/compare/v0.1.1...v0.1.2",
+  "download_url": "https://github.com/Kero309x/Kero309x-Patches/releases/download/v0.1.2/Kero309x-Patches-0.1.2.mpp",
+  "signature_download_url": "",
+  "public_key": "uFMhSyNbTCb7z00yIEEE5ck++mMA2yB/YkgbPhV1+1k="
 }
