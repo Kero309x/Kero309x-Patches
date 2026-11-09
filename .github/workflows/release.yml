@@ -133,7 +133,7 @@ jobs:
               download_url: $download_url,
               signature_download_url: ""
             } + (if $public_key == "" then {} else { public_key: $public_key } end)' > patches-bundle.json
-          git add patches-bundle.json
+          git add patches-bundle.json patches-list.json
           git -c user.name='github-actions[bot]' \
               -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
               commit -m "chore: publish the patch source metadata for v${version}"

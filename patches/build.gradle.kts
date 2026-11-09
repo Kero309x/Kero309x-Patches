@@ -38,6 +38,34 @@ val verifyOutPath = providers.gradleProperty("out").orElse("")
 val verifyRuntimeClasspath = sourceSets["test"].runtimeClasspath
 
 /**
+ * Regenerates `patches-list.json` at the repository root.
+ *
+ * The manager reads `patches-bundle.json`; community indexes read this file to
+ * build their application and patch tables. Both are generated from the same
+ * catalogue, so an index cannot advertise a patch the bundle does not ship.
+ * Lives in the test source set, like [verifyPatches], because it is tooling that
+ * must not be bundled into the patch file.
+ */
+tasks.register<JavaExec>("generatePatchesList") {
+    group = "documentation"
+    description = "Regenerates patches-list.json for third-party patch indexes."
+
+    dependsOn(tasks.named("testClasses"))
+    classpath = verifyRuntimeClasspath
+    mainClass.set("app.keropatches.tools.PatchListGeneratorKt")
+    args = listOf(
+        project.version.toString(),
+        rootProject.layout.projectDirectory.file("patches-list.json").asFile.absolutePath,
+    )
+}
+
+// Every bundle build refreshes the index file, so it cannot drift from the
+// catalogue. CI then fails when the committed file is stale.
+tasks.named("buildAndroid") {
+    dependsOn("generatePatchesList")
+}
+
+/**
  * Applies every registered patch to an unmodified APK so a fingerprint that no
  * longer resolves fails here instead of at a user's patch run.
  *

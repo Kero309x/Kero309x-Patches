@@ -30,6 +30,10 @@ on an Android device:
 - Tools that take the metadata file directly can use
   `https://raw.githubusercontent.com/Kero309x/Kero309x-Patches/main/patches-bundle.json`
 
+Third-party indexes read `patches-list.json` from the same branch. It lists every
+patch with the application and version it targets, and is generated from the
+catalogue rather than written by hand.
+
 Morphe reads `patches-bundle.json` from `main` and downloads the bundle attached
 to the latest release. Every `0.x` release is a pre-release, so enable
 pre-releases for this source.

@@ -64,6 +64,12 @@ jobs:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.MORPHE_REGISTRY_TOKEN }}
 
+      - name: Check the index file is current
+        # `buildAndroid` regenerates patches-list.json from the catalogue. A diff
+        # here means the committed copy is stale and indexes would advertise the
+        # wrong patches.
+        run: git diff --exit-code patches-list.json
+
       - name: Upload bundle
         if: success()
         uses: actions/upload-artifact@v7

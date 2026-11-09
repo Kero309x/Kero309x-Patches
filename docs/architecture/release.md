@@ -51,6 +51,15 @@ rewritten afterwards do not reach the manager until the next release. `0.1.2` is
 the one case where the field was synced by hand, in a dedicated commit, after its
 notes were replaced.
 
+`patches-list.json` at the repository root is the file third-party indexes read.
+The manager never reads it. `buildAndroid` regenerates it from `Catalogue` through
+the `generatePatchesList` task, so the index tables list exactly the patches the
+bundle ships: name, description, default state, category, target package, accepted
+signatures, versions and minimum SDK. The release workflow commits it next to
+`patches-bundle.json`, and the build workflow fails when the committed copy is
+stale. It is generated, not edited by hand; changing the catalogue and running
+`./gradlew generatePatchesList` is the only supported edit.
+
 ## Signing
 
 Signing lets the manager refuse a release that was altered after publication.

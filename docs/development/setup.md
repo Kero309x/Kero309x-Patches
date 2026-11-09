@@ -47,6 +47,18 @@ The wrapper was generated with the installed Gradle rather than copied, so the
 checksum in `gradle/wrapper/gradle-wrapper.properties` belongs to the distribution
 it points at. Regenerate it only when the Gradle version changes.
 
+To build the bundle the way a release does, use `buildAndroid`; it adds
+`classes.dex` and, when a signing key is present, the signature. It also
+regenerates `patches-list.json` from the catalogue, so a build can leave that file
+modified; commit the result with the change that caused it.
+
+```bash
+./gradlew buildAndroid --no-configuration-cache
+```
+
+`buildAndroid` captures the project, so the configuration cache must stay off. The
+same applies to `generateSigningKey`.
+
 The wrapper is pinned to Gradle 9.8.2, which is the newest version the framework
 plugin supports. Gradle 9.9.0 applies the plugin and then fails with `Cannot set
 a fallback for a provider using a null value`, so it cannot be used until the
