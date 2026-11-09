@@ -63,8 +63,13 @@ used for a release.
 
 The framework Gradle plugin is published to GitHub Packages and needs an
 authenticated read. Repository secrets are not shared with other repositories, so
-a personal access token with `read:packages` is stored as
-`MORPHE_REGISTRY_TOKEN`. It is read-only and scoped as narrowly as GitHub allows.
+a personal access token with `read:packages` must be stored as
+`MORPHE_REGISTRY_TOKEN`. It must be read-only and scoped as narrowly as GitHub
+allows.
+
+That secret is not configured yet. Until it is, the automated build stops when it
+tries to resolve the framework plugin; a local build uses the credentials in the
+maintainer's Gradle properties instead.
 
 ## Rollback
 

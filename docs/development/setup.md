@@ -26,7 +26,9 @@ gpr.key=<token>
 ```
 
 Never put these in the repository, in a workflow file, or in a log. In CI they
-come from the `MORPHE_REGISTRY_TOKEN` secret.
+are expected from the `MORPHE_REGISTRY_TOKEN` secret; that secret is not
+configured yet, so the automated build cannot resolve the framework plugin until
+it is added.
 
 ## First build
 
