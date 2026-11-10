@@ -7,6 +7,7 @@ import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
 import app.morphe.patcher.extensions.InstructionExtensions.instructions
 import app.morphe.patcher.extensions.InstructionExtensions.removeInstruction
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
+import app.morphe.patcher.extensions.InstructionExtensions.replaceInstructions
 import app.morphe.patcher.util.proxy.mutableTypes.MutableMethod
 import com.android.tools.smali.dexlib2.AccessFlags
 import com.android.tools.smali.dexlib2.Opcode
@@ -195,6 +196,30 @@ internal fun MutableMethod.removeCallTo(method: String) {
     indices.sortedDescending().forEach { index ->
         removeInstruction(index)
     }
+}
+
+/**
+ * Replaces the call to this method with a block of instructions.
+ *
+ * Some guards need more than a constant: a branch, or a value taken from another
+ * field. The block is written as smali and compiled against this method, so its
+ * registers and its parameters are the ones of the method it replaces.
+ *
+ * @param method method reference in smali form, for example
+ *   `Lcom/example/Thing;->setName(Ljava/lang/String;)V`.
+ * @param block the instructions that take the place of the call.
+ */
+internal fun MutableMethod.replaceCallWithBlock(method: String, block: String) {
+    val index = instructions.indexOfFirst { instruction ->
+        instruction.opcode in INVOKE_OPCODES &&
+            (instruction as? ReferenceInstruction)?.reference?.toString() == method
+    }
+
+    check(index >= 0) {
+        "No call to $method in $definingClass->$name$returnType; the code changed."
+    }
+
+    replaceInstructions(index, block)
 }
 
 /**

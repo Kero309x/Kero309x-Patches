@@ -27,7 +27,8 @@ login.
       account has never had one, and not again after the first time.
 - [ ] Switching to a saved account logs it in with the password it already
       knows.
-- [ ] A password the user types is still used for the login it belongs to.
+- [ ] A password the user types is still used for the login it belongs to, and
+      is still stored for the next time.
 - [ ] The account is still stored encrypted; nothing about the storage changes.
 - [ ] Turning the patch off restores the stock behaviour.
 
@@ -44,7 +45,9 @@ password comes from; it does not change the login request itself.
   again, as it does in the stock build.
 - The application stores the password in its own encrypted database. This
   patch does not change where that is or how it is encrypted; it only stops
-  the stored copy from being overwritten with nothing.
+  the stored copy from being overwritten with nothing. A login that carries a
+  password of its own still writes that one, so the password the user typed is
+  never lost.
 
 ## Open questions
 

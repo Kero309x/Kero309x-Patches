@@ -4,7 +4,7 @@
 package app.keropatches.vodafone.account
 
 import app.keropatches.core.PatchCategory
-import app.keropatches.core.removeCallTo
+import app.keropatches.core.replaceCallWithBlock
 import app.keropatches.vodafone.VodafoneApp
 import app.morphe.patcher.Fingerprint
 import app.morphe.patcher.patch.bytecodePatch
@@ -45,10 +45,10 @@ private object LoginUserMapperFingerprint : Fingerprint(
  * password over the stored one, and the next time the account is opened the
  * application asks for the password again.
  *
- * The patch removes the overwrite, so the password always comes from the token
- * the server signed. The token is the account's own record, so the password
- * that is kept is the one the server holds for that account, and the
- * application can log in with it without asking.
+ * The patch writes the password only when the login carries one. A login that
+ * does not carries one keeps the password the signed token holds, which is the
+ * password the server holds for that account, so the application can log in
+ * with it without asking.
  *
  * The rest of the mapper is untouched: the token information and the user
  * configuration are still written as they were, and the user is still built
@@ -64,8 +64,16 @@ val keepStoredPasswordPatch = bytecodePatch(
     category(PatchCategory.ENTITLEMENT.label)
 
     execute {
-        LoginUserMapperFingerprint.method.removeCallTo(
+        LoginUserMapperFingerprint.method.replaceCallWithBlock(
             "Lvodafone/vis/engezly/data/models/jwt/UserInfo;->setPassword(Ljava/lang/String;)V",
+            """
+            if-eqz p3, :kero_keep_token_password
+            invoke-virtual {p3}, Ljava/lang/String;->isEmpty()Z
+            move-result p2
+            if-nez p2, :kero_keep_token_password
+            invoke-virtual {v0, p3}, Lvodafone/vis/engezly/data/models/jwt/UserInfo;->setPassword(Ljava/lang/String;)V
+            :kero_keep_token_password
+            """.trimIndent(),
         )
     }
 }

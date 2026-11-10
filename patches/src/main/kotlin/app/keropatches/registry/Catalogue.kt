@@ -233,6 +233,13 @@ object Catalogue {
             specPath = "docs/specs/vodafone/stored-password.md",
             sourceFile = "src/main/kotlin/app/keropatches/vodafone/account/KeepStoredPassword.kt",
         ),
+        PatchEntry(
+            patch = app.keropatches.vodafone.capture.allowScreenCapturePatch,
+            application = "vodafone",
+            behaviourId = "vodafone.system.screenshots",
+            specPath = "docs/specs/vodafone/screenshots.md",
+            sourceFile = "src/main/kotlin/app/keropatches/vodafone/capture/AllowScreenshots.kt",
+        ),
     )
 
     /** Applications this bundle announces, in registry order. */

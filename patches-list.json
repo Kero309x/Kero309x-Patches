@@ -729,6 +729,32 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Allow screenshots",
+      "description": "Stops the app hiding its screens from screenshots and screen recordings.",
+      "default": true,
+      "category": "Interface",
+      "compatiblePackages": [
+        {
+          "packageName": "com.emeint.android.myservices",
+          "name": "Ana Vodafone",
+          "description": "Telecom services and account management.",
+          "apkFileType": "APKM_REQUIRED",
+          "appIconColor": null,
+          "signatures": ["7671c18d28517819385163cccb7c76e4ce4a083d05866403fac5ba0547b95485"],
+          "formFactor": "MOBILE",
+          "targets": [
+            {
+              "version": "2026.11.1",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 24,
+              "description": null
+            }
+          ]
+        }
+      ]
     }
   ]
 }

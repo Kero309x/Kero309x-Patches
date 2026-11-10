@@ -1327,16 +1327,71 @@ available.
 | Database method that writes the password | `UserAuthInfoStore.updateUserPassword`, never called |
 | Where the stored password is used | the credential login, when the account it opens has one |
 
-**Decision:** remove the overwrite, so the password always comes from the token
-the server signed. The password the user types is still what the login request
-carries; the account record keeps the password the server holds for it.
+**Decision:** write the password only when the login carries one. A login that
+does not carry one keeps the password the signed token holds, which is the
+password the server holds for that account, so the application can log in with
+it without asking. A login that does carry one still writes it, so the password
+the user typed is never lost.
 
 **Known limitations:** if a server stopped putting the password in its token,
 the application would ask for the password again, as it does in the stock build.
 
 **Verification run:** the unified run applies all registered Ana Vodafone patches
 to the stock base APK and reports `PASS` for each of them, and the patched APK
-compiles. The removed call was confirmed in the decompiled output. The
+compiles. The rewritten branch was confirmed in the decompiled output. The
+behaviour has not been observed on a device, because no test device is
+available.
+
+### `vodafone.system.screenshots` - derived 2026-11-11
+
+**Consulted:** the stock 2026.11.1 APKM only, decompiled locally with apktool
+3.0.3 and `--no-res`. No other patch collection was opened.
+
+**How it was found:**
+
+1. Listed the libraries the application starts at launch and found a security
+   library, `com.cyshield.appshield`, with initializers of its own.
+2. Read the manifest. The library is started by the startup provider of the
+   application, and its initializer is registered with the application context.
+3. Read the initializer of the library. It registers two callbacks that watch
+   the screens of the application: one that follows them and one that protects
+   them.
+4. Read the protection callback. It keeps a flag that says whether the
+   protection is on, a prefix of the package names it applies to, and the
+   screens that are open. When a screen is created, started or resumed, it
+   checks whether the screen belongs to the application and, if it does, sets
+   the secure flag on the window of that screen.
+5. Read the rest of the library. It carries a list of the checks it can run,
+   among them the checks for root, for a developer build, for USB debugging,
+   for an emulator, for a hooking framework and for a screen recording,
+   together with the entry point that starts them and the one that builds its
+   own certificate pinner.
+6. Searched the whole application for calls to those two entry points and found
+   none. The library is initialised with the two callbacks and nothing else, so
+   the device checks and its own pinner are never used in this build.
+
+**Derived facts:**
+
+| Fact | Value |
+|---|---|
+| Library | `com.cyshield.appshield`, started by the startup provider of the application |
+| Initializer | `com.cyshield.appshield.utils.SecuritySdkInitializer` |
+| Screen protection | `com.cyshield.appshield.utils.ScreenProtectionManager` |
+| Method that protects a screen | `Lo/notifySurfaceUpdate;->AnimatedBarCharthGBTI10(Landroid/app/Activity;)V` |
+| What it does | `Window.addFlags(0x2000)`, the secure flag |
+| Checks the library can run | root, developer mode, debug build, USB debugging, emulator, screen recording, hooking frameworks, prevent screenshots |
+| Are those checks run | no, nothing calls the entry point that starts them |
+| Is the library's own pinner used | no, nothing calls the method that builds it |
+
+**Decision:** answer the method that protects a screen with an early return, so
+the window is left as the application made it.
+
+**Known limitations:** the library stays in the build and keeps watching the
+screens; only the flag it sets on their windows is gone.
+
+**Verification run:** the unified run applies all registered Ana Vodafone patches
+to the stock base APK and reports `PASS` for each of them, and the patched APK
+compiles. The injected return was confirmed in the decompiled output. The
 behaviour has not been observed on a device, because no test device is
 available.
 

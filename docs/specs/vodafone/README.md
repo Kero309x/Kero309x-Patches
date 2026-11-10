@@ -13,14 +13,16 @@ code 1246), distributed as an APKM bundle.
 | 6 | Remove the saved account limit | [account-limit.md](account-limit.md) | yes | low |
 | 7 | Disable certificate pinning | [certificate-pinning.md](certificate-pinning.md) | yes | medium |
 | 8 | Keep the password of each account | [stored-password.md](stored-password.md) | yes | medium |
+| 9 | Allow screenshots | [screenshots.md](screenshots.md) | yes | low |
 
 ## Status
 
-All eight specs are `derived` and implemented. The first release for this
+All nine specs are `derived` and implemented. The first release for this
 application stopped at the two behaviours that decide whether a repackaged build
 runs at all. The later ones cover what the application reports, what a push
 message can make it do to the installation, the promotional card it draws, how
-many accounts it keeps, the certificate it pins and the password it remembers.
+many accounts it keeps, the certificate it pins, the password it remembers and
+the screens it hides from screenshots.
 
 `derived` means the behaviour has a spec, a record of how it was derived and an
 implementation that builds and applies to the stock APK. It does not mean it has
@@ -33,8 +35,10 @@ The stock build was examined for the behaviours users usually ask about, and the
 examination found nothing to patch behind them:
 
 - no advertising SDK is bundled, so there is no ad surface to remove;
-- the application does not set `FLAG_SECURE`, so screenshots already work;
-- there is no root or debugger detection beyond crash-reporter heuristics;
+- the application hides its screens from screenshots through a security library
+  it embeds, which is what the screenshot behaviour changes;
+- the device checks that library carries, for root, for a developer build, for
+  an emulator and for a hooking framework, are never started in this build;
 - there is no Play Integrity attestation; the `IntegrityManager` in the build is
   the application's own device-integrity helper, not a store gate.
 
