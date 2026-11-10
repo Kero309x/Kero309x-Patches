@@ -191,6 +191,27 @@ object Catalogue {
             specPath = "docs/specs/vodafone/forced-update.md",
             sourceFile = "src/main/kotlin/app/keropatches/vodafone/update/IgnoreForcedUpdate.kt",
         ),
+        PatchEntry(
+            patch = app.keropatches.vodafone.analytics.disableTrackingPatch,
+            application = "vodafone",
+            behaviourId = "vodafone.privacy.tracking",
+            specPath = "docs/specs/vodafone/tracking.md",
+            sourceFile = "src/main/kotlin/app/keropatches/vodafone/analytics/DisableTracking.kt",
+        ),
+        PatchEntry(
+            patch = app.keropatches.vodafone.notification.ignoreRemoteActionsPatch,
+            application = "vodafone",
+            behaviourId = "vodafone.account.remote-actions",
+            specPath = "docs/specs/vodafone/remote-actions.md",
+            sourceFile = "src/main/kotlin/app/keropatches/vodafone/notification/IgnoreRemoteActions.kt",
+        ),
+        PatchEntry(
+            patch = app.keropatches.vodafone.promotion.hideAdSpaceCardPatch,
+            application = "vodafone",
+            behaviourId = "vodafone.promotion.ad-space",
+            specPath = "docs/specs/vodafone/ad-space.md",
+            sourceFile = "src/main/kotlin/app/keropatches/vodafone/promotion/HideAdSpaceCard.kt",
+        ),
     )
 
     /** Applications this bundle announces, in registry order. */

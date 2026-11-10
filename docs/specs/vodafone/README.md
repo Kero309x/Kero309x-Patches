@@ -7,12 +7,16 @@ code 1246), distributed as an APKM bundle.
 |---|---|---|---|---|
 | 1 | Skip the store licence check | [license-check.md](license-check.md) | yes | high |
 | 2 | Disable the forced update requirement | [forced-update.md](forced-update.md) | yes | medium |
+| 3 | Disable usage tracking | [tracking.md](tracking.md) | yes | low |
+| 4 | Ignore the server's remote wipe and forced logout | [remote-actions.md](remote-actions.md) | yes | medium |
+| 5 | Hide the promotional card | [ad-space.md](ad-space.md) | yes | low |
 
 ## Status
 
-Both specs are `derived` and implemented. This is the first release for this
-application, and it deliberately stops at the two behaviours that decide whether
-a repackaged build runs at all.
+All five specs are `derived` and implemented. The first release for this
+application stopped at the two behaviours that decide whether a repackaged build
+runs at all. The later three cover what the application reports, what a push
+message can make it do to the installation, and the promotional card it draws.
 
 `derived` means the behaviour has a spec, a record of how it was derived and an
 implementation that builds and applies to the stock APK. It does not mean it has
@@ -30,7 +34,10 @@ examination found nothing to patch behind them:
 - there is no Play Integrity attestation; the `IntegrityManager` in the build is
   the application's own device-integrity helper, not a store gate.
 
-No patch is shipped for a behaviour the stock application does not have.
+No patch is shipped for a behaviour the stock application does not have. The
+promotional card is the only advertisement the application draws itself: it is
+offered by the server and belongs to the operator, so it is filed as promotion
+rather than as advertising.
 
 ## Not included
 

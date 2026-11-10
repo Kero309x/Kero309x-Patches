@@ -974,10 +974,11 @@ one edit removes the refusal without touching any other code.
 not change anything the server is told. Features the server gates by entitlement
 stay gated.
 
-**Verification run:** the unified run applies the two Ana Vodafone patches to the
-stock base APK and reports `PASS` for both, and the patched APK compiles. The
-injected return was confirmed in the decompiled output. The behaviour has not
-been observed on a device, because no test device is available.
+**Verification run:** the unified run applies all registered Ana Vodafone
+patches to the stock base APK and reports `PASS` for this patch, and the patched
+APK compiles. The injected return was confirmed in the decompiled output. The
+behaviour has not been observed on a device, because no test device is
+available.
 
 ### `vodafone.system.forced-update` — derived 2026-11-10
 
@@ -1024,10 +1025,178 @@ offers voluntarily are untouched.
 does not receive later fixes, and a feature the server refuses for an outdated
 client stays refused.
 
-**Verification run:** the unified run applies the two Ana Vodafone patches to the
-stock base APK and reports `PASS` for both, and the patched APK compiles. Both
-injected answers were confirmed in the decompiled output. The behaviour has not
-been observed on a device, because no test device is available.
+**Verification run:** the unified run applies all registered Ana Vodafone
+patches to the stock base APK and reports `PASS` for this patch, and the patched
+APK compiles. Both injected answers were confirmed in the decompiled output. The
+behaviour has not been observed on a device, because no test device is
+available.
+
+### `vodafone.privacy.tracking` - derived 2026-11-10
+
+**Consulted:** the stock 2026.11.1 APKM only, decompiled locally with apktool
+3.0.3 and `--no-res`. No other patch collection was opened.
+
+**How it was found:**
+
+1. Listed the packages of the application and found a tracking package with a
+   `common/model` folder that holds the tool types: `ANALYTICS`, `SOCIAL_MEDIA`,
+   `SURVEY` and `TECHNICAL`.
+2. Read the dispatcher, the class whose metadata names it `EventLogger`. Its
+   only method takes a tool type, a key and a map, and routes the event to the
+   logger of that tool: the analytics logger, the social-media logger or the
+   survey logger. The technical tool does nothing.
+3. Read the caller, the singleton whose metadata names it `Logger`. It adds the
+   common data to an event, and for the survey tool it hands the event to a
+   background coroutine. Both paths end at the dispatcher, so the dispatcher is
+   the only place an event leaves the application.
+4. Searched for the callers of the social-media handler, the class whose
+   metadata names it `SocialMediaEventHandler`. It is not reached through the
+   dispatcher alone: the dashboard, the offers screen, the gift screens and the
+   scratch card call it directly.
+5. Read the handler. It is the only place that calls the attribution SDK with
+   an event and the analytics API with an event for the social tool.
+6. Searched the whole application for calls to the analytics API and found two
+   that do not pass any of the above: the login flow reports its experiment
+   events through the API directly.
+7. Read the startup path. The application creates the Firebase app, asks the
+   tracking singleton to initialise itself and asks it to start the libraries,
+   and the social handler is given the application context. The SDKs are
+   therefore started whatever this patch does.
+
+**Derived facts:**
+
+| Fact | Value |
+|---|---|
+| Dispatcher | `Lo/LivenessInstructionsUi;->AnimatedBarChartPreview(Lvodafone/vis/engezly/tracking/common/model/ToolType;Ljava/lang/String;Ljava/util/Map;)V` |
+| Dispatcher reads | the tool type, the event key and the event map |
+| Tools | analytics, social media, survey, technical |
+| Social handler | `Lo/clearOnScrollListeners;->AnimatedBarChartKtAnimatedBarChart1111(Lo/clearOnChildAttachStateChangeListeners;)V` |
+| Social handler, second entry point | `Lo/clearOnScrollListeners;->AnimatedBarChartKtAnimatedBarChart1111(Ljava/lang/String;D)V` |
+| Screens that call the social handler directly | dashboard, offers, gift selection, gift mass, scratch card |
+| Analytics API call | `Lcom/google/firebase/analytics/FirebaseAnalytics;->logEvent(Ljava/lang/String;Landroid/os/Bundle;)V` |
+| Experiment events | reported by the login flow, through the analytics API directly |
+| SDK start-up | `FirebaseApp.initializeApp`, the tracking singleton's `init` and `initLibraries`, the social handler's `init` |
+| Return types of every patched method | void |
+
+**Decision:** silence the dispatcher, both entry points of the social handler
+and the analytics API call. The dispatcher covers the application's own event
+vocabulary, the social handler covers the screens that report without asking
+the dispatcher, and the API call covers the experiment events. Every method is
+void, so no caller can be left waiting for a value.
+
+**Known limitations:** the SDKs are still created and started, so the traffic
+they produce on their own, such as install attribution and session reporting,
+is not stopped. The events are still prepared before they are reported, so the
+work is done even though nothing is sent.
+
+**Verification run:** the unified run applies the Ana Vodafone patches to the
+stock base APK and reports `PASS` for each of them, and the patched APK
+compiles. The injected returns were confirmed in the decompiled output. The
+behaviour has not been observed on a device, because no test device is
+available.
+
+### `vodafone.account.remote-actions` - derived 2026-11-10
+
+**Consulted:** the stock 2026.11.1 APKM only, decompiled locally with apktool
+3.0.3 and `--no-res`. No other patch collection was opened.
+
+**How it was found:**
+
+1. Listed the notification package and found a push listener whose metadata
+   names it `VodafonePushListener`. It implements the push service's listener
+   interface and holds a logout use case, a silent-notification view model and
+   an application scope.
+2. Read the silent-push path. It reads a key out of the message and compares it
+   with the keys of the action enum: the token-expiry key, the user-token key
+   and the shopping-cart key are each handled by the application itself.
+3. Read the action enum. It has five entries: clearing the application data,
+   logging out, updating the token expiry, resetting the user token and
+   updating the shopping-cart count.
+4. Followed the branch that the three handled keys do not take. It hands the key
+   to the destructive handler.
+5. Read the destructive handler. It reads the current activity, reads the user
+   information and launches a coroutine. The coroutine compares the key with
+   the clearing key and calls the system service that clears the application's
+   data, and compares it with the logout key and runs the logout use case.
+6. Searched for other callers of the destructive handler and found only the
+   silent-push path.
+
+**Derived facts:**
+
+| Fact | Value |
+|---|---|
+| Push listener | `Lo/getChildPosition;`, the push service's listener interface |
+| Key of the message | the `silent_push_key` extra |
+| Keys the application handles itself | `update_token_expire_date`, `RefreshData`, `UpdateEshopCartCount` |
+| Destructive handler | `Lo/getChildPosition;->AnimatedBarChartPreview(Ljava/lang/String;)V` |
+| Clearing key | `ClearAppCache` |
+| Clearing action | `ActivityManager.clearApplicationUserData()` |
+| Logout key | `ForceLogout` |
+| Logout action | the logout use case, then the user is sent back to the login screen |
+| Other callers of the handler | none |
+
+**Decision:** answer the destructive handler with an early return. It is
+reached only for the keys the application does not handle itself, so the token
+refresh, the user-token reset and the shopping-cart count keep working, and the
+two destructive actions never run.
+
+**Known limitations:** the server still sends the messages and still believes it
+may wipe the installation or end the session. A session the server has already
+refused still ends.
+
+**Verification run:** the unified run applies the Ana Vodafone patches to the
+stock base APK and reports `PASS` for each of them, and the patched APK
+compiles. The injected return was confirmed in the decompiled output. The
+behaviour has not been observed on a device, because no test device is
+available.
+
+### `vodafone.promotion.ad-space` - derived 2026-11-10
+
+**Consulted:** the stock 2026.11.1 APKM only, decompiled locally with apktool
+3.0.3 and `--no-res`. No other patch collection was opened.
+
+**How it was found:**
+
+1. Listed the application packages and found an `adspace` package with a
+   presentation folder, a model folder and a domain folder.
+2. Read the view model whose metadata names it `AdSpaceViewModel`. It holds the
+   state of the card, asks a use case for the offer and asks another use case
+   to redeem it. The state starts empty and is filled when the offer arrives.
+3. Read the presentation model. It carries the description, the price, the
+   gift, the redemption pattern, the confirmation and rejection buttons and the
+   destination of the offer.
+4. Searched for the code that draws the card and found one composable that
+   takes the view model and the state and draws the offer.
+5. Listed its callers. The home screen, the recharge and balance screen, the
+   payment screen and the flex management home call it, directly or through the
+   copies the shrinker left behind.
+
+**Derived facts:**
+
+| Fact | Value |
+|---|---|
+| View model | `Lvodafone/vis/engezly/adspace/presentation/AdSpaceViewModel;` |
+| Offer use case | `GetAdSpacePromoUseCase` |
+| Redemption use case | `RedeemAdSpacePromoUseCase` |
+| State | a flow that starts empty and is filled when the offer arrives |
+| Composables that draw the card | one |
+| Card composable | `Lo/updateAnchorInfoForLayout;->AdSpaceCard-lVb_Clg(...)V` |
+| Screens that call it | flex home, recharge and balance, payment, flex management home |
+| Return type | void |
+
+**Decision:** answer the card composable with an early return, so it draws
+nothing. A composable that emits no nodes leaves no space behind, and no screen
+reads the offer back from the card.
+
+**Known limitations:** the offer is still requested from the server and still
+held by the view model; only the drawing is stopped. The redemption flow stays
+reachable through the server answer, but not through the interface.
+
+**Verification run:** the unified run applies the Ana Vodafone patches to the
+stock base APK and reports `PASS` for each of them, and the patched APK
+compiles. The injected return was confirmed in the decompiled output. The
+behaviour has not been observed on a device, because no test device is
+available.
 
 ## Not consulted
 

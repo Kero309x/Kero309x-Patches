@@ -573,6 +573,84 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Disable usage tracking",
+      "description": "Stops the app reporting its usage, social-media, survey and experiment events.",
+      "default": true,
+      "category": "Privacy",
+      "compatiblePackages": [
+        {
+          "packageName": "com.emeint.android.myservices",
+          "name": "Ana Vodafone",
+          "description": "Telecom services and account management.",
+          "apkFileType": "APKM_REQUIRED",
+          "appIconColor": null,
+          "signatures": ["7671c18d28517819385163cccb7c76e4ce4a083d05866403fac5ba0547b95485"],
+          "formFactor": "MOBILE",
+          "targets": [
+            {
+              "version": "2026.11.1",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 24,
+              "description": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Ignore the server's remote wipe and forced logout",
+      "description": "Stops a silent push from clearing the app's data or logging the account out.",
+      "default": true,
+      "category": "Account and entitlements",
+      "compatiblePackages": [
+        {
+          "packageName": "com.emeint.android.myservices",
+          "name": "Ana Vodafone",
+          "description": "Telecom services and account management.",
+          "apkFileType": "APKM_REQUIRED",
+          "appIconColor": null,
+          "signatures": ["7671c18d28517819385163cccb7c76e4ce4a083d05866403fac5ba0547b95485"],
+          "formFactor": "MOBILE",
+          "targets": [
+            {
+              "version": "2026.11.1",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 24,
+              "description": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Hide the promotional card",
+      "description": "Stops the home, recharge and payment screens from drawing the promotional gift card.",
+      "default": true,
+      "category": "Ads and promotion",
+      "compatiblePackages": [
+        {
+          "packageName": "com.emeint.android.myservices",
+          "name": "Ana Vodafone",
+          "description": "Telecom services and account management.",
+          "apkFileType": "APKM_REQUIRED",
+          "appIconColor": null,
+          "signatures": ["7671c18d28517819385163cccb7c76e4ce4a083d05866403fac5ba0547b95485"],
+          "formFactor": "MOBILE",
+          "targets": [
+            {
+              "version": "2026.11.1",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 24,
+              "description": null
+            }
+          ]
+        }
+      ]
     }
   ]
 }
