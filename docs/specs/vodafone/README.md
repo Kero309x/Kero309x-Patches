@@ -10,13 +10,17 @@ code 1246), distributed as an APKM bundle.
 | 3 | Disable usage tracking | [tracking.md](tracking.md) | yes | low |
 | 4 | Ignore the server's remote wipe and forced logout | [remote-actions.md](remote-actions.md) | yes | medium |
 | 5 | Hide the promotional card | [ad-space.md](ad-space.md) | yes | low |
+| 6 | Remove the saved account limit | [account-limit.md](account-limit.md) | yes | low |
+| 7 | Disable certificate pinning | [certificate-pinning.md](certificate-pinning.md) | yes | medium |
+| 8 | Keep the password of each account | [stored-password.md](stored-password.md) | yes | medium |
 
 ## Status
 
-All five specs are `derived` and implemented. The first release for this
+All eight specs are `derived` and implemented. The first release for this
 application stopped at the two behaviours that decide whether a repackaged build
-runs at all. The later three cover what the application reports, what a push
-message can make it do to the installation, and the promotional card it draws.
+runs at all. The later ones cover what the application reports, what a push
+message can make it do to the installation, the promotional card it draws, how
+many accounts it keeps, the certificate it pins and the password it remembers.
 
 `derived` means the behaviour has a spec, a record of how it was derived and an
 implementation that builds and applies to the stock APK. It does not mean it has

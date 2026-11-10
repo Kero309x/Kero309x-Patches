@@ -25,8 +25,11 @@ import app.keropatches.anghami.ui.hidePremiumButtonsPatch
 import app.keropatches.anghami.ui.hideShuffleBadgesPatch
 import app.keropatches.anghami.update.ignoreForcedUpdatePatch
 import app.keropatches.vodafone.VodafoneApp
+import app.keropatches.vodafone.account.keepStoredPasswordPatch
+import app.keropatches.vodafone.account.removeAccountLimitPatch
 import app.keropatches.vodafone.analytics.disableTrackingPatch
 import app.keropatches.vodafone.integrity.skipLicenseCheckPatch
+import app.keropatches.vodafone.network.disableCertificatePinningPatch
 import app.keropatches.vodafone.notification.ignoreRemoteActionsPatch
 import app.keropatches.vodafone.promotion.hideAdSpaceCardPatch
 import app.keropatches.vodafone.update.disableForcedUpdatePatch
@@ -75,7 +78,8 @@ object PatchRegistry {
      * The first release for this application ships the two behaviours that stop
      * a repackaged build from being refused at startup. The later ones cover
      * the application's own reporting, the actions a silent push can trigger,
-     * and the promotional card.
+     * the promotional card, the number of accounts the application keeps, the
+     * certificate it pins and the password it remembers.
      */
     val vodafone: Set<Patch<*>> = setOf(
         skipLicenseCheckPatch,
@@ -83,6 +87,9 @@ object PatchRegistry {
         disableTrackingPatch,
         ignoreRemoteActionsPatch,
         hideAdSpaceCardPatch,
+        removeAccountLimitPatch,
+        disableCertificatePinningPatch,
+        keepStoredPasswordPatch,
     )
 
     /** Every patch this bundle ships, across all applications. */

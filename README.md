@@ -3,9 +3,9 @@
 An independent, clean-room patch collection for the Morphe patching framework,
 maintained by Kero309x.
 
-> **Status: pre-alpha.** All twenty-five patches are implemented and pass the build
+> **Status: pre-alpha.** All twenty-eight patches are implemented and pass the build
 > and the patch-application gate against their stock builds (20/20 for Anghami
-> 8.0.28, 5/5 for Ana Vodafone 2026.11.1). None has been checked on a device yet. A
+> 8.0.28, 8/8 for Ana Vodafone 2026.11.1). None has been checked on a device yet. A
 > signed pre-release bundle, `v0.1.2`, is published; treat it as unverified at
 > runtime.
 
@@ -140,7 +140,7 @@ the bytecode assembles; runtime behaviour needs a device and is checked separate
 
 The table below mirrors the ordered `Catalogue.kt` list and is updated in the same
 change as any patch. The registry test keeps the catalogue, the registry and the
-behaviour specs in agreement. All twenty-five patches are enabled by default
+behaviour specs in agreement. All twenty-eight patches are enabled by default
 (decision `0004`).
 
 | # | Patch | Category | Default | Spec |
@@ -170,6 +170,9 @@ behaviour specs in agreement. All twenty-five patches are enabled by default
 | 23 | Disable usage tracking | Privacy | on | [spec](docs/specs/vodafone/tracking.md) |
 | 24 | Ignore the server's remote wipe and forced logout | Account and entitlements | on | [spec](docs/specs/vodafone/remote-actions.md) |
 | 25 | Hide the promotional card | Ads and promotion | on | [spec](docs/specs/vodafone/ad-space.md) |
+| 26 | Remove the saved account limit | Account and entitlements | on | [spec](docs/specs/vodafone/account-limit.md) |
+| 27 | Disable certificate pinning | Network and security | on | [spec](docs/specs/vodafone/certificate-pinning.md) |
+| 28 | Keep the password of each account | Account and entitlements | on | [spec](docs/specs/vodafone/stored-password.md) |
 
 ## Development
 

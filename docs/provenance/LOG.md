@@ -1198,6 +1198,148 @@ compiles. The injected return was confirmed in the decompiled output. The
 behaviour has not been observed on a device, because no test device is
 available.
 
+### `vodafone.account.account-limit` - derived 2026-11-10
+
+**Consulted:** the stock 2026.11.1 APKM only, decompiled locally with apktool
+3.0.3 and `--no-res`. No other patch collection was opened.
+
+**How it was found:**
+
+1. Listed the account packages and found the switch-account overlay, the
+   credential-login overlay and the screen that says too many accounts are
+   saved.
+2. Searched the account packages for a comparison of a list size with a
+   constant and found two places. The first is a method of its own that asks
+   whether the accounts are at the limit; it compares the size with six when the
+   first account is a seamless one and with five otherwise. The second is the
+   comparison inside the method that asks which account to switch to; it
+   compares the size with five and shows the screen when the list is at least
+   that long.
+3. Read the method that asks which account to switch to. When the list is
+   shorter than the limit it takes the path that switches to the account whose
+   number matches the user; when the list is at the limit it takes the other
+   path. The comparison is the only thing that decides between the two.
+4. Searched the whole application for other counts against five or six and
+   found none that decide whether an account may be added.
+
+**Derived facts:**
+
+| Fact | Value |
+|---|---|
+| Limit | five saved accounts, six when the first of them is a seamless one |
+| First check | `SwitchAccountOverlayKt.checkIfAccountsMaxLimit(List)Z` |
+| Second check | `CredentialsLoginOverlayKt.onSwitchAccountClicked(SavedAccountsUiState, Function0, Function0)V` |
+| Screen shown when the limit is reached | the saved-accounts-exceed-limit overlay |
+| Return types | the first check answers a boolean, the second is void |
+
+**Decision:** answer the first check with "the list is not full" and make the
+second check count zero saved accounts, which is the answer the comparison
+takes for a list that is not full. The account that is being switched to is
+found in the list in the same way as before.
+
+**Known limitations:** the server still decides what each account may do, and
+the accounts are still stored the way they always were.
+
+**Verification run:** the unified run applies all registered Ana Vodafone patches
+to the stock base APK and reports `PASS` for each of them, and the patched APK
+compiles. The injected answers were confirmed in the decompiled output. The
+behaviour has not been observed on a device, because no test device is
+available.
+
+### `vodafone.network.certificate-pinning` - derived 2026-11-10
+
+**Consulted:** the stock 2026.11.1 APKM only, decompiled locally with apktool
+3.0.3 and `--no-res`. No other patch collection was opened.
+
+**How it was found:**
+
+1. Searched the application for the certificate pinning API and found two
+   builders of a pinner: one in the application's own network layer and one in
+   the authentication layer.
+2. Read both builders. They are the same code: a pinner for one host with two
+   public keys.
+3. Read the place where the pinner is attached to the client. The
+   application's own layer attaches it when its configuration asks for it, and
+   the authentication layer does the same.
+4. Searched the whole application for other uses of the certificate API. The
+   remaining ones belong to libraries that build a client without pins.
+
+**Derived facts:**
+
+| Fact | Value |
+|---|---|
+| Pinned host | `mobile.vodafone.com.eg` |
+| Pinned keys | `sha256/wdks7OHYA8F/OIfcK4rPxn5H2QjOLZN2paEk/D+64W8=` and `sha256/yMoKrrKMydah5ZHYUtRtI5IJtR+5hZ1Ls7rO8jHsLjU=` |
+| Application pinner | `Lo/getPrintScreenEK5gGoQ$AnimatedBarChartKtAnimatedBarChart1;->AnimatedBarChartKtAnimatedBarChart1()Lokhttp3/CertificatePinner;` |
+| Authentication pinner | `Lo/updateAuxData$AnimatedBarChartKtAnimatedBarChart1;->AnimatedBarChartKtAnimatedBarChart1()Lokhttp3/CertificatePinner;` |
+| Other pins | none |
+
+**Decision:** remove the host from both pins. A pinner without a host matches no
+request, so the certificate is validated against the trust store of the device
+instead. The keys and the pinner itself are left in the build.
+
+**Known limitations:** the connection is no longer checked against the two keys
+the operator ships with the application.
+
+**Verification run:** the unified run applies all registered Ana Vodafone patches
+to the stock base APK and reports `PASS` for each of them, and the patched APK
+compiles. The replaced host was confirmed in the decompiled output. The
+behaviour has not been observed on a device, because no test device is
+available.
+
+### `vodafone.account.stored-password` - derived 2026-11-10
+
+**Consulted:** the stock 2026.11.1 APKM only, decompiled locally with apktool
+3.0.3 and `--no-res`. No other patch collection was opened.
+
+**How it was found:**
+
+1. Listed the account packages and followed the password from the screen that
+   asks for it to the place the account is stored.
+2. Read the screen: the password the user types is put into the account record
+   that is handed to the login.
+3. Read the mapper that turns a login response into the account the
+   application keeps. It reads the account out of the signed token the server
+   sent and then writes the password of this login over the one the token
+   carries.
+4. Read the two callers of that mapper. The application passes the password of
+   the login it is performing, which is empty for every login that does not ask
+   for one. The authentication layer passes the password that is already
+   stored, which is empty as well because nothing ever writes it.
+5. Read the second mapper, the one that turns the account into the record the
+   database keeps, and the database interface. The record has a password column
+   and the database interface has a method that writes it, but nothing calls
+   that method.
+6. Read the credential login. It reads the password of the account it is asked
+   to open and uses it when it is there, and asks for one when it is not.
+7. Read the list of saved accounts. It is built from the stored records, and
+   the mapper reads the password of the record into the account it hands to the
+   list.
+
+**Derived facts:**
+
+| Fact | Value |
+|---|---|
+| Mapper that overwrites the password | `Lo/ContentPainterModifiermeasure1;->AnimatedBarChartKtAnimatedBarChart1111(LoginResponseModel, Z, String)UserInfo` |
+| The overwrite | `UserInfo.setPassword(password)` with the password of this login |
+| The token | carries the password of the account |
+| Record | `UserAuthInfoEntity`, with a password column |
+| Database method that writes the password | `UserAuthInfoStore.updateUserPassword`, never called |
+| Where the stored password is used | the credential login, when the account it opens has one |
+
+**Decision:** remove the overwrite, so the password always comes from the token
+the server signed. The password the user types is still what the login request
+carries; the account record keeps the password the server holds for it.
+
+**Known limitations:** if a server stopped putting the password in its token,
+the application would ask for the password again, as it does in the stock build.
+
+**Verification run:** the unified run applies all registered Ana Vodafone patches
+to the stock base APK and reports `PASS` for each of them, and the patched APK
+compiles. The removed call was confirmed in the decompiled output. The
+behaviour has not been observed on a device, because no test device is
+available.
+
 ## Not consulted
 
 No source, comment, identifier, helper or fingerprint from any other patch

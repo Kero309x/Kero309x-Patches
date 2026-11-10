@@ -212,6 +212,27 @@ object Catalogue {
             specPath = "docs/specs/vodafone/ad-space.md",
             sourceFile = "src/main/kotlin/app/keropatches/vodafone/promotion/HideAdSpaceCard.kt",
         ),
+        PatchEntry(
+            patch = app.keropatches.vodafone.account.removeAccountLimitPatch,
+            application = "vodafone",
+            behaviourId = "vodafone.account.account-limit",
+            specPath = "docs/specs/vodafone/account-limit.md",
+            sourceFile = "src/main/kotlin/app/keropatches/vodafone/account/RemoveAccountLimit.kt",
+        ),
+        PatchEntry(
+            patch = app.keropatches.vodafone.network.disableCertificatePinningPatch,
+            application = "vodafone",
+            behaviourId = "vodafone.network.certificate-pinning",
+            specPath = "docs/specs/vodafone/certificate-pinning.md",
+            sourceFile = "src/main/kotlin/app/keropatches/vodafone/network/DisableCertificatePinning.kt",
+        ),
+        PatchEntry(
+            patch = app.keropatches.vodafone.account.keepStoredPasswordPatch,
+            application = "vodafone",
+            behaviourId = "vodafone.account.stored-password",
+            specPath = "docs/specs/vodafone/stored-password.md",
+            sourceFile = "src/main/kotlin/app/keropatches/vodafone/account/KeepStoredPassword.kt",
+        ),
     )
 
     /** Applications this bundle announces, in registry order. */
