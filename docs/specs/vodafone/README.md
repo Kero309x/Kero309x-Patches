@@ -26,8 +26,10 @@ the screens it hides from screenshots.
 
 `derived` means the behaviour has a spec, a record of how it was derived and an
 implementation that builds and applies to the stock APK. It does not mean it has
-been checked on a device: no test device is available to this project yet, so
-every spec still carries unchecked acceptance criteria.
+been checked on a device. The bundle was run on a device, and what that run
+showed is recorded below; the acceptance criteria of the individual specs are
+still unchecked, because a run of the whole bundle cannot tell for every
+behaviour whether the behaviour it changes is the one that changed.
 
 ## Scope of this release
 
@@ -58,11 +60,11 @@ patched build mounted over it.
 - The push of the stock build works and the push of the patched build works too:
   the mount leaves the signature of the stock build in place, so the services
   that are bound to it keep working.
-- The application shows a blank splash on that device, with the stock build as
-  well. The tokens of the installed account had expired a few days earlier and
-  the application waits for a new login that never starts, so the splash never
-  ends. This is the behaviour of the stock build and not something the patches
-  cause. The application needs a fresh sign in on that device.
+- Started the way the launcher starts it, the patched build opens the screen
+  with the accounts, and the network calls it makes afterwards succeed. Started
+  by naming the splash activity on its own, it waits on a blank screen; the
+  stock build does the same, so this is a matter of how the application is
+  started and not of the patches.
 - The window of the running application carries no secure flag, with and
   without the patches, which is what the screenshot behaviour records.
 
