@@ -3,10 +3,11 @@
 An independent, clean-room patch collection for the Morphe patching framework,
 maintained by Kero309x.
 
-> **Status: pre-alpha.** All twenty patches are implemented and pass the build and
-> the patch-application gate against the stock 8.0.28 build (20/20). None has been
-> checked on a device yet. A signed pre-release bundle, `v0.1.2`, is published;
-> treat it as unverified at runtime.
+> **Status: pre-alpha.** All twenty-two patches are implemented and pass the build
+> and the patch-application gate against their stock builds (20/20 for Anghami
+> 8.0.28, 2/2 for Ana Vodafone 2026.11.1). None has been checked on a device yet. A
+> signed pre-release bundle, `v0.1.2`, is published; treat it as unverified at
+> runtime.
 
 ## What this is
 
@@ -66,12 +67,14 @@ derivative works.
 | Application | Package | Version | File type |
 |---|---|---|---|
 | Anghami | `com.anghami` | 8.0.28 (8000280) | APKM |
+| Ana Vodafone | `com.emeint.android.myservices` | 2026.11.1 (1246) | APKM |
 
 The table lists the applications currently registered. The bundle is not tied to
 a single application: another target is added as a package with its own
 compatibility data and specs, without changing the core layer.
 
-Behaviour specifications: [`docs/specs/anghami/`](docs/specs/anghami/README.md).
+Behaviour specifications: [`docs/specs/anghami/`](docs/specs/anghami/README.md)
+and [`docs/specs/vodafone/`](docs/specs/vodafone/README.md).
 
 Behaviours that other collections implement but this one does not are not
 carried over. Adding one is new work: a spec, a derivation, an implementation,
@@ -137,8 +140,8 @@ the bytecode assembles; runtime behaviour needs a device and is checked separate
 
 The table below mirrors the ordered `Catalogue.kt` list and is updated in the same
 change as any patch. The registry test keeps the catalogue, the registry and the
-behaviour specs in agreement. All twenty patches are enabled by default (decision
-`0004`).
+behaviour specs in agreement. All twenty-two patches are enabled by default
+(decision `0004`).
 
 | # | Patch | Category | Default | Spec |
 |---|---|---|---|---|
@@ -162,6 +165,8 @@ behaviour specs in agreement. All twenty patches are enabled by default (decisio
 | 18 | Hide in-feed ad banners | Ads and promotion | on | [spec](docs/specs/anghami/feed-ad-banners.md) |
 | 19 | Ignore the forced update requirement | Store and upsells | on | [spec](docs/specs/anghami/forced-update.md) |
 | 20 | Disable first-party Silo telemetry | Privacy | on | [spec](docs/specs/anghami/silo-telemetry.md) |
+| 21 | Skip the store licence check | Store and upsells | on | [spec](docs/specs/vodafone/license-check.md) |
+| 22 | Disable the forced update requirement | Store and upsells | on | [spec](docs/specs/vodafone/forced-update.md) |
 
 ## Development
 

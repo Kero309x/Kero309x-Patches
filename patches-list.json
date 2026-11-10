@@ -521,6 +521,58 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Skip the store licence check",
+      "description": "Stops the bundled licence client from validating the installation before the application starts.",
+      "default": true,
+      "category": "Store and upsells",
+      "compatiblePackages": [
+        {
+          "packageName": "com.emeint.android.myservices",
+          "name": "Ana Vodafone",
+          "description": "Telecom services and account management.",
+          "apkFileType": "APKM_REQUIRED",
+          "appIconColor": null,
+          "signatures": ["7671c18d28517819385163cccb7c76e4ce4a083d05866403fac5ba0547b95485"],
+          "formFactor": "MOBILE",
+          "targets": [
+            {
+              "version": "2026.11.1",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 24,
+              "description": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Disable the forced update requirement",
+      "description": "Stops the client from blocking the app, or opening the store, when the server marks this build as outdated.",
+      "default": true,
+      "category": "Store and upsells",
+      "compatiblePackages": [
+        {
+          "packageName": "com.emeint.android.myservices",
+          "name": "Ana Vodafone",
+          "description": "Telecom services and account management.",
+          "apkFileType": "APKM_REQUIRED",
+          "appIconColor": null,
+          "signatures": ["7671c18d28517819385163cccb7c76e4ce4a083d05866403fac5ba0547b95485"],
+          "formFactor": "MOBILE",
+          "targets": [
+            {
+              "version": "2026.11.1",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 24,
+              "description": null
+            }
+          ]
+        }
+      ]
     }
   ]
 }

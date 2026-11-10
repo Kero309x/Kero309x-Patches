@@ -24,6 +24,9 @@ import app.keropatches.anghami.store.hideUpgradeBannersPatch
 import app.keropatches.anghami.ui.hidePremiumButtonsPatch
 import app.keropatches.anghami.ui.hideShuffleBadgesPatch
 import app.keropatches.anghami.update.ignoreForcedUpdatePatch
+import app.keropatches.vodafone.VodafoneApp
+import app.keropatches.vodafone.integrity.skipLicenseCheckPatch
+import app.keropatches.vodafone.update.disableForcedUpdatePatch
 import app.morphe.patcher.patch.Patch
 
 /**
@@ -63,12 +66,24 @@ object PatchRegistry {
         disableSiloTelemetryPatch,
     )
 
+    /**
+     * Patches for the Ana Vodafone application.
+     *
+     * The first release for this application ships the two behaviours that stop
+     * a repackaged build from being refused at startup.
+     */
+    val vodafone: Set<Patch<*>> = setOf(
+        skipLicenseCheckPatch,
+        disableForcedUpdatePatch,
+    )
+
     /** Every patch this bundle ships, across all applications. */
-    val all: Set<Patch<*>> = anghami
+    val all: Set<Patch<*>> = anghami + vodafone
 
     /** Application id a patch targets, or null when the registry does not own it. */
     fun applicationOf(patch: Patch<*>): String? = when (patch) {
         in anghami -> AnghamiApp.definition.id
+        in vodafone -> VodafoneApp.definition.id
         else -> null
     }
 }

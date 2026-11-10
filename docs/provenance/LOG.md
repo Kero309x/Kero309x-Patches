@@ -13,12 +13,18 @@ assuming anything was carried over from another project.
 | 2026-11-04 | Minimum SDK declared by the build | 23 |
 | 2026-11-04 | Signing certificate subject | `O=Anghami, C=LB` |
 | 2026-11-04 | Signing certificate SHA-256 | `5e5d1b3609403e1db445d142ef36433a2ad2008030281d437d9e632c01c45659` |
+| 2026-11-10 | Stock build used | `com.emeint.android.myservices` 2026.11.1, version code 1246 |
+| 2026-11-10 | Build container | APKM bundle, eighteen entries, 23 DEX files in the base APK, no native libraries in the base APK |
+| 2026-11-10 | Minimum SDK declared by the build | 24 |
+| 2026-11-10 | Signing certificate subject | `CN=EME International, O=EMEINT, L=Cairo, ST=El Maadi, C=20` |
+| 2026-11-10 | Signing certificate SHA-256 | `7671c18d28517819385163cccb7c76e4ce4a083d05866403fac5ba0547b95485` |
 
 ## Derivation records
 
 | Date | Behaviour | Consulted | Derived | Verified |
 |---|---|---|---|---|
 | 2026-11-04 | platform metadata | stock APKM `info.json` and `META-INF/BNDLTOOL.RSA` | package name, version name, version code, minimum SDK, signing certificate digest | certificate digest recomputed from the DER certificate |
+| 2026-11-10 | platform metadata, Ana Vodafone | stock APKM `info.json`, `aapt dump badging`, `apksigner verify --print-certs` | package name, version name, version code, minimum SDK, signing certificate digest, 23 DEX files, no native libraries in the base APK | certificate digest reported for the v2/v3 scheme by `apksigner` |
 
 > The certificate digest above was read from the v1 JAR signature of the base
 > APK. Before release it must be confirmed against the v2/v3 signing block with
@@ -922,6 +928,106 @@ which stays available for bug reports.
 8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. All
 four edits were confirmed in the decompiled output. The behaviour has not been
 observed on a device, because no test device is available.
+
+### `vodafone.integrity.license-check` — derived 2026-11-10
+
+**Consulted:** the stock 2026.11.1 APKM only, decompiled locally with apktool
+3.0.3 and `--no-res`. No other patch collection was opened.
+
+**How it was found:**
+
+1. Read the application element of the manifest. It names
+   `com.pairip.application.Application`, a wrapper class that is not part of the
+   application's own package.
+2. Read that class: it extends `vodafone.vis.engezly.AnaVodafoneApplication` and
+   overrides `attachBaseContext` only to call
+   `LicenseClient.checkLicense(context)` after the super call. There is no
+   `VMRunner` and no `libpairipcore.so` in the bundle.
+3. Searched the whole decompiled tree for `checkLicense`. It is called from the
+   wrapper above and from `LicenseContentProvider.onCreate`; the manifest does not
+   register that provider, so only the wrapper call runs.
+4. Read `LicenseClient`: `checkLicense` posts a runnable on the main thread.
+   The runnable binds to the licensing service of `com.android.vending`, and
+   `performLocalInstallerCheck` accepts the installation only when the installer
+   is `com.android.vending`. A response code of 2 leads to a paywall activity; 3
+   is reported as "Request package name invalid"; a bind failure is retried three
+   times and then shows an error dialog and schedules an application shutdown.
+
+**Derived facts:**
+
+| Fact | Value |
+|---|---|
+| Manifest application | `com.pairip.application.Application` |
+| Application base class | `vodafone.vis.engezly.AnaVodafoneApplication` |
+| Startup call | `LicenseClient.checkLicense(Landroid/content/Context;)V`, static |
+| Other call site | `LicenseContentProvider.onCreate`, provider not registered |
+| Service bound to | `com.android.vending` licensing service |
+| Installer requirement | `com.android.vending`, checked by `performLocalInstallerCheck` |
+| Forced rejection | paywall activity, error dialog and delayed shutdown |
+| Side effects of the call | none beyond the check itself |
+
+**Decision:** return early from the static entry point. It is the single call on
+the startup path and it initialises nothing the rest of the application reads, so
+one edit removes the refusal without touching any other code.
+
+**Known limitations:** the patch does not make the installation licensed and does
+not change anything the server is told. Features the server gates by entitlement
+stay gated.
+
+**Verification run:** the unified run applies the two Ana Vodafone patches to the
+stock base APK and reports `PASS` for both, and the patched APK compiles. The
+injected return was confirmed in the decompiled output. The behaviour has not
+been observed on a device, because no test device is available.
+
+### `vodafone.system.forced-update` — derived 2026-11-10
+
+**Consulted:** the stock 2026.11.1 APKM only, decompiled locally with apktool
+3.0.3 and `--no-res`. No other patch collection was opened.
+
+**How it was found:**
+
+1. Listed the classes in the `main.prenavigation` package and found
+   `UpdateChecker`, which also carries the methods named `checkAppForceUpdate`,
+   `showAppSoftUpdateIfExists`, `getUpdateInfo` and
+   `checkFeatureHasMaintenance`.
+2. Read the whole class to separate the four gates it runs before a screen is
+   shown: an application force check, a feature force check, a feature soft
+   overlay and an application soft prompt.
+3. Traced where the update type comes from. `GetAppUpdateTypeUseCase` maps the
+   `updateType` string of the channel configuration to `UpdateType`;
+   `GetModuleUpdateTypeUseCase` maps the per-module entry the same way. The
+   mapping is used only to decide these prompts.
+4. Read the two force answers. The application answer shows a blocking dialog and
+   returns `true`; the feature answer opens the store and returns `true`. Both
+   return `false` for every other type, and the caller then continues.
+5. Read the soft handlers. Both act only on the soft type, so leaving the
+   computed update type untouched keeps the voluntary prompt working.
+
+**Derived facts:**
+
+| Fact | Value |
+|---|---|
+| Owner | `Lvodafone/vis/engezly/main/prenavigation/UpdateChecker;` |
+| Application force answer | `AnimatedBarChartKtAnimatedBarChart1111(UpdateType; Continuation;)Object`, boxed `Boolean` |
+| Feature force answer | `AnimatedBarChartKtAnimatedBarChart1(UpdateType; String;)Z` |
+| Application soft prompt | `showAppSoftUpdateIfExists`, acts only on the soft type |
+| Feature soft overlay | acts only on the soft type |
+| Blocking action | dialog with a store action for the application; store launch for a feature |
+| Caller behaviour on `false` | proceeds into the normal screens |
+
+**Decision:** answer both force questions `false` and leave the computed update
+type and the programs that consume it alone. The soft prompt keeps working, the
+stored configuration is not rewritten and the store entry points the application
+offers voluntarily are untouched.
+
+**Known limitations:** the patched build stays on the version it was built for and
+does not receive later fixes, and a feature the server refuses for an outdated
+client stays refused.
+
+**Verification run:** the unified run applies the two Ana Vodafone patches to the
+stock base APK and reports `PASS` for both, and the patched APK compiles. Both
+injected answers were confirmed in the decompiled output. The behaviour has not
+been observed on a device, because no test device is available.
 
 ## Not consulted
 

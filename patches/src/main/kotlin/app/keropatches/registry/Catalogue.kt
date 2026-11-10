@@ -177,6 +177,20 @@ object Catalogue {
             specPath = "docs/specs/anghami/silo-telemetry.md",
             sourceFile = "src/main/kotlin/app/keropatches/anghami/analytics/DisableSiloTelemetry.kt",
         ),
+        PatchEntry(
+            patch = app.keropatches.vodafone.integrity.skipLicenseCheckPatch,
+            application = "vodafone",
+            behaviourId = "vodafone.integrity.license-check",
+            specPath = "docs/specs/vodafone/license-check.md",
+            sourceFile = "src/main/kotlin/app/keropatches/vodafone/integrity/SkipLicenseCheck.kt",
+        ),
+        PatchEntry(
+            patch = app.keropatches.vodafone.update.disableForcedUpdatePatch,
+            application = "vodafone",
+            behaviourId = "vodafone.system.forced-update",
+            specPath = "docs/specs/vodafone/forced-update.md",
+            sourceFile = "src/main/kotlin/app/keropatches/vodafone/update/IgnoreForcedUpdate.kt",
+        ),
     )
 
     /** Applications this bundle announces, in registry order. */
