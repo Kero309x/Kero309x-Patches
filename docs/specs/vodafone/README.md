@@ -47,6 +47,25 @@ promotional card is the only advertisement the application draws itself: it is
 offered by the server and belongs to the operator, so it is filed as promotion
 rather than as advertising.
 
+## What a device run showed
+
+The bundle was run on a device with the stock application installed, with the
+patched build mounted over it.
+
+- The patched build starts and runs without a crash.
+- The licence check of the stock build runs at startup; the patched build does
+  not run it.
+- The push of the stock build works and the push of the patched build works too:
+  the mount leaves the signature of the stock build in place, so the services
+  that are bound to it keep working.
+- The application shows a blank splash on that device, with the stock build as
+  well. The tokens of the installed account had expired a few days earlier and
+  the application waits for a new login that never starts, so the splash never
+  ends. This is the behaviour of the stock build and not something the patches
+  cause. The application needs a fresh sign in on that device.
+- The window of the running application carries no secure flag, with and
+  without the patches, which is what the screenshot behaviour records.
+
 ## Not included
 
 Behaviours that exist in other collections but are absent from this project are
