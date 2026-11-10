@@ -1274,18 +1274,23 @@ available.
 | Authentication pinner | `Lo/updateAuxData$AnimatedBarChartKtAnimatedBarChart1;->AnimatedBarChartKtAnimatedBarChart1()Lokhttp3/CertificatePinner;` |
 | Other pins | none |
 
-**Decision:** remove the host from both pins. A pinner without a host matches no
-request, so the certificate is validated against the trust store of the device
-instead. The keys and the pinner itself are left in the build.
+**Decision:** remove the pins from both pinners, so the pinner the client carries
+has no host and enforces nothing. The pins are removed rather than pointed at
+another host: the library makes a host out of the pattern of a pin and refuses
+one it cannot make, so an empty pattern would make the application fail to
+start instead of just not pinning.
 
 **Known limitations:** the connection is no longer checked against the two keys
 the operator ships with the application.
 
 **Verification run:** the unified run applies all registered Ana Vodafone patches
 to the stock base APK and reports `PASS` for each of them, and the patched APK
-compiles. The replaced host was confirmed in the decompiled output. The
-behaviour has not been observed on a device, because no test device is
-available.
+compiles. The removed calls were confirmed in the decompiled output. The patch
+was also run on a device, where the first version of it failed: it replaced the
+pinned host with an empty string, the library refused the pattern it could not
+make a host of, and the application failed to start while it built its client.
+The version that removes the pins starts and runs. The behaviour has not been
+observed on a device beyond that, because no account was signed in.
 
 ### `vodafone.account.stored-password` - derived 2026-11-10
 
@@ -1382,12 +1387,16 @@ available.
 | Checks the library can run | root, developer mode, debug build, USB debugging, emulator, screen recording, hooking frameworks, prevent screenshots |
 | Are those checks run | no, nothing calls the entry point that starts them |
 | Is the library's own pinner used | no, nothing calls the method that builds it |
+| Is the screen protection turned on | no, only the library's own entry point turns it on and nothing calls it |
 
 **Decision:** answer the method that protects a screen with an early return, so
 the window is left as the application made it.
 
 **Known limitations:** the library stays in the build and keeps watching the
-screens; only the flag it sets on their windows is gone.
+screens; only the flag it sets on their windows is gone. In this build the
+library never turns the protection on, so the patch changes nothing today: it
+is a guarantee rather than a repair. The window of the running application was
+checked on a device and carries no secure flag, with and without the patch.
 
 **Verification run:** the unified run applies all registered Ana Vodafone patches
 to the stock base APK and reports `PASS` for each of them, and the patched APK
