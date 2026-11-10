@@ -39,6 +39,28 @@ Morphe reads `patches-bundle.json` from `main` and downloads the bundle attached
 to the latest release. Every `0.x` release is a pre-release, so enable
 pre-releases for this source.
 
+The source brings every application it has patches for, so one source covers
+both applications in the table below. Do not add it through a link that names
+one application: Morphe reads the `app` parameter of such a link as "bring this
+application only", and leaves the others out. The links above name no
+application, so both are brought.
+
+Three things have to be in place for the manager to use the source:
+
+- the manager has to be recent enough for the patcher the bundle asks for
+  (`Patcher-Version` in the bundle manifest). An older manager marks the source
+  as needing an update and skips it;
+- pre-release patches have to be on for the source, as every release so far is a
+  pre-release;
+- the application has to be installed, since the manager lists the applications
+  it finds on the device.
+
+Morphe keeps the metadata of a source, so a source that was added before an
+application joined it keeps that application out until it is brought back in the
+source's own application list. The list is one tap away from the `Apps` row on
+the source card, and an application that arrived with a later release is marked
+`New` there.
+
 From `0.1.2` the bundle is signed with Ed25519 and the metadata publishes the
 matching `public_key`, so the manager can reject a bundle altered after
 publication. Earlier releases are unsigned and have no `classes.dex`, which makes
