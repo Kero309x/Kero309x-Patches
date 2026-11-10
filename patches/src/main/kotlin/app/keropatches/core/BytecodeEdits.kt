@@ -223,6 +223,44 @@ internal fun MutableMethod.replaceCallWithBlock(method: String, block: String) {
 }
 
 /**
+ * Removes the call to this method from this method, and the move that reads its
+ * answer with it.
+ *
+ * A call whose answer is used is followed by a move that takes it. Removing the
+ * call alone would leave that move reading nothing, which the verifier refuses,
+ * so the two are removed together. The calls are removed from the last one
+ * backwards, so the positions of the calls that are still to be removed stay
+ * correct.
+ *
+ * @param method method reference in smali form, for example
+ *   `Lcom/example/Builder;->add(Ljava/lang/String;)Lcom/example/Builder;`.
+ */
+internal fun MutableMethod.removeCallAndResult(method: String) {
+    val indices = instructions.indices.filter { index ->
+        val instruction = instructions[index]
+        instruction.opcode in INVOKE_OPCODES &&
+            (instruction as? ReferenceInstruction)?.reference?.toString() == method
+    }
+
+    check(indices.isNotEmpty()) {
+        "No call to $method in $definingClass->$name$returnType; the code changed."
+    }
+
+    val removals = mutableListOf<Int>()
+    indices.forEach { index ->
+        removals += index
+        val result = instructions.getOrNull(index + 1)
+        if (result != null && result.opcode in MOVE_RESULT_OPCODES) {
+            removals += index + 1
+        }
+    }
+
+    removals.sortedDescending().forEach { index ->
+        removeInstruction(index)
+    }
+}
+
+/**
  * Makes this method answer null without running its body.
  *
  * Some callers treat a null getter answer as "this surface is not configured" and
@@ -270,4 +308,11 @@ private val INVOKE_OPCODES = setOf(
     Opcode.INVOKE_DIRECT_RANGE,
     Opcode.INVOKE_STATIC_RANGE,
     Opcode.INVOKE_INTERFACE_RANGE,
+)
+
+/** Every move that reads the answer of the call before it. */
+private val MOVE_RESULT_OPCODES = setOf(
+    Opcode.MOVE_RESULT,
+    Opcode.MOVE_RESULT_WIDE,
+    Opcode.MOVE_RESULT_OBJECT,
 )

@@ -4,13 +4,10 @@
 package app.keropatches.vodafone.network
 
 import app.keropatches.core.PatchCategory
-import app.keropatches.core.replaceStringConstant
+import app.keropatches.core.removeCallAndResult
 import app.keropatches.vodafone.VodafoneApp
 import app.morphe.patcher.Fingerprint
 import app.morphe.patcher.patch.bytecodePatch
-
-/** The host the application pins its certificate to. */
-private const val PINNED_HOST = "mobile.vodafone.com.eg"
 
 /**
  * The pinner of the application's own network layer.
@@ -47,14 +44,16 @@ private object AuthenticationPinnerFingerprint : Fingerprint(
  * a proxy in the way, a certificate the operator renewed, or a debugging
  * tool. The authentication stack pins the same host the same way.
  *
- * The patch removes the host from both pins. A pinner without a host matches no
- * request, so the certificate is validated the way the platform validates it:
- * against the trust store of the device. The two public keys are left in the
- * build, and the pinner is still created and still attached to the client, so
- * nothing else about the network layer changes.
+ * The patch removes the pins from both pinners, so the pinner the client carries
+ * has no host and enforces nothing. The certificate is then validated the way
+ * the platform validates it: against the trust store of the device.
  *
- * Only the host is changed. The rest of the pinner, including the public keys
- * and the certificate checks the platform does, is untouched.
+ * The pins are removed rather than pointed at another host. The library refuses
+ * a pattern it cannot make a host of, so an empty pattern would make the
+ * application fail to start instead of just not pinning.
+ *
+ * The rest of the network layer is untouched: the same requests are made, with
+ * the same headers, and the certificate checks the platform does still happen.
  */
 @Suppress("unused")
 val disableCertificatePinningPatch = bytecodePatch(
@@ -66,7 +65,10 @@ val disableCertificatePinningPatch = bytecodePatch(
     category(PatchCategory.SECURITY.label)
 
     execute {
-        NetworkPinnerFingerprint.method.replaceStringConstant(PINNED_HOST, "")
-        AuthenticationPinnerFingerprint.method.replaceStringConstant(PINNED_HOST, "")
+        val addPin = "Lokhttp3/CertificatePinner\$Builder;->add(Ljava/lang/String;[Ljava/lang/String;)" +
+            "Lokhttp3/CertificatePinner\$Builder;"
+
+        NetworkPinnerFingerprint.method.removeCallAndResult(addPin)
+        AuthenticationPinnerFingerprint.method.removeCallAndResult(addPin)
     }
 }
