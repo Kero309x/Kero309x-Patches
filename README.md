@@ -6,7 +6,7 @@ maintained by Kero309x.
 > **Status: pre-alpha.** All twenty-eight patches are implemented and pass the build
 > and the patch-application gate against their stock builds (20/20 for Anghami
 > 8.0.28, 8/8 for Ana Vodafone 2026.11.1). None has been checked on a device yet. A
-> signed pre-release bundle, `v0.1.2`, is published; treat it as unverified at
+> signed pre-release bundle, `v0.1.3`, is published; treat it as unverified at
 > runtime.
 
 ## What this is
