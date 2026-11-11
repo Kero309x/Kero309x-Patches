@@ -1251,13 +1251,35 @@ the list in the same way as before.
 the accounts are still stored the way they always were. The text that says how
 many accounts can be saved is a text of the resources and still says five.
 
+**Where the message comes from, and where the check is:**
+
+The message "Maximum Accounts Reached" is not a text of the resources. It is
+the text of the error that the operator's content service sends for the error
+code `-1234566`. The application builds that error itself: the method
+`LoginErrorHandler.getMaximumAccountErrorInfo()` returns an error with the
+code `-1234566` and the use case `login`, and the list of error features that
+the content service sent is looked up for that code. The application then
+shows it with `LoginScaffoldKt.HandleLoginErrorState`, which compares the
+error code with `-1234566` to decide how the buttons of the message behave.
+
+So the check that decides whether the message appears is in the application,
+and the wording of the message is the operator's. The two producers of that
+error are `CredentialsLoginOverlayKt$AnimatedBarChartPreview$AnimatedBarChartPreview`
+and `LoginLandingScreenKt.LoginLandingScreen$lambda$23$lambda$17`; the second
+one is the third check above, and it is the one that fired on the device.
+
 **Verification run:** the unified run applies all registered Ana Vodafone
 patches to the stock base APK and reports `PASS` for each of them, and the
 patched APK compiles. The three answers were confirmed in the decompiled
 output. The behaviour was observed on a device on 2026-11-11 with five
 accounts saved: before the third check was changed, the button that adds
 another account showed the message that too many accounts are saved; with it,
-the button opens the screen that asks for the number.
+the button opens the screen that asks for the number. The same device, with
+the message appearing on the screen that asks for the password of the sixth
+account, showed that the message is shown while the operator's answer is not
+yet known: the application had built the error itself, and the wording came
+from the content the operator had sent earlier.
+
 
 ### `vodafone.network.certificate-pinning` - derived 2026-11-10
 

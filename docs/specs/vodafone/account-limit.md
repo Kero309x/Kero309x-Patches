@@ -52,7 +52,19 @@ answers.
 - Is the limit enforced anywhere else? Answered for this build: the limit is
   counted in three places, the overlay that lists the accounts, the overlay
   that asks which account to switch to, and the screen that shows the accounts
-  with the button that adds another account. All three are changed.
+  with the button that adds another account. All three are changed. A count of
+  every comparison against the number five in the whole application was made
+  afterwards and found no fourth one that belongs to the account list; the
+  other comparisons belong to the strength of a password and to the order of
+  an enum.
+- Does the operator refuse the sixth account? Not answered. The message that
+  says too many accounts are saved is shown in two ways. When the application
+  finds the list full it builds the error itself and shows the message. When
+  the operator refuses a sign-in, the application shows the operator's own
+  answer. The wording of the message is the operator's in both cases: the
+  error code is `-1234566` and the text for that code comes from the content
+  the operator sent. The check that decides whether the message appears is the
+  application's; the wording is not.
 
 ## Verification
 
