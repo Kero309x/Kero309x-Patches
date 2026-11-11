@@ -28,6 +28,7 @@ import app.keropatches.vodafone.VodafoneApp
 import app.keropatches.vodafone.account.keepStoredPasswordPatch
 import app.keropatches.vodafone.account.removeAccountLimitPatch
 import app.keropatches.vodafone.analytics.disableTrackingPatch
+import app.keropatches.vodafone.cash.useCurrentConnectionForCashPatch
 import app.keropatches.vodafone.capture.allowScreenCapturePatch
 import app.keropatches.vodafone.integrity.skipLicenseCheckPatch
 import app.keropatches.vodafone.network.disableCertificatePinningPatch
@@ -88,6 +89,7 @@ object PatchRegistry {
         disableTrackingPatch,
         ignoreRemoteActionsPatch,
         hideAdSpaceCardPatch,
+        useCurrentConnectionForCashPatch,
         removeAccountLimitPatch,
         disableCertificatePinningPatch,
         keepStoredPasswordPatch,

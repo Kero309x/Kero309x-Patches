@@ -192,10 +192,11 @@ behaviour specs in agreement. All twenty-nine patches are enabled by default
 | 23 | Disable usage tracking | Privacy | on | [spec](docs/specs/vodafone/tracking.md) |
 | 24 | Ignore the server's remote wipe and forced logout | Account and entitlements | on | [spec](docs/specs/vodafone/remote-actions.md) |
 | 25 | Hide the promotional card | Ads and promotion | on | [spec](docs/specs/vodafone/ad-space.md) |
-| 26 | Remove the saved account limit | Account and entitlements | on | [spec](docs/specs/vodafone/account-limit.md) |
-| 27 | Disable certificate pinning | Network and security | on | [spec](docs/specs/vodafone/certificate-pinning.md) |
-| 28 | Keep the password of each account | Account and entitlements | on | [spec](docs/specs/vodafone/stored-password.md) |
-| 29 | Allow screenshots | Interface | on | [spec](docs/specs/vodafone/screenshots.md) |
+| 26 | Use the current connection for Vodafone Cash | Interface | on | [spec](docs/specs/vodafone/cash-network.md) |
+| 27 | Remove the saved account limit | Account and entitlements | on | [spec](docs/specs/vodafone/account-limit.md) |
+| 28 | Disable certificate pinning | Network and security | on | [spec](docs/specs/vodafone/certificate-pinning.md) |
+| 29 | Keep the password of each account | Account and entitlements | on | [spec](docs/specs/vodafone/stored-password.md) |
+| 30 | Allow screenshots | Interface | on | [spec](docs/specs/vodafone/screenshots.md) |
 
 ## Development
 

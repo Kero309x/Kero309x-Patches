@@ -33,7 +33,7 @@ assuming anything was carried over from another project.
 
 ## Behaviour derivations
 
-### How the application models a subscription Ã¢â‚¬â€ mapped 2026-11-04
+### How the application models a subscription ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â mapped 2026-11-04
 
 Every behaviour in this bundle that depends on whether the user pays reaches that
 answer through the same small class, so the map is recorded once here and referred
@@ -42,9 +42,9 @@ to from the individual specs.
 | Fact | Value |
 |---|---|
 | Account state object | `Lcom/anghami/ghost/local/Account;`, a single instance field, handed out by `getAccountInstance()` |
-| The decision that matters | `isPlusUser()Z` on that instance Ã¢â‚¬â€ true when the stored plan type is `PLUS`, or `FREE_TRIAL`, or when `isGoldUser()` is true |
-| The static shorthand | `Account.isPlus()Z` Ã¢â‚¬â€ wraps `isPlusUser()` of the current instance through a compiler-generated callback object |
-| Gold tier | `isGoldUser()Z` Ã¢â‚¬â€ stored plan type equals `GOLD`; `Account.isGold()Z` is its static wrapper |
+| The decision that matters | `isPlusUser()Z` on that instance ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â true when the stored plan type is `PLUS`, or `FREE_TRIAL`, or when `isGoldUser()` is true |
+| The static shorthand | `Account.isPlus()Z` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â wraps `isPlusUser()` of the current instance through a compiler-generated callback object |
+| Gold tier | `isGoldUser()Z` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â stored plan type equals `GOLD`; `Account.isGold()Z` is its static wrapper |
 | Persistence | the instance is read from an on-disk account file and written back by one write helper, so the stored plan type is a local copy of what the server sent |
 | Instance hand-out | `getAccountInstance()Z` is a plain singleton getter: it returns one static field and has no caching layer of its own |
 | Attribute helpers | `getAccountAttribute` and `getBooleanAttribute` resolve that one instance and then call the supplied callback; neither caches a result |
@@ -57,7 +57,7 @@ single change would silently turn the entitlement, the badge and the lyrics gate
 into one behaviour, which is exactly what this bundle avoids. The shared class is
 therefore treated as a place to *read* state from, not as a shortcut to rewrite.
 
-### `anghami.system.rating-prompt` Ã¢â‚¬â€ derived 2026-11-04
+### `anghami.system.rating-prompt` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â derived 2026-11-04
 
 **Consulted:** the stock 8.0.28 build only, decompiled locally with apktool
 3.0.3 and `--no-res`. No other patch collection was opened.
@@ -77,7 +77,7 @@ therefore treated as a place to *read* state from, not as a shortcut to rewrite.
 | Fact | Value |
 |---|---|
 | Rating controller | `Lcom/anghami/ghost/rating/AppRater;`, a singleton |
-| Decision predicate | `getShouldShowDialog()Z` Ã¢â‚¬â€ true only when online, past a reset window, past a minimum time since first launch, past a minimum launch count, not already rated for this version, and past a minimum event count |
+| Decision predicate | `getShouldShowDialog()Z` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â true only when online, past a reset window, past a minimum time since first launch, past a minimum launch count, not already rated for this version, and past a minimum event count |
 | Call sites of the predicate | exactly one outside the class: the rating-event handler in the main activity |
 | Store-presence gate | `Lcom/anghami/util/c;->g(Landroidx/fragment/app/n;)Z`, true when the store package is installed |
 | Two presentation paths | a custom dialog when the store is absent, the Play in-app review sheet when it is present |
@@ -92,7 +92,7 @@ Result: the fingerprint matched exactly one method (`validate = true` enforces
 that a fingerprint matches at most one method), and the patch applied with no
 exception.
 
-### `anghami.playback.track-skips` Ã¢â‚¬â€ derived 2026-11-04
+### `anghami.playback.track-skips` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â derived 2026-11-04
 
 **Consulted:** the stock 8.0.28 build only.
 
@@ -128,7 +128,7 @@ the download and lyrics patches, which are separate behaviours.
 8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. The
 behaviour has not been observed on a device, because no test device is available.
 
-### `anghami.media.lyrics-access` Ã¢â‚¬â€ derived 2026-11-04
+### `anghami.media.lyrics-access` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â derived 2026-11-04
 
 **Consulted:** the stock 8.0.28 build only.
 
@@ -150,7 +150,7 @@ behaviour has not been observed on a device, because no test device is available
 |---|---|
 | The gate | `Lcom/anghami/ghost/local/Account;.lyricsEnabled()Z` |
 | Stock body | subscriber, or the server-provided free-lyrics flag is set |
-| Gate site | `Lcom/anghami/app/lyrics/LyricsActivity$a;.a(...)` Ã¢â‚¬â€ one read, one branch |
+| Gate site | `Lcom/anghami/app/lyrics/LyricsActivity$a;.a(...)` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â one read, one branch |
 | Paywall action | `showSubscribeActivity("lyrics")` on the host screen |
 | Unrelated member with a similar name | `PreferenceHelper.clearLyricsEnabled()`, which only resets a locally remembered mode at sign-out |
 
@@ -164,7 +164,7 @@ answer is false.
 both patches above, the fingerprint matched exactly one method and the patch
 applied with no exception.
 
-### `anghami.privacy.analytics` Ã¢â‚¬â€ derived 2026-11-04
+### `anghami.privacy.analytics` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â derived 2026-11-04
 
 **Consulted:** the stock 8.0.28 build only.
 
@@ -184,14 +184,14 @@ applied with no exception.
 | Fact | Value |
 |---|---|
 | Facade | `Lcom/anghami/ghost/analytics/Analytics;` |
-| Bootstrap | `init(String, boolean, FacebookAppEventLogger)` Ã¢â‚¬â€ posts one runnable to the IO pool |
+| Bootstrap | `init(String, boolean, FacebookAppEventLogger)` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â posts one runnable to the IO pool |
 | What the runnable starts | Firebase Analytics, Amplitude, Adjust (with its app secret), Branch, and the Facebook logger if provided |
-| Caller of the bootstrap | `Lcom/anghami/AnghamiApplication;` Ã¢â‚¬â€ one call, result ignored |
+| Caller of the bootstrap | `Lcom/anghami/AnghamiApplication;` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â one call, result ignored |
 | Latch safety | the `CountDownLatch` used to wait for Branch is awaited only inside that same runnable, so nothing else waits for a start that never happens |
 | Firebase field safety | the analytics field is null-checked immediately before its only read |
-| Event sinks (void) | `postEvent` Ãƒâ€”4, `postGoogleAnalyticsEvent`, `postBranchEvent`, `logBranchPurchaseEvent`, `postAdjustEvent` Ãƒâ€”2, `postOpenLinkAdjustEvent` |
-| Event builders | dozens of `postÃ¢â‚¬Â¦Event` helpers, all of which end in one of the sinks above |
-| Value-returning methods, deliberately untouched | `AmplitudeExperiment.getMinArtistNumberForOnBoarding(int)` Ã¢â‚¬â€ falls back to its argument when the client is null, one caller outside the package; `shouldSendEventAndRecordTimeStamp(String, long)` Ã¢â‚¬â€ a local rate limiter that sends nothing |
+| Event sinks (void) | `postEvent` ÃƒÆ’Ã¢â‚¬â€4, `postGoogleAnalyticsEvent`, `postBranchEvent`, `logBranchPurchaseEvent`, `postAdjustEvent` ÃƒÆ’Ã¢â‚¬â€2, `postOpenLinkAdjustEvent` |
+| Event builders | dozens of `postÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦Event` helpers, all of which end in one of the sinks above |
+| Value-returning methods, deliberately untouched | `AmplitudeExperiment.getMinArtistNumberForOnBoarding(int)` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â falls back to its argument when the client is null, one caller outside the package; `shouldSendEventAndRecordTimeStamp(String, long)` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â a local rate limiter that sends nothing |
 | Experiment bootstrap | `AmplitudeExperiment.init(String)`, called only from the facade's bootstrap |
 | Crash reporting | travels through the same facade as an ordinary event; no Firebase Crashlytics entry point is called by app code |
 
@@ -199,7 +199,7 @@ applied with no exception.
 only the bootstrap would still leave a sink reachable if a future build moved the
 bootstrap; silencing only the sinks would leave the SDKs running and uploading
 whatever they collect themselves. The value-returning methods stay as they are,
-because silencing them would change a decision Ã¢â‚¬â€ which artists to show Ã¢â‚¬â€ rather
+because silencing them would change a decision ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â which artists to show ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â rather
 than stop a report.
 
 **Open limitation:** BugSnag is present in the build as a library with an internal
@@ -210,7 +210,7 @@ The patch does not attempt to disable a library that the app does not drive.
 8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. The
 behaviour has not been observed on a device, because no test device is available.
 
-### `anghami.ads.sponsored-content` Ã¢â‚¬â€ derived 2026-11-04
+### `anghami.ads.sponsored-content` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â derived 2026-11-04
 
 **Consulted:** the stock 8.0.28 build only.
 
@@ -228,8 +228,8 @@ behaviour has not been observed on a device, because no test device is available
 | Fact | Value |
 |---|---|
 | The flag | `Lcom/anghami/ghost/pojo/Song;->isSponsored:Z`, serialised from the JSON key `sponsored` |
-| How it is populated | reflective JSON mapping Ã¢â‚¬â€ there is no assignment to the field anywhere in the bytecode, and no mapper calls the protobuf getter either |
-| Readers | `SongCardModel._bind(SquareViewHolder)` Ã¢â‚¬â€ passed to the shared badge helper; `SongRowModel._bind(RowViewHolder)` Ã¢â‚¬â€ caption visibility; `SongWideModel._bind(WideViewHolder)` Ã¢â‚¬â€ caption visibility |
+| How it is populated | reflective JSON mapping ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â there is no assignment to the field anywhere in the bytecode, and no mapper calls the protobuf getter either |
+| Readers | `SongCardModel._bind(SquareViewHolder)` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â passed to the shared badge helper; `SongRowModel._bind(RowViewHolder)` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â caption visibility; `SongWideModel._bind(WideViewHolder)` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â caption visibility |
 | Non-readers | no click handler, no filter, no sort, no playback decision |
 | Section flag | `Section;->sponsored:Z` is copied from the response and written to a parcel, but no view reads it |
 | In-car sponsor | `PreferenceHelper.getACRSponsoredImage()/getACRSponsoredText()`, read once by `com.anghami.acr.ACRActivity`; an empty value is its documented "nothing to show" state |
@@ -244,7 +244,7 @@ itself and pretending otherwise would describe a behaviour the patch cannot keep
 8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. The
 behaviour has not been observed on a device, because no test device is available.
 
-### `anghami.ads.promotional-popups` Ã¢â‚¬â€ derived 2026-11-04
+### `anghami.ads.promotional-popups` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â derived 2026-11-04
 
 **Consulted:** the stock 8.0.28 build only.
 
@@ -267,7 +267,7 @@ behaviour has not been observed on a device, because no test device is available
 | Popup start method | `x.i(Lcom/anghami/ui/popupwindow/a;)V`, called from the main screen and from two base-screen helpers |
 | Full-screen surface | `Lp4/d;`, source `AdsPopupHandler.java`, one instance per main screen |
 | Flyer start method | `p4.d.a(Lcom/anghami/odin/ads/e;)V`, called on an ad event and on resume |
-| Visibility query | `p4.d.b()Z` Ã¢â‚¬â€ reads the dialog, returns false when there is none; no caller waits on it |
+| Visibility query | `p4.d.b()Z` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â reads the dialog, returns false when there is none; no caller waits on it |
 | Non-ad users of the popup component | none: its only model parameter is the popup ad model |
 
 **Decision:** answer both start methods immediately. They are the only two places
@@ -279,7 +279,7 @@ in a state where an ad is half-built.
 8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. The
 behaviour has not been observed on a device, because no test device is available.
 
-### `anghami.ads.audio-ads` Ã¢â‚¬â€ derived 2026-11-05
+### `anghami.ads.audio-ads` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â derived 2026-11-05
 
 **Consulted:** the stock 8.0.28 build only.
 
@@ -298,16 +298,16 @@ behaviour has not been observed on a device, because no test device is available
 | Fact | Value |
 |---|---|
 | Playback core | `Lcom/anghami/odin/core/S;`, source `OdinPlayer.java` |
-| Ad decision | `S.L0()Z` Ã¢â‚¬â€ the single "does an ad belong after this track" answer |
+| Ad decision | `S.L0()Z` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â the single "does an ad belong after this track" answer |
 | What it reads | the queue's `getDisableAds()`, the server's `AdSettings.getNoAd(currentSong)`, `adFrequency` or `adVideoFrequency` depending on video mode, and the player's own offline flag |
 | Where it is used | once when a track ends, and once when the reported item duration is calculated |
-| Start method | `S.w1(Lcom/anghami/odin/ads/A;)V` Ã¢â‚¬â€ the only place an ad is handed to a player |
+| Start method | `S.w1(Lcom/anghami/odin/ads/A;)V` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â the only place an ad is handed to a player |
 | Callers of the start method | the track-end branch, gated by `L0()`; and `S.b1()`, the back-to-back step, which only runs while an ad is already playing |
 | Ad pipeline | separate from the decision: loaders and players are built regardless, so skipping the decision leaves no partial state |
 
 **Decision:** answer `L0()` with false. The stock code already has a branch for
-"no ad here" Ã¢â‚¬â€ it is the branch taken when the server sends no ad, when the queue
-disables ads or when the song is exempt Ã¢â‚¬â€ and it advances the queue normally.
+"no ad here" ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â it is the branch taken when the server sends no ad, when the queue
+disables ads or when the song is exempt ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â and it advances the queue normally.
 Returning false therefore reuses existing behaviour instead of suppressing a call
 and hoping the caller recovers. The ad pipeline is left intact on purpose: it
 still fetches and caches its models, and a player handed an ad from elsewhere
@@ -317,7 +317,7 @@ would still work.
 8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. The
 behaviour has not been observed on a device, because no test device is available.
 
-### `anghami.playback.forced-shuffle` Ã¢â‚¬â€ derived 2026-11-05
+### `anghami.playback.forced-shuffle` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â derived 2026-11-05
 
 **Consulted:** the stock 8.0.28 build only.
 
@@ -364,7 +364,7 @@ the radio queue would have fetched. This is the client-side part of the change.
 8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. The
 behaviour has not been observed on a device, because no test device is available.
 
-### `anghami.interface.shuffle-badges` Ã¢â‚¬â€ derived 2026-11-05
+### `anghami.interface.shuffle-badges` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â derived 2026-11-05
 
 **Consulted:** the stock 8.0.28 build only.
 
@@ -405,7 +405,7 @@ it edits and fails loudly if the layout changes.
 8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. The
 behaviour has not been observed on a device, because no test device is available.
 
-### `anghami.system.screenshots` Ã¢â‚¬â€ derived 2026-11-06
+### `anghami.system.screenshots` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â derived 2026-11-06
 
 **Consulted:** the stock 8.0.28 build only.
 
@@ -443,7 +443,7 @@ alone so an already-marked window is still cleared.
 8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. The
 behaviour has not been observed on a device, because no test device is available.
 
-### `anghami.interface.premium-buttons` Ã¢â‚¬â€ derived 2026-11-06
+### `anghami.interface.premium-buttons` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â derived 2026-11-06
 
 **Consulted:** the stock 8.0.28 build only.
 
@@ -480,7 +480,7 @@ entry point and only loses the advertisement.
 8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. The
 behaviour has not been observed on a device, because no test device is available.
 
-### `anghami.entitlement.profile-badge` Ã¢â‚¬â€ derived 2026-11-06
+### `anghami.entitlement.profile-badge` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â derived 2026-11-06
 
 **Consulted:** the stock 8.0.28 build only.
 
@@ -519,7 +519,7 @@ keeps working.
 8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. The
 behaviour has not been observed on a device, because no test device is available.
 
-### `anghami.entitlement.plus` Ã¢â‚¬â€ derived 2026-11-06
+### `anghami.entitlement.plus` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â derived 2026-11-06
 
 **Consulted:** the stock 8.0.28 build only.
 
@@ -569,7 +569,7 @@ still shows the stored plan. Both are recorded in the spec.
 8.0.28 APK and reports `PASS` for this patch, and the patched APK compiles. The
 behaviour has not been observed on a device, because no test device is available.
 
-### `anghami.store.gold-upsell` Ã¢â‚¬â€ re-derived 2026-11-06 (first derivation 2026-11-04)
+### `anghami.store.gold-upsell` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â re-derived 2026-11-06 (first derivation 2026-11-04)
 
 **Consulted:** the stock 8.0.28 build only.
 
@@ -623,7 +623,7 @@ on a device, because no test device is available.
 answers are among the 36 modified classes written to the patched APK.
 `Hide Gold upsell` reported PASS.
 
-### `anghami.store.upgrade-banners` Ã¢â‚¬â€ derived 2026-11-06
+### `anghami.store.upgrade-banners` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â derived 2026-11-06
 
 **Consulted:** the stock 8.0.28 build only.
 
@@ -673,7 +673,7 @@ deliberately. Recorded in the spec.
 `Hide upgrade banners` reported PASS, and the final run wrote
 `verify-out/patched.apk`.
 
-### `anghami.downloads.limits` Ã¢â‚¬â€ derived 2026-11-06
+### `anghami.downloads.limits` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â derived 2026-11-06
 
 **Consulted:** the stock 8.0.28 build only.
 
@@ -718,7 +718,7 @@ still depends on the server having granted the download. Recorded in the spec.
 four edits were confirmed by decompiling the patched output. The behaviour has not
 been observed on a device, because no test device is available.
 
-### `anghami.integrity.signature-assertion` Ã¢â‚¬â€ derived 2026-11-07
+### `anghami.integrity.signature-assertion` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â derived 2026-11-07
 
 **Consulted:** the stock 8.0.28 build only.
 
@@ -747,7 +747,7 @@ been observed on a device, because no test device is available.
 | Final step | `SHA-256` over base64 hash + salt + request body, then hex |
 | Headers | `X-ANGH-RGSIG` and `X-ANGH-APP-RGSIG`, both from this answer |
 | Other signer readers | none in the application package |
-| Stock certificate | 846-byte DER, SHA-256 `5e5d1b36Ã¢â‚¬Â¦45659`, digest checked by a unit test |
+| Stock certificate | 846-byte DER, SHA-256 `5e5d1b36ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦45659`, digest checked by a unit test |
 
 **Decision:** replace the certificate byte read with a decode of the store
 certificate. Constructing the value directly would drop the salt and the body and
@@ -775,7 +775,7 @@ embedded certificate digest to the compatibility value passes. The behaviour has
 not been observed on a device or against the server, because neither is
 available.
 
-### `anghami.ads.feed-banners` Ã¢â‚¬â€ derived 2026-11-07
+### `anghami.ads.feed-banners` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â derived 2026-11-07
 
 **Consulted:** the stock 8.0.28 build only.
 
@@ -823,7 +823,7 @@ popup decisions, which have their own behaviours.
 edit was confirmed in the decompiled output. The behaviour has not been observed
 on a device, because no test device is available.
 
-### `anghami.system.forced-update` Ã¢â‚¬â€ derived 2026-11-07
+### `anghami.system.forced-update` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â derived 2026-11-07
 
 **Consulted:** the stock 8.0.28 build only.
 
@@ -869,7 +869,7 @@ local dead end; it does not change the server's decision.
 edit was confirmed in the decompiled output. The behaviour has not been observed
 on a device, because no test device is available.
 
-### `anghami.privacy.silo-telemetry` Ã¢â‚¬â€ derived 2026-11-08
+### `anghami.privacy.silo-telemetry` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â derived 2026-11-08
 
 **Consulted:** the stock 8.0.28 build only.
 
@@ -929,7 +929,7 @@ which stays available for bug reports.
 four edits were confirmed in the decompiled output. The behaviour has not been
 observed on a device, because no test device is available.
 
-### `vodafone.integrity.license-check` Ã¢â‚¬â€ derived 2026-11-10
+### `vodafone.integrity.license-check` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â derived 2026-11-10
 
 **Consulted:** the stock 2026.11.1 APKM only, decompiled locally with apktool
 3.0.3 and `--no-res`. No other patch collection was opened.
@@ -980,7 +980,7 @@ APK compiles. The injected return was confirmed in the decompiled output. The
 behaviour has not been observed on a device, because no test device is
 available.
 
-### `vodafone.system.forced-update` Ã¢â‚¬â€ derived 2026-11-10
+### `vodafone.system.forced-update` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â derived 2026-11-10
 
 **Consulted:** the stock 2026.11.1 APKM only, decompiled locally with apktool
 3.0.3 and `--no-res`. No other patch collection was opened.
@@ -1292,77 +1292,57 @@ has no host and enforces nothing. The pins are removed rather than pointed at
 another host: the library makes a host out of the pattern of a pin and refuses
 one it cannot make, so an empty pattern would make the application fail to
 start instead of just not pinning.
+### `vodafone.cash.current-connection` - derived 2026-11-11
 
-**Known limitations:** the connection is no longer checked against the two keys
-the operator ships with the application.
-
-**Verification run:** the unified run applies all registered Ana Vodafone patches
-to the stock base APK and reports `PASS` for each of them, and the patched APK
-compiles. The removed calls were confirmed in the decompiled output. The patch
-was also run on a device, where the first version of it failed: it replaced the
-pinned host with an empty string, the library refused the pattern it could not
-make a host of, and the application failed to start while it built its client.
-The version that removes the pins starts and runs. The behaviour has not been
-observed on a device beyond that, because no account was signed in.
-
-### `vodafone.account.stored-password` - derived 2026-11-11
-
-**Consulted:** the stock 2026.11.1 APKM only, decompiled locally with apktool
-3.0.3 and `--no-res`. No other patch collection was opened.
+**Consulted:** the stock 2026.11.1 base APK only, decompiled locally with
+apktool 3.0.2 and `--no-res`. No other patch collection was opened.
 
 **How it was found:**
 
-1. Listed the account packages and followed the password from the screen that
-   asks for it to the place the account is stored.
-2. Read the two databases of the application: the one of the authentication
-   layer, which holds the account with the password encrypted, and the one of
-   the application itself, which holds a second copy of it. The list of
-   accounts is built from the second one.
-3. Read the two writes that put the password into them. Both of them are the
-   same statement in the two data access layers: one that updates the password
-   of the account that is logged in, and one that replaces the whole account
-   record.
-4. Read the encryption. An empty password is left as it is by the encryption,
-   so a write that is given an empty password really does empty the stored
-   one.
-5. Read where the writes are run from. They are run with the password of the
-   login that is being performed, and that password is empty for every login
-   that does not ask for one, such as the silent login that follows a token
-   refresh.
-6. Read the credential login. It reads the password of the account it is asked
-   to open and uses it when it is there, and asks for one when it is not.
-
-**The first attempt, and why it was not kept:** the derivation started at the
-mapper that turns a login response into the account the application keeps,
-and the patch rewrote it so that it would not write an empty password. That
-mapper was wrong on two counts: the account it builds is new, so there is no
-old password in it to keep, and the block of instructions that was put in place
-of the call took the instructions that followed it with it and left a branch
-that pointed at a move instruction, which the verifier refuses. The application
-crashed with a `VerifyError` as soon as a login came back. The patch was
-replaced by the change of the statements themselves.
+1. Read the strings of the application for the messages of the cash service
+   and found the two that are about the connection: one that says the cash
+   service is not available through Wi-Fi and one that says the mobile data
+   has to be connected through the Vodafone network.
+2. Looked for the place that decides between them and found that the keys of
+   the two errors are read by the application as errors of the operator and not
+   as something the application decides on its own.
+3. Searched the whole cash part of the application for a check of the
+   connection and found none: there is no call of the connectivity of the
+   device anywhere in it.
+4. Followed the network of the cash requests. The cash service talks to the
+   operator through a network manager of its own, and the provider of that
+   network manager has a method that puts it as the base of the network the
+   requests go out over, right before every request.
+5. Read that method. It prepares the network, sets the cash network manager as
+   the base instance of the network manager of the application, and sets it a
+   second time on the network of the cash service.
 
 **Derived facts:**
 
 | Fact | Value |
 |---|---|
-| Database of the authentication layer | `user_auth_database_v1`, table `UserInfoEntity` |
-| Database of the application | `AnaVodafone`, table `UserAuthInfoEntity` |
-| The write that empties the password, first database | `UPDATE UserInfoEntity SET password =? where isUserCurrentlyLoggedIn = 1` |
-| The write that empties the password, second database | `UPDATE UserAuthInfoEntity SET password =? where isUserCurrentlyLoggedIn = 1` |
-| The write that replaces the account record | `INSERT OR REPLACE INTO UserAuthInfoEntity (...) VALUES (?,?,...)` |
-| The encryption | `CryptoHandler.getEncryptedData`, which keeps an empty password as it is |
-| Where the password of a login comes from | the login itself, empty for every login that does not ask for one |
-| Where the stored password is used | the credential login, when the account it opens has one |
+| The messages | `cash_internet_error_title`, `cash_internet_error_desc`, `cash_diff_carrier_error_description` |
+| Where they come from | the operator, the keys are read as errors of the answer |
+| Is there a check in the application | no, there is none in the cash part |
+| The network of the cash requests | a network manager of its own, put on the mobile data before every request |
+| The method that does it | `NetworkInstanceProviderImpl.updateCashBaseNetworkInstance()` |
+| The class it sits in | `Lo/FailureInfo;`, the implementation of the provider of the cash network |
 
-**Decision:** change the three statements so that they keep the password that
-is already stored when they are handed an empty one. A statement that carries a
-password still writes it, so the password the user typed is never lost. The
-change is made in the statement text alone, so there is no branch and no
-label in it and nothing in it that the verifier can refuse.
+**Decision:** leave the network as it is, so that the cash requests go out
+over the connection the device already has. The method that puts the cash
+network on the mobile data is answered with an early return.
 
-**Known limitations:** the statement that replaces the whole account record
-reads the password that is already stored from the row it replaces. An account
+**Known limitations:** the operator ties the cash service to the mobile network
+of the line, so it is likely to refuse a request that goes out over another
+connection, and the message of the operator is then shown. The service also
+reads the identity of the line from the card of the device, so a device
+without the card of the line has no identity to read.
+
+**Verification run:** the unified run applies all registered Ana Vodafone
+patches to the stock base APK and reports `PASS` for each of them, and the
+patched APK compiles. The injected return was confirmed in the decompiled
+output. What the operator answers over a connection that is not the mobile
+data of the line was not observed.
 that has no row yet has nothing to keep, and its password stays empty, as it
 is in the stock build.
 

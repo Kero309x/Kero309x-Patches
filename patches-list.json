@@ -653,6 +653,32 @@
       ]
     },
     {
+      "name": "Use the current connection for Vodafone Cash",
+      "description": "Lets the Vodafone Cash service use the connection the device already has, instead of asking for mobile data.",
+      "default": true,
+      "category": "Interface",
+      "compatiblePackages": [
+        {
+          "packageName": "com.emeint.android.myservices",
+          "name": "Ana Vodafone",
+          "description": "Telecom services and account management.",
+          "apkFileType": "APKM_REQUIRED",
+          "appIconColor": null,
+          "signatures": ["7671c18d28517819385163cccb7c76e4ce4a083d05866403fac5ba0547b95485"],
+          "formFactor": "MOBILE",
+          "targets": [
+            {
+              "version": "2026.11.1",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 24,
+              "description": null
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "Remove the saved account limit",
       "description": "Lets the app keep more than five accounts and switch between all of them.",
       "default": true,

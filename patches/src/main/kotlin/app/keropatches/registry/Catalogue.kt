@@ -213,6 +213,13 @@ object Catalogue {
             sourceFile = "src/main/kotlin/app/keropatches/vodafone/promotion/HideAdSpaceCard.kt",
         ),
         PatchEntry(
+            patch = app.keropatches.vodafone.cash.useCurrentConnectionForCashPatch,
+            application = "vodafone",
+            behaviourId = "vodafone.cash.current-connection",
+            specPath = "docs/specs/vodafone/cash-network.md",
+            sourceFile = "src/main/kotlin/app/keropatches/vodafone/cash/UseCurrentConnectionForCash.kt",
+        ),
+        PatchEntry(
             patch = app.keropatches.vodafone.account.removeAccountLimitPatch,
             application = "vodafone",
             behaviourId = "vodafone.account.account-limit",
