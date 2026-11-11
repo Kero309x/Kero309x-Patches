@@ -15,6 +15,7 @@ sections below distinguish what has been exercised from what is still intended.
 | 0.1.2 | 2026-11-09 | pre-release, published by the release workflow, signed, Manager-ready | `Kero309x-Patches-0.1.2.mpp` |
 | 0.1.3 | 2026-11-10 | pre-release, published by the release workflow, signed, Manager-ready, two applications | `Kero309x-Patches-0.1.3.mpp` |
 | 0.1.4 | 2026-11-11 | pre-release, published by the release workflow, signed, Manager-ready, two applications | `Kero309x-Patches-0.1.4.mpp` |
+| 0.1.5 | 2026-11-11 | pre-release, published by the release workflow, signed, Manager-ready, two applications | `Kero309x-Patches-0.1.5.mpp` |
 
 Each bundle is built from the tagged commit.
 
@@ -22,7 +23,8 @@ Each bundle is built from the tagged commit.
 - `0.1.1` — `849971EF03A28F5767DCCE5FCBC6428D5D64626C6309615D486554377CED9FE4`
 - `0.1.2` — `47B177D75EF06CA5E34497B8005DB0415B57A10C9A5C41B7F049C127BE6FEDFD`
 - `0.1.3` — `1BA60367F99AD3D68C0FBC7700C37EE47B057F09F47897CC8BB026DAA3BE2B00`
-- `0.1.4` — `751FDE19FB9E1079A0D564B1C9510C0671E0A095BB929B204FC253661EE9BBD7`
+- `0.1.4` - `751FDE19FB9E1079A0D564B1C9510C0671E0A095BB929B204FC253661EE9BBD7`
+- `0.1.5` - `CF95C866694AD06B6273953A6F99F300357CF8FCBCAEBE4D936DE8D77CA965AF`
 
 The same hash is repeated in the release notes.
 
