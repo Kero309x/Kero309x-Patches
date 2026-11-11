@@ -1,7 +1,7 @@
 # Remove the saved account limit
 
 - **Id:** `vodafone.account.account-limit`
-- **Status:** derived
+- **Status:** verified
 - **Default enabled:** yes
 - **Risk:** low
 - **Category:** Account and entitlements
@@ -21,9 +21,12 @@ accounts it has saved.
 
 ## Acceptance criteria
 
-- [ ] A sixth account can be added and used.
+- [x] The screen that says too many accounts are saved is not shown.
+- [x] A new account can be added when five accounts are saved: the button
+      that adds another account opens the screen that asks for the number.
+- [ ] A sixth account can be added and used. Not checked on a device: the
+      accounts need a number of their own and a sign in of their own.
 - [ ] Switching to any saved account works, however many accounts are saved.
-- [ ] The screen that says too many accounts are saved is not shown.
 - [ ] The accounts behave as before: they are logged in, switched and removed
       the same way.
 - [ ] Turning the patch off restores the limit.
@@ -41,12 +44,15 @@ answers.
   changes.
 - The list of accounts is still what the application has saved. A very long
   list is shown in the same list as before.
+- The text that says how many accounts can be saved is a text of the resources
+  and still says five. The patch removes the check, not the text.
 
 ## Open questions
 
 - Is the limit enforced anywhere else? Answered for this build: the limit is
-  counted in two places, the overlay that lists the accounts and the overlay
-  that asks which account to switch to. Both are changed.
+  counted in three places, the overlay that lists the accounts, the overlay
+  that asks which account to switch to, and the screen that shows the accounts
+  with the button that adds another account. All three are changed.
 
 ## Verification
 
@@ -55,6 +61,11 @@ answers.
    steps refuses and that the "too many accounts" screen never appears.
 3. Switch between the accounts and confirm that each one opens.
 4. Disable the patch, rebuild and install, and confirm the limit returns.
+
+Verified on a device on 2026-11-11 with five accounts saved: before the third
+of the three checks was changed, the button that adds another account showed
+the "Maximum Accounts Reached" message; with it, the button opens the screen
+that asks for the number.
 
 ## Provenance
 

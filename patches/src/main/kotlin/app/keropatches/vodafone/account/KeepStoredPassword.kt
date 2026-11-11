@@ -27,28 +27,64 @@ private object StoredPasswordStatementFingerprint : Fingerprint(
 )
 
 /**
+ * The same write in the second database of the application.
+ *
+ * The application keeps two copies of the account: one in the database of the
+ * authentication layer, which holds the password encrypted, and one in the
+ * database of the application itself, which holds it in the clear and is the
+ * one the list of accounts is built from. The copy in the application database
+ * is written by the same kind of statement, and it empties the password in the
+ * same way. The class and the method together identify it.
+ */
+private object ApplicationPasswordStatementFingerprint : Fingerprint(
+    definingClass = "Lo/sendPreinstallReferrerI;",
+    name = "AnimatedBarChartPreview",
+    isStatic = true,
+    returnType = "Ljava/lang/Object;",
+    parameters = listOf(
+        "Ljava/lang/String;",
+        "Lo/DualSurfaceProcessorExternalSyntheticLambda6;",
+    ),
+)
+
+/**
+ * The statement that writes the whole account record of the application.
+ *
+ * The copy of the account that the application keeps for itself is written by
+ * a statement that replaces the record. It carries the password of the login
+ * that is being performed, which is empty for every login that does not ask
+ * for one, and it replaces the stored password with that empty one. The class
+ * and the method together identify it.
+ */
+private object ApplicationAccountInsertFingerprint : Fingerprint(
+    definingClass = "Lo/sendPreinstallReferrerI\$1;",
+    name = "AnimatedBarChartKtAnimatedBarChart1112",
+    isStatic = false,
+    returnType = "Ljava/lang/String;",
+    parameters = emptyList(),
+)
+
+/**
  * Keeps the password the application already knows for an account.
  *
  * The application stores the password of every account, encrypted, in its own
  * database, and uses it to log the account in again when the account is
- * opened. The password reaches the stored record through a statement of the
- * data access layer that writes the password of the account that is currently
- * logged in.
+ * opened. The password reaches the stored record through two statements of the
+ * data access layer, one for each of the two databases the application keeps,
+ * and both of them are run with the password of the login that is being
+ * performed, which is empty for every login that does not ask for one.
  *
- * That write is what makes the application forget. A login that carries no
- * password of its own - one that was started by a link, by a token that was
- * refreshed, or by any flow that does not ask for one - writes an empty
- * password over the stored one. The encryption keeps an empty password as it
- * is, so the stored password really is emptied, and the next time the account
- * is opened the application asks for the password again.
+ * That is what makes the application forget. The encryption keeps an empty
+ * password as it is, so the stored password really is emptied, and the next
+ * time the account is opened the application asks for the password again.
  *
- * The patch makes that write keep the password that is already stored when it
- * is handed an empty one. A write that carries a password still writes it, so
- * the password the user types is stored as it always was, and the application
- * can still log the account in with it.
+ * The patch makes both statements keep the password that is already stored
+ * when they are handed an empty one. A statement that carries a password still
+ * writes it, so the password the user types is stored as it always was, and
+ * the application can still log the account in with it.
  *
- * The statement keeps its shape: it still updates the account that is logged
- * in, and it still writes a password when it is given one.
+ * The statements keep their shape: they still write the account that is
+ * logged in, and they still write a password when they are given one.
  */
 @Suppress("unused")
 val keepStoredPasswordPatch = bytecodePatch(
@@ -64,6 +100,15 @@ val keepStoredPasswordPatch = bytecodePatch(
             "UPDATE UserInfoEntity SET password =? where isUserCurrentlyLoggedIn = 1",
             "UPDATE UserInfoEntity SET password =CASE WHEN ?1='' THEN password ELSE ?1 END " +
                 "where isUserCurrentlyLoggedIn = 1",
+        )
+        ApplicationPasswordStatementFingerprint.method.replaceStringConstant(
+            "UPDATE UserAuthInfoEntity SET password =? where isUserCurrentlyLoggedIn = 1",
+            "UPDATE UserAuthInfoEntity SET password =CASE WHEN ?1='' THEN password ELSE ?1 END " +
+                "where isUserCurrentlyLoggedIn = 1",
+        )
+        ApplicationAccountInsertFingerprint.method.replaceStringConstant(
+            "INSERT OR REPLACE INTO `UserAuthInfoEntity` (`msisdn`,`password`,`accountNumber`,`firstName`,`lastName`,`lineType`,`billCycleCode`,`priceGroupType`,`contractStatus`,`encryptedMsisdn`,`customerID`,`contractID`,`segmentValue`,`billCycleDate`,`serviceClassCode`,`contractSubType`,`tariffModelName`,`contractType`,`customerType`,`ratePlanCode`,`ratePlanType`,`serviceClassName`,`digitalID`,`isUserCurrentlyLoggedIn`,`isLoggedInSeamless`,`isAccountOwner`,`isEndUser`,`isProspectUser`,`isSpocUser`,`isFirstTimeSeamlessLogin`,`hasProfile`,`isEnterpriseUser`,`isNewVF`,`tokenInfo`,`eShopTokenInfo`,`subAccounts`,`isPaymentResponsibleFlag`,`contractRole`,`key`,`priceGroupCode`,`ADSLFlag`,`largeBillingAccount`,`loyalAuthorizedFlag`,`priceGroupCategory`,`spocSubAccounts`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            "INSERT OR REPLACE INTO `UserAuthInfoEntity` (`msisdn`,`password`,`accountNumber`,`firstName`,`lastName`,`lineType`,`billCycleCode`,`priceGroupType`,`contractStatus`,`encryptedMsisdn`,`customerID`,`contractID`,`segmentValue`,`billCycleDate`,`serviceClassCode`,`contractSubType`,`tariffModelName`,`contractType`,`customerType`,`ratePlanCode`,`ratePlanType`,`serviceClassName`,`digitalID`,`isUserCurrentlyLoggedIn`,`isLoggedInSeamless`,`isAccountOwner`,`isEndUser`,`isProspectUser`,`isSpocUser`,`isFirstTimeSeamlessLogin`,`hasProfile`,`isEnterpriseUser`,`isNewVF`,`tokenInfo`,`eShopTokenInfo`,`subAccounts`,`isPaymentResponsibleFlag`,`contractRole`,`key`,`priceGroupCode`,`ADSLFlag`,`largeBillingAccount`,`loyalAuthorizedFlag`,`priceGroupCategory`,`spocSubAccounts`) VALUES (?1,COALESCE(NULLIF(?2,''),(SELECT `password` FROM `UserAuthInfoEntity` WHERE `msisdn`=?1),''),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
         )
     }
 }
