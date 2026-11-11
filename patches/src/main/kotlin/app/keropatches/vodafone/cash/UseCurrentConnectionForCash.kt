@@ -27,6 +27,25 @@ private object CashNetworkInstanceFingerprint : Fingerprint(
 )
 
 /**
+ * The screen that refuses to open without the mobile data.
+ *
+ * The cash section of the application opens on a screen of its own, and that
+ * screen checks the connection of the device before it shows anything. When the
+ * device is on a connection that is not the mobile data of the line, the screen
+ * shows the message that the mobile data has to be turned on and the section
+ * cannot be opened. The check and the message are in a method of their own.
+ * The shrinker renamed the class and the method, so the class and the
+ * signature together identify them.
+ */
+private object CashScreenConnectionFingerprint : Fingerprint(
+    definingClass = "Lo/r8lambdaJxYYgvdy3elmxJSlXdbEzZMIL8;",
+    name = "getFlags",
+    isStatic = false,
+    returnType = "V",
+    parameters = emptyList(),
+)
+
+/**
  * Lets the cash service use the connection the device already has.
  *
  * The cash service of the operator is tied to the mobile data connection of
@@ -37,9 +56,10 @@ private object CashNetworkInstanceFingerprint : Fingerprint(
  * has to be turned on, and the cash service cannot be reached.
  *
  * The patch leaves the network as it is, so the cash requests go out over the
- * connection the device is already using. Whether the operator answers them is
- * the operator's own decision, and this patch does not change what the
- * operator answers.
+ * connection the device is already using, and the screen that opens the cash
+ * section no longer refuses to open for the same reason. Whether the operator
+ * answers the requests is the operator's own decision, and this patch does not
+ * change what the operator answers.
  *
  * Nothing else about the cash service changes: the same requests are made and
  * the same answers are shown.
@@ -55,5 +75,6 @@ val useCurrentConnectionForCashPatch = bytecodePatch(
 
     execute {
         CashNetworkInstanceFingerprint.method.returnEarly()
+        CashScreenConnectionFingerprint.method.returnEarly()
     }
 }

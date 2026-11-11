@@ -66,3 +66,18 @@ offsets of the instructions, so a branch can be checked by hand.
   which keeps the signature of the stock build and with it the services that
   are bound to it. The mount is taken away with `umount -l`, because a plain
   `umount` is refused while the application runs.
+- **The compiled image of the application has to be removed after every new
+  build is put over it.** The application is compiled ahead of time into
+  `oat/arm64` of its own directory, and that image is of the build that was
+  installed. While it is there, the application runs the code of the stock
+  build and a patch that is in the dex has no effect. Removing the directory
+  with `rm -rf <appdir>/oat` makes the application compile itself from the
+  dex that is mounted, which takes a while the first time.
+
+## A statement of the data access layer
+
+A statement of the data access layer is a text in the dex, and it is the
+easiest thing in an application to change without a branch. Two things have to
+be counted before it is changed: the number of values and the number of
+columns have to stay the same, and a value that holds a subquery of the same
+table has to be written so that it is read before the row is replaced.

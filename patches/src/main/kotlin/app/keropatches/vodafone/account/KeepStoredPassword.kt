@@ -69,22 +69,25 @@ private object ApplicationAccountInsertFingerprint : Fingerprint(
  *
  * The application stores the password of every account, encrypted, in its own
  * database, and uses it to log the account in again when the account is
- * opened. The password reaches the stored record through two statements of the
- * data access layer, one for each of the two databases the application keeps,
- * and both of them are run with the password of the login that is being
- * performed, which is empty for every login that does not ask for one.
+ * opened. The password reaches the stored record through three statements of
+ * the data access layer, one for the database of the authentication layer and
+ * two for the database of the application itself, and all of them are run with
+ * the password of the login that is being performed, which is empty for every
+ * login that does not ask for one.
  *
  * That is what makes the application forget. The encryption keeps an empty
  * password as it is, so the stored password really is emptied, and the next
  * time the account is opened the application asks for the password again.
  *
- * The patch makes both statements keep the password that is already stored
- * when they are handed an empty one. A statement that carries a password still
- * writes it, so the password the user types is stored as it always was, and
- * the application can still log the account in with it.
+ * The patch makes the three statements keep the password that is already
+ * stored when they are handed an empty one. A statement that carries a
+ * password still writes it, so the password the user types is stored as it
+ * always was, and the application can still log the account in with it.
  *
  * The statements keep their shape: they still write the account that is
- * logged in, and they still write a password when they are given one.
+ * logged in, and they still write a password when they are given one. The
+ * statement that replaces the whole record reads the password that is already
+ * stored from the row it replaces.
  */
 @Suppress("unused")
 val keepStoredPasswordPatch = bytecodePatch(
@@ -108,7 +111,7 @@ val keepStoredPasswordPatch = bytecodePatch(
         )
         ApplicationAccountInsertFingerprint.method.replaceStringConstant(
             "INSERT OR REPLACE INTO `UserAuthInfoEntity` (`msisdn`,`password`,`accountNumber`,`firstName`,`lastName`,`lineType`,`billCycleCode`,`priceGroupType`,`contractStatus`,`encryptedMsisdn`,`customerID`,`contractID`,`segmentValue`,`billCycleDate`,`serviceClassCode`,`contractSubType`,`tariffModelName`,`contractType`,`customerType`,`ratePlanCode`,`ratePlanType`,`serviceClassName`,`digitalID`,`isUserCurrentlyLoggedIn`,`isLoggedInSeamless`,`isAccountOwner`,`isEndUser`,`isProspectUser`,`isSpocUser`,`isFirstTimeSeamlessLogin`,`hasProfile`,`isEnterpriseUser`,`isNewVF`,`tokenInfo`,`eShopTokenInfo`,`subAccounts`,`isPaymentResponsibleFlag`,`contractRole`,`key`,`priceGroupCode`,`ADSLFlag`,`largeBillingAccount`,`loyalAuthorizedFlag`,`priceGroupCategory`,`spocSubAccounts`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-            "INSERT OR REPLACE INTO `UserAuthInfoEntity` (`msisdn`,`password`,`accountNumber`,`firstName`,`lastName`,`lineType`,`billCycleCode`,`priceGroupType`,`contractStatus`,`encryptedMsisdn`,`customerID`,`contractID`,`segmentValue`,`billCycleDate`,`serviceClassCode`,`contractSubType`,`tariffModelName`,`contractType`,`customerType`,`ratePlanCode`,`ratePlanType`,`serviceClassName`,`digitalID`,`isUserCurrentlyLoggedIn`,`isLoggedInSeamless`,`isAccountOwner`,`isEndUser`,`isProspectUser`,`isSpocUser`,`isFirstTimeSeamlessLogin`,`hasProfile`,`isEnterpriseUser`,`isNewVF`,`tokenInfo`,`eShopTokenInfo`,`subAccounts`,`isPaymentResponsibleFlag`,`contractRole`,`key`,`priceGroupCode`,`ADSLFlag`,`largeBillingAccount`,`loyalAuthorizedFlag`,`priceGroupCategory`,`spocSubAccounts`) VALUES (?1,COALESCE(NULLIF(?2,''),(SELECT `password` FROM `UserAuthInfoEntity` WHERE `msisdn`=?1),''),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            "INSERT OR REPLACE INTO `UserAuthInfoEntity` (`msisdn`,`password`,`accountNumber`,`firstName`,`lastName`,`lineType`,`billCycleCode`,`priceGroupType`,`contractStatus`,`encryptedMsisdn`,`customerID`,`contractID`,`segmentValue`,`billCycleDate`,`serviceClassCode`,`contractSubType`,`tariffModelName`,`contractType`,`customerType`,`ratePlanCode`,`ratePlanType`,`serviceClassName`,`digitalID`,`isUserCurrentlyLoggedIn`,`isLoggedInSeamless`,`isAccountOwner`,`isEndUser`,`isProspectUser`,`isSpocUser`,`isFirstTimeSeamlessLogin`,`hasProfile`,`isEnterpriseUser`,`isNewVF`,`tokenInfo`,`eShopTokenInfo`,`subAccounts`,`isPaymentResponsibleFlag`,`contractRole`,`key`,`priceGroupCode`,`ADSLFlag`,`largeBillingAccount`,`loyalAuthorizedFlag`,`priceGroupCategory`,`spocSubAccounts`) VALUES (?1,COALESCE(NULLIF(?2,''),(SELECT `password` FROM `UserAuthInfoEntity` WHERE `msisdn`=?1),''),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
         )
     }
 }
