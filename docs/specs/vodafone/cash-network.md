@@ -9,22 +9,24 @@
 ## Observable behaviour
 
 The stock build puts the requests of the Vodafone Cash service on the mobile
-data connection of the line before every request, and when the mobile data is
-off it shows the message that the mobile data has to be turned on and the
-service cannot be reached.
+data connection of the line before every request, and the screen that opens the
+service refuses to open when the device is not on that connection. It then says
+that the cash service is not available through Wi-Fi.
 
-After patching, the cash requests go out over the connection the device
-already has. Whether the operator answers them is the operator's own decision,
-and the patch does not change what the operator answers.
+After patching, the requests go out over the connection the device already has
+and the screen opens. Whether the operator answers the requests is the
+operator's own decision, and this patch does not change what the operator
+answers.
 
 ## Preconditions
 
-None. The network instance is set before every cash request.
+None. The network is put on the mobile data before every cash request, and the
+screen of the cash service checks the connection of the device on its own.
 
 ## Acceptance criteria
 
 - [ ] The cash section of the application opens when the device is on a
-      connection that is not the mobile data.
+      connection that is not the mobile data of the line.
 - [ ] The balance of the cash account is shown, when the operator answers over
       that connection.
 - [ ] A transaction is carried out, when the operator allows it over that
@@ -61,8 +63,8 @@ line on purpose.
 
 1. Install the patched build and sign in.
 2. Turn the mobile data off and keep the connection the device has.
-3. Open the Vodafone Cash service and confirm that the application does not
-   ask for the mobile data.
+3. Open the Vodafone Cash service and confirm that the application does not ask
+   for the mobile data.
 4. Confirm what the operator answers over that connection.
 5. Disable the patch, rebuild and install, and confirm that the stock
    behaviour returns.
