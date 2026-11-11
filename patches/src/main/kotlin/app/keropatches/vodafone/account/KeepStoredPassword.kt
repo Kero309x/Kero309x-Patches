@@ -4,55 +4,51 @@
 package app.keropatches.vodafone.account
 
 import app.keropatches.core.PatchCategory
-import app.keropatches.core.replaceCallWithBlock
+import app.keropatches.core.replaceStringConstant
 import app.keropatches.vodafone.VodafoneApp
 import app.morphe.patcher.Fingerprint
 import app.morphe.patcher.patch.bytecodePatch
 
 /**
- * The mapper that turns a login response into the user the application keeps.
+ * The statement that writes the stored password of the account.
  *
- * It reads the signed token out of the response, builds the user from it and
- * then writes the password of this login over the one the token carries. The
- * class and the method are both renamed by the shrinker, so the class and the
- * full signature together identify it.
+ * The application keeps the password of an account in its own database, in
+ * encrypted form, so that it can log the account in again without asking. The
+ * write is a plain update statement that the data access layer builds. The
+ * shrinker renamed the class the statement sits in, so the class and the method
+ * together identify it.
  */
-private object LoginUserMapperFingerprint : Fingerprint(
-    definingClass = "Lo/ContentPainterModifiermeasure1;",
-    name = "AnimatedBarChartKtAnimatedBarChart1111",
+private object StoredPasswordStatementFingerprint : Fingerprint(
+    definingClass = "Lo/includeOperationsIn\$1;",
+    name = "createQuery",
     isStatic = false,
-    returnType = "Lvodafone/vis/engezly/data/models/jwt/UserInfo;",
-    parameters = listOf(
-        "Lcom/vodafone/networklayer/dxl/models/LoginResponseModel;",
-        "Z",
-        "Ljava/lang/String;",
-    ),
+    returnType = "Ljava/lang/String;",
+    parameters = emptyList(),
 )
 
 /**
  * Keeps the password the application already knows for an account.
  *
  * The application stores the password of every account, encrypted, in its own
- * database, and uses it to log in again when the account is opened. The
- * password reaches the stored record through the mapper that turns a login
- * response into the user the application keeps: the mapper reads the user out
- * of the signed token and then writes the password of this login over the one
- * the token carries.
+ * database, and uses it to log the account in again when the account is
+ * opened. The password reaches the stored record through a statement of the
+ * data access layer that writes the password of the account that is currently
+ * logged in.
  *
- * That overwrite is what makes the application forget. A login that carries no
+ * That write is what makes the application forget. A login that carries no
  * password of its own - one that was started by a link, by a token that was
  * refreshed, or by any flow that does not ask for one - writes an empty
- * password over the stored one, and the next time the account is opened the
- * application asks for the password again.
+ * password over the stored one. The encryption keeps an empty password as it
+ * is, so the stored password really is emptied, and the next time the account
+ * is opened the application asks for the password again.
  *
- * The patch writes the password only when the login carries one. A login that
- * does not carries one keeps the password the signed token holds, which is the
- * password the server holds for that account, so the application can log in
- * with it without asking.
+ * The patch makes that write keep the password that is already stored when it
+ * is handed an empty one. A write that carries a password still writes it, so
+ * the password the user types is stored as it always was, and the application
+ * can still log the account in with it.
  *
- * The rest of the mapper is untouched: the token information and the user
- * configuration are still written as they were, and the user is still built
- * from the token in the first place.
+ * The statement keeps its shape: it still updates the account that is logged
+ * in, and it still writes a password when it is given one.
  */
 @Suppress("unused")
 val keepStoredPasswordPatch = bytecodePatch(
@@ -64,16 +60,10 @@ val keepStoredPasswordPatch = bytecodePatch(
     category(PatchCategory.ENTITLEMENT.label)
 
     execute {
-        LoginUserMapperFingerprint.method.replaceCallWithBlock(
-            "Lvodafone/vis/engezly/data/models/jwt/UserInfo;->setPassword(Ljava/lang/String;)V",
-            """
-            if-eqz p3, :kero_keep_token_password
-            invoke-virtual {p3}, Ljava/lang/String;->isEmpty()Z
-            move-result p2
-            if-nez p2, :kero_keep_token_password
-            invoke-virtual {v0, p3}, Lvodafone/vis/engezly/data/models/jwt/UserInfo;->setPassword(Ljava/lang/String;)V
-            :kero_keep_token_password
-            """.trimIndent(),
+        StoredPasswordStatementFingerprint.method.replaceStringConstant(
+            "UPDATE UserInfoEntity SET password =? where isUserCurrentlyLoggedIn = 1",
+            "UPDATE UserInfoEntity SET password =CASE WHEN ?1='' THEN password ELSE ?1 END " +
+                "where isUserCurrentlyLoggedIn = 1",
         )
     }
 }

@@ -205,6 +205,11 @@ internal fun MutableMethod.removeCallTo(method: String) {
  * field. The block is written as smali and compiled against this method, so its
  * registers and its parameters are the ones of the method it replaces.
  *
+ * The call is removed on its own and the block is put in its place. The two
+ * are not done in one step, because the step that replaces instructions
+ * removes as many instructions as the block holds, which would take the
+ * instructions that follow the call with it.
+ *
  * @param method method reference in smali form, for example
  *   `Lcom/example/Thing;->setName(Ljava/lang/String;)V`.
  * @param block the instructions that take the place of the call.
@@ -219,7 +224,8 @@ internal fun MutableMethod.replaceCallWithBlock(method: String, block: String) {
         "No call to $method in $definingClass->$name$returnType; the code changed."
     }
 
-    replaceInstructions(index, block)
+    removeInstruction(index)
+    addInstructions(index, block)
 }
 
 /**
