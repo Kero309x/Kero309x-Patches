@@ -3,8 +3,11 @@
 Status: `v0.1.0` was published from a local build; `v0.1.1` was the first release
 produced by the automated workflow; `v0.1.2` is the first signed release built by
 `buildAndroid` for Morphe Manager; `v0.1.3` is the first release that carries a
-second application; `v0.1.4` completes the behaviours of that application. The
-sections below distinguish what has been exercised from what is still intended.
+second application; `v0.1.4` completes the behaviours of that application;
+`v0.1.5` carries the corrected password and account-limit behaviours and the
+cash connection change; `v0.1.6` adds the account check of the login
+repository. The sections below distinguish what has been exercised from what is
+still intended.
 
 ## Published so far
 
@@ -16,6 +19,7 @@ sections below distinguish what has been exercised from what is still intended.
 | 0.1.3 | 2026-11-10 | pre-release, published by the release workflow, signed, Manager-ready, two applications | `Kero309x-Patches-0.1.3.mpp` |
 | 0.1.4 | 2026-11-11 | pre-release, published by the release workflow, signed, Manager-ready, two applications | `Kero309x-Patches-0.1.4.mpp` |
 | 0.1.5 | 2026-11-11 | pre-release, published by the release workflow, signed, Manager-ready, two applications | `Kero309x-Patches-0.1.5.mpp` |
+| 0.1.6 | 2026-11-12 | pre-release, published by the release workflow, signed, Manager-ready, two applications | `Kero309x-Patches-0.1.6.mpp` |
 
 Each bundle is built from the tagged commit.
 
@@ -25,6 +29,7 @@ Each bundle is built from the tagged commit.
 - `0.1.3` — `1BA60367F99AD3D68C0FBC7700C37EE47B057F09F47897CC8BB026DAA3BE2B00`
 - `0.1.4` - `751FDE19FB9E1079A0D564B1C9510C0671E0A095BB929B204FC253661EE9BBD7`
 - `0.1.5` - `CF95C866694AD06B6273953A6F99F300357CF8FCBCAEBE4D936DE8D77CA965AF`
+- `0.1.6` - `15D60BCA6963F7A190A6254514EB5AE2F413A84AEBB7F0447FBC8C24904E4942`
 
 The same hash is repeated in the release notes.
 
