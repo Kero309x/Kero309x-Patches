@@ -50,21 +50,25 @@ answers.
 ## Open questions
 
 - Is the limit enforced anywhere else? Answered for this build: the limit is
-  counted in three places, the overlay that lists the accounts, the overlay
-  that asks which account to switch to, and the screen that shows the accounts
-  with the button that adds another account. All three are changed. A count of
-  every comparison against the number five in the whole application was made
-  afterwards and found no fourth one that belongs to the account list; the
-  other comparisons belong to the strength of a password and to the order of
-  an enum.
-- Does the operator refuse the sixth account? Not answered. The message that
-  says too many accounts are saved is shown in two ways. When the application
-  finds the list full it builds the error itself and shows the message. When
-  the operator refuses a sign-in, the application shows the operator's own
-  answer. The wording of the message is the operator's in both cases: the
-  error code is `-1234566` and the text for that code comes from the content
-  the operator sent. The check that decides whether the message appears is the
-  application's; the wording is not.
+  counted in four places. The first three are the overlay that lists the
+  accounts, the overlay that asks which account to switch to, and the screen
+  that shows the accounts with the button that adds another account. The fourth
+  is the repository that performs the login: it counts the saved accounts that
+  are not seamless, and when the count is exactly five and the number being
+  signed in is not one of the saved accounts, it answers the "too many
+  accounts" error itself instead of asking the login service. All four are
+  changed. A count of every comparison against the number five in the whole
+  application was made as well and found no fifth one that belongs to the
+  account list; the other comparisons belong to the strength of a password and
+  to the order of an enum.
+- Does the operator refuse the sixth account? Not answered, and no longer
+  needed to explain the message. The message that says too many accounts are
+  saved is shown when the application itself answers the error code
+  `-1234566`; the wording for that code is the operator's, because the text
+  comes from the content the operator sent. The fourth check is what answered
+  that code on the password screen of a sixth number while the network was
+  closed. Whether the operator also refuses the sign-in is still its own
+  decision and is outside this patch.
 
 ## Verification
 
@@ -75,12 +79,20 @@ answers.
 4. Disable the patch, rebuild and install, and confirm the limit returns.
 
 Verified on a device on 2026-11-11 with five accounts saved: before the third
-of the three checks was changed, the button that adds another account showed
-the "Maximum Accounts Reached" message; with it, the button opens the screen
-that asks for the number.
+of the checks was changed, the button that adds another account showed the
+"Maximum Accounts Reached" message; with it, the button opens the screen that
+asks for the number.
+
+A fourth check was found on 2026-11-12 from the same device run: the message
+appeared on the screen that asks for the password of a sixth number while the
+network was closed, so the error was built by the application and not by the
+operator. The fourth check is in the login repository; it is changed together
+with the other three and the apply run confirms the edit. The sixth account has
+not been signed in on a device since then.
 
 ## Provenance
 
 - Spec author and date: Kero309x, 2026-11-10
-- Derived: 2026-11-10 from the stock build. Derivation record:
+- Derived: 2026-11-10 from the stock build, extended on 2026-11-12 with the
+  login-repository check. Derivation record:
   `docs/provenance/LOG.md`, section `vodafone.account.account-limit`.

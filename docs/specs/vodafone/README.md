@@ -10,26 +10,29 @@ code 1246), distributed as an APKM bundle.
 | 3 | Disable usage tracking | [tracking.md](tracking.md) | yes | low |
 | 4 | Ignore the server's remote wipe and forced logout | [remote-actions.md](remote-actions.md) | yes | medium |
 | 5 | Hide the promotional card | [ad-space.md](ad-space.md) | yes | low |
-| 6 | Remove the saved account limit | [account-limit.md](account-limit.md) | yes | low |
-| 7 | Disable certificate pinning | [certificate-pinning.md](certificate-pinning.md) | yes | medium |
-| 8 | Keep the password of each account | [stored-password.md](stored-password.md) | yes | medium |
-| 9 | Allow screenshots | [screenshots.md](screenshots.md) | yes | low |
+| 6 | Use the current connection for Vodafone Cash | [cash-network.md](cash-network.md) | yes | low |
+| 7 | Remove the saved account limit | [account-limit.md](account-limit.md) | yes | low |
+| 8 | Disable certificate pinning | [certificate-pinning.md](certificate-pinning.md) | yes | medium |
+| 9 | Keep the password of each account | [stored-password.md](stored-password.md) | yes | medium |
+| 10 | Allow screenshots | [screenshots.md](screenshots.md) | yes | low |
 
 ## Status
 
-All nine specs are `derived` and implemented. The first release for this
+All ten specs are implemented. Eight are `derived` and two, the account limit
+and the stored password, are `verified` on a device. The first release for this
 application stopped at the two behaviours that decide whether a repackaged build
 runs at all. The later ones cover what the application reports, what a push
-message can make it do to the installation, the promotional card it draws, how
-many accounts it keeps, the certificate it pins, the password it remembers and
-the screens it hides from screenshots.
+message can make it do to the installation, the promotional card it draws, the
+connection the cash service uses, how many accounts it keeps, the certificate
+it pins, the password it remembers and the screens it hides from screenshots.
 
 `derived` means the behaviour has a spec, a record of how it was derived and an
 implementation that builds and applies to the stock APK. It does not mean it has
-been checked on a device. The bundle was run on a device, and what that run
-showed is recorded below; the acceptance criteria of the individual specs are
-still unchecked, because a run of the whole bundle cannot tell for every
-behaviour whether the behaviour it changes is the one that changed.
+been checked on a device. `verified` means the acceptance criteria of that spec
+were checked on a device as well. The bundle was run on a device, and what that
+run showed is recorded below; the behaviours that have not been checked
+individually stay `derived`, because a run of the whole bundle cannot tell for
+every behaviour whether the behaviour it changes is the one that changed.
 
 ## Scope of this release
 

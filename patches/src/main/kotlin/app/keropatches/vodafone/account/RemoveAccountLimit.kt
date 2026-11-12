@@ -67,21 +67,51 @@ private object LandingAccountCountFingerprint : Fingerprint(
 )
 
 /**
+ * The repository that refuses a login when five accounts are saved.
+ *
+ * The class is the credential-login repository. Its `login` method asks the
+ * cache how many saved accounts are not seamless and compares that number with
+ * five. When the number is exactly five and the number being signed in is not
+ * one of the saved accounts, the method returns an error with the code of the
+ * "too many accounts" message instead of asking the login service. The class
+ * and the method are both renamed by the shrinker, so the class and the full
+ * signature together identify it.
+ */
+private object LoginRepositoryLimitFingerprint : Fingerprint(
+    definingClass = "Lo/GetTargetFragmentUsageViolation;",
+    name = "AnimatedBarChartKtAnimatedBarChart1112",
+    isStatic = false,
+    returnType = "Ljava/lang/Object;",
+    parameters = listOf(
+        "Lvodafone/vis/engezly/account/login/domain/model/LoginInfoModel;",
+        "Lkotlin/coroutines/Continuation;",
+    ),
+)
+
+/**
  * Removes the limit on the number of saved accounts.
  *
  * The stock build keeps at most five accounts, or six when the first of them is
  * a seamless one, and refuses to switch to another account once the list is
- * that long. The limit is checked in three places: the overlay that lists the
+ * that long. The limit is checked in four places: the overlay that lists the
  * accounts, the credential-login overlay that asks which account to switch to,
- * and the screen that shows the accounts and the button that adds another one.
- * All three are answered here.
+ * the screen that shows the accounts and the button that adds another one, and
+ * the repository that performs the login itself. All four are answered here.
  *
  * The first check is a method of its own, so it is answered with "the list is
- * not full". The other two compare the size of the list with five inline; the
+ * not full". The next two compare the size of the list with five inline; the
  * size is answered with zero instead, which is the answer the comparison takes
  * for a list that is not full. The account that is being switched to is
  * found in the list in the same way as before, so the account that is opened
  * does not change.
+ *
+ * The fourth check is the one that is reached when the number being signed in
+ * is not one of the saved accounts. It counts the saved accounts with a method
+ * of its own and compares the answer with five, then looks the number up in the
+ * saved list and answers the "too many accounts" error when it is absent. The
+ * count is answered with zero, which is never five, so the login goes to the
+ * login service as it does for any account that is not the fifth one. The count
+ * is used in this one comparison, so no other behaviour changes.
  *
  * The accounts themselves are stored the way they always were. The patch only
  * removes the check, so nothing about how an account is remembered, logged in
@@ -100,5 +130,8 @@ val removeAccountLimitPatch = bytecodePatch(
         AccountLimitFingerprint.method.returnEarly(false)
         SavedAccountCountFingerprint.method.answerIntCallsWithZero("Ljava/util/List;->size()I")
         LandingAccountCountFingerprint.method.answerIntCallsWithZero("Ljava/util/List;->size()I")
+        LoginRepositoryLimitFingerprint.method.answerIntCallsWithZero(
+            "Lo/GetTargetFragmentUsageViolation;->AnimatedBarChartKtAnimatedBarChart1111()I",
+        )
     }
 }

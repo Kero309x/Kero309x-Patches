@@ -3,11 +3,11 @@
 An independent, clean-room patch collection for the Morphe patching framework,
 maintained by Kero309x.
 
-> **Status: pre-alpha.** All twenty-nine patches are implemented and pass the build
+> **Status: pre-alpha.** All thirty patches are implemented and pass the build
 > and the patch-application gate against their stock builds (20/20 for Anghami
-> 8.0.28, 9/9 for Ana Vodafone 2026.11.1). None has been checked on a device yet. A
-> signed pre-release bundle, `v0.1.4`, is published; treat it as unverified at
-> runtime.
+> 8.0.28, 10/10 for Ana Vodafone 2026.11.1). Some of the Ana Vodafone
+> behaviours have been checked on a device; the rest have not. A signed
+> pre-release bundle, `v0.1.6`, is published; treat it as unverified at runtime.
 
 ## What this is
 
@@ -64,8 +64,9 @@ the source card, and an application that arrived with a later release is marked
 From `0.1.2` the bundle is signed with Ed25519 and the metadata publishes the
 matching `public_key`, so the manager can reject a bundle altered after
 publication. Earlier releases are unsigned and have no `classes.dex`, which makes
-them Desktop-only. No patch has been checked on a device, so treat the bundle as
-unverified at runtime.
+them Desktop-only. The Ana Vodafone password, account-limit and screenshot
+behaviours have been checked on a device; the other behaviours have not, so
+treat the bundle as unverified at runtime.
 
 ## Independence
 
@@ -162,7 +163,7 @@ the bytecode assembles; runtime behaviour needs a device and is checked separate
 
 The table below mirrors the ordered `Catalogue.kt` list and is updated in the same
 change as any patch. The registry test keeps the catalogue, the registry and the
-behaviour specs in agreement. All twenty-nine patches are enabled by default
+behaviour specs in agreement. All thirty patches are enabled by default
 (decision `0004`).
 
 | # | Patch | Category | Default | Spec |

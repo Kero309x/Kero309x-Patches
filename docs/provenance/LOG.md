@@ -1239,13 +1239,15 @@ fired.
 | First check | `SwitchAccountOverlayKt.checkIfAccountsMaxLimit(List)Z` |
 | Second check | `CredentialsLoginOverlayKt.onSwitchAccountClicked(SavedAccountsUiState, Function0, Function0)V` |
 | Third check | `LoginLandingScreenKt.LoginLandingScreen$lambda$23$lambda$17(LoginSharedViewModel, State, Boolean)Unit` |
+| Fourth check | `CredentialLoginRepoImp.login(LoginInfoModel, Continuation)Object` |
 | Screen shown when the limit is reached | the saved-accounts-exceed-limit overlay |
-| Return types | the first check answers a boolean, the second is void, the third is void |
+| Return types | the first check answers a boolean, the others are void except the fourth, which answers the login result |
 
-**Decision:** answer the first check with "the list is not full" and make the
-other two count zero saved accounts, which is the answer the comparison takes
-for a list that is not full. The account that is being switched to is found in
-the list in the same way as before.
+**Decision:** answer the first check with "the list is not full", make the next
+two count zero saved accounts, which is the answer the comparison takes for a
+list that is not full, and answer the count of the fourth with zero as well.
+The account that is being switched to is found in the list in the same way as
+before.
 
 **Known limitations:** the server still decides what each account may do, and
 the accounts are still stored the way they always were. The text that says how
@@ -1263,22 +1265,56 @@ shows it with `LoginScaffoldKt.HandleLoginErrorState`, which compares the
 error code with `-1234566` to decide how the buttons of the message behave.
 
 So the check that decides whether the message appears is in the application,
-and the wording of the message is the operator's. The two producers of that
-error are `CredentialsLoginOverlayKt$AnimatedBarChartPreview$AnimatedBarChartPreview`
-and `LoginLandingScreenKt.LoginLandingScreen$lambda$23$lambda$17`; the second
-one is the third check above, and it is the one that fired on the device.
+and the wording of the message is the operator's. The message is shown on the
+overlay and on the landing screen when the error carries the code `-1234566`,
+and the code is put on the error by the login repository, which is the fourth
+check below.
+
+**The fourth check, found on 2026-11-12:** the message was still shown on the
+screen that asks for the password of a sixth number after the three checks were
+changed, while the network was closed. That made the producer of the error the
+place to read. The error code `-1234566` is built in one method only, and the
+class is the credential-login repository, whose Kotlin metadata names its
+methods:
+
+| Method, as the shrinker named it | Name in the metadata |
+|---|---|
+| `GetTargetFragmentUsageViolation->AnimatedBarChartKtAnimatedBarChart1112(LoginInfoModel, Continuation)Object` | `login` |
+| `GetTargetFragmentUsageViolation->AnimatedBarChartKtAnimatedBarChart1111()I` | `getUsersCountWithoutSeamless` |
+| `GetTargetFragmentUsageViolation->AnimatedBarChartPreview(String)UserAuthInfoEntity` | `checkIsUserNotFoundAndNotSeamless` |
+
+The body of `login` asks the cache how many saved accounts are not seamless,
+compares the answer with five, and, when it is equal, looks the number being
+signed in up in the saved accounts. When the number is not there, the method
+returns an error of its own with the code `-1234566` and never calls the login
+service. The comparison is `const/4 v1, 0x5` followed by `if-ne`, which is the
+check the device was seeing. It fires at exactly five saved accounts and a
+number that is not one of them: the sixth account. The count method is called
+in this one place, so answering it with zero changes nothing else.
+
+The check was missed by the first search because it counts the saved accounts
+through a method of its own and names the number it compares with in a
+constant, instead of counting a list inline the way the other three do. The
+earlier claim that the two producers of the error were the overlay and the
+landing screen was wrong: those two only show an error that already carries
+the code, and the repository is what builds it.
 
 **Verification run:** the unified run applies all registered Ana Vodafone
 patches to the stock base APK and reports `PASS` for each of them, and the
-patched APK compiles. The three answers were confirmed in the decompiled
-output. The behaviour was observed on a device on 2026-11-11 with five
-accounts saved: before the third check was changed, the button that adds
-another account showed the message that too many accounts are saved; with it,
-the button opens the screen that asks for the number. The same device, with
-the message appearing on the screen that asks for the password of the sixth
-account, showed that the message is shown while the operator's answer is not
-yet known: the application had built the error itself, and the wording came
-from the content the operator had sent earlier.
+patched APK compiles. The four answers were confirmed in the decompiled
+output of the patched build: `const/4 v0, 0x0` sits where `move-result` was,
+before `const/4 v1, 0x5` and `if-ne`, so the branch to the error is not taken.
+The behaviour was observed on a device on 2026-11-11 with five accounts saved:
+before the third check was changed, the button that adds another account showed
+the message that too many accounts are saved; with it, the button opens the
+screen that asks for the number. The same device, with the message appearing on
+the screen that asks for the password of the sixth account, showed that the
+message is built before the operator answers: the application had built the
+error itself, and the wording came from the content the operator had sent
+earlier. That observation is what led to the fourth check. The fourth check has
+not been run on a device yet: at the time it was found the device could not be
+reached, and the patch is confirmed by the apply run and by the disassembly of
+its method.
 
 
 ### `vodafone.network.certificate-pinning` - derived 2026-11-10
